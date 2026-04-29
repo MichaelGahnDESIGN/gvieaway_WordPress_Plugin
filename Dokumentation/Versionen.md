@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.11
+
+Beschreibung: Datenschutz-Element im Frontend um Link und Popup zur WordPress-Datenschutzerklaerung erweitert.
+Begruendung: Nutzer sollen die Datenschutzerklaerung direkt beim Datenschutz-Hinweis lesen koennen, ohne die Seite zu verlassen.
+Betroffene Bereiche: Frontend Formularausgabe, Frontend JavaScript, Frontend CSS, Dokumentation.
+Ruecknahme: Version 0.0.10 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.10
 
 Beschreibung: Speichern-Feedback im Formular-Editor verbessert, aktiven Tab nach dem Speichern beibehalten und Hilfetexte unter die Felder gesetzt.

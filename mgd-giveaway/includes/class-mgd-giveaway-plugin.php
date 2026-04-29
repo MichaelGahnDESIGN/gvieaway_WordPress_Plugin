@@ -1094,13 +1094,38 @@ class MGD_Giveaway_Plugin
             echo '<textarea name="' . esc_attr($name) . '"' . $required . '></textarea>';
         } elseif ('privacy' === $type) {
             $notice = $text ? $text : $label;
-            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '> <span>' . esc_html($notice) . '</span></span>';
+            $modal_id = wp_unique_id('mgd-privacy-modal-');
+            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" data-mgd-modal="' . esc_attr($modal_id) . '">zur Datenschutzerkl&auml;rung</button></span></span>';
+            echo '</label>';
+            $this->render_privacy_modal($modal_id);
+            return;
         } elseif ('checkbox' === $type) {
             echo '<input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '>';
         } else {
             echo '<input type="' . esc_attr($type) . '" name="' . esc_attr($name) . '"' . $required . '>';
         }
         echo '</label>';
+    }
+
+    private function render_privacy_modal($modal_id)
+    {
+        $privacy_page_id = (int) get_option('wp_page_for_privacy_policy');
+        $privacy_page = $privacy_page_id ? get_post($privacy_page_id) : null;
+
+        echo '<div id="' . esc_attr($modal_id) . '" class="mgd-privacy-modal" aria-hidden="true">';
+        echo '<div class="mgd-privacy-backdrop" data-mgd-modal-close></div>';
+        echo '<div class="mgd-privacy-dialog" role="dialog" aria-modal="true" aria-label="Datenschutzerkl&auml;rung">';
+        echo '<button type="button" class="mgd-privacy-close" data-mgd-modal-close aria-label="Schliessen">&times;</button>';
+        echo '<h2>Datenschutzerkl&auml;rung</h2>';
+        echo '<div class="mgd-privacy-content">';
+        if ($privacy_page && 'publish' === $privacy_page->post_status) {
+            echo apply_filters('the_content', $privacy_page->post_content);
+        } else {
+            echo '<p>Es wurde noch keine Datenschutzerkl&auml;rung in WordPress hinterlegt.</p>';
+        }
+        echo '</div>';
+        echo '</div>';
+        echo '</div>';
     }
 
     public function handle_frontend_submit()

@@ -32,6 +32,18 @@
     margin-top: 4px;
 }
 
+.mgd-privacy-link {
+    display: inline;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    font: inherit;
+}
+
 .mgd-giveaway-hp {
     position: absolute;
     left: -9999px;
@@ -74,4 +86,58 @@
 
 .mgd-giveaway-error {
     color: #b32d2e;
+}
+
+.mgd-privacy-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+}
+
+.mgd-privacy-modal.is-open {
+    display: block;
+}
+
+.mgd-privacy-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.58);
+}
+
+.mgd-privacy-dialog {
+    position: relative;
+    width: min(860px, calc(100vw - 32px));
+    max-height: calc(100vh - 64px);
+    overflow: auto;
+    margin: 32px auto;
+    background: #fff;
+    color: #1d2327;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.mgd-privacy-dialog h2 {
+    margin-top: 0;
+    padding-right: 38px;
+}
+
+.mgd-privacy-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 999px;
+    background: #f0f0f1;
+    color: #1d2327;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.mgd-modal-open {
+    overflow: hidden;
 }
