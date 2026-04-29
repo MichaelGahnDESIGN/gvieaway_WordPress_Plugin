@@ -9,6 +9,7 @@ class MGD_Giveaway_Plugin
     private static $instance = null;
     private $post_type = 'mgd_giveaway_form';
     private $submission_table;
+    private $log_table;
 
     public static function instance()
     {
@@ -23,8 +24,10 @@ class MGD_Giveaway_Plugin
     {
         global $wpdb;
         $this->submission_table = $wpdb->prefix . 'mgd_giveaway_submissions';
+        $this->log_table = $wpdb->prefix . 'mgd_giveaway_logs';
 
         add_action('init', array($this, 'register_post_type'));
+        add_action('init', array($this, 'maybe_upgrade'));
         add_action('admin_menu', array($this, 'register_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
@@ -34,14 +37,27 @@ class MGD_Giveaway_Plugin
         add_action('admin_post_mgd_giveaway_delete_form', array($this, 'handle_delete_form'));
         add_action('admin_post_mgd_giveaway_duplicate_form', array($this, 'handle_duplicate_form'));
         add_action('admin_post_mgd_giveaway_save_settings', array($this, 'handle_save_settings'));
+        add_action('admin_post_mgd_giveaway_export_mail_list', array($this, 'handle_export_mail_list'));
+        add_action('admin_post_mgd_giveaway_import_mail_list', array($this, 'handle_import_mail_list'));
+        add_action('admin_post_mgd_giveaway_export_logs', array($this, 'handle_export_logs'));
+        add_action('admin_post_mgd_giveaway_clear_logs', array($this, 'handle_clear_logs'));
         add_action('admin_post_nopriv_mgd_giveaway_submit', array($this, 'handle_frontend_submit'));
         add_action('admin_post_mgd_giveaway_submit', array($this, 'handle_frontend_submit'));
     }
 
     public static function activate()
     {
-        self::create_submission_table();
+        self::create_tables();
+        update_option('mgd_giveaway_version', MGD_GIVEAWAY_VERSION, false);
         flush_rewrite_rules();
+    }
+
+    public function maybe_upgrade()
+    {
+        if (get_option('mgd_giveaway_version') !== MGD_GIVEAWAY_VERSION) {
+            self::create_tables();
+            update_option('mgd_giveaway_version', MGD_GIVEAWAY_VERSION, false);
+        }
     }
 
     public static function uninstall()
@@ -58,20 +74,23 @@ class MGD_Giveaway_Plugin
         }
 
         delete_option('mgd_giveaway_settings');
+        delete_option('mgd_giveaway_version');
 
         global $wpdb;
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}mgd_giveaway_submissions");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}mgd_giveaway_logs");
     }
 
-    private static function create_submission_table()
+    private static function create_tables()
     {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'mgd_giveaway_submissions';
+        $submission_table = $wpdb->prefix . 'mgd_giveaway_submissions';
+        $log_table = $wpdb->prefix . 'mgd_giveaway_logs';
         $charset_collate = $wpdb->get_charset_collate();
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-        $sql = "CREATE TABLE {$table_name} (
+        $submission_sql = "CREATE TABLE {$submission_table} (
             id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
             form_id bigint(20) unsigned NOT NULL,
             email varchar(190) NOT NULL DEFAULT '',
@@ -84,7 +103,21 @@ class MGD_Giveaway_Plugin
             KEY email (email)
         ) {$charset_collate};";
 
-        dbDelta($sql);
+        $log_sql = "CREATE TABLE {$log_table} (
+            id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+            level varchar(20) NOT NULL DEFAULT 'info',
+            event varchar(100) NOT NULL DEFAULT '',
+            message text NULL,
+            context longtext NULL,
+            created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY level (level),
+            KEY event (event),
+            KEY created_at (created_at)
+        ) {$charset_collate};";
+
+        dbDelta($submission_sql);
+        dbDelta($log_sql);
     }
 
     public function register_post_type()
@@ -115,6 +148,8 @@ class MGD_Giveaway_Plugin
 
         add_submenu_page('mgd-giveaway', 'Dashboard', 'Dashboard', 'manage_options', 'mgd-giveaway', array($this, 'render_dashboard_page'));
         add_submenu_page('mgd-giveaway', 'Neues Formular', 'Neues Formular', 'manage_options', 'mgd-giveaway-form', array($this, 'render_form_editor_page'));
+        add_submenu_page('mgd-giveaway', 'Mail-Liste', 'Mail-Liste', 'manage_options', 'mgd-giveaway-mail-list', array($this, 'render_mail_list_page'));
+        add_submenu_page('mgd-giveaway', 'Logs', 'Logs', 'manage_options', 'mgd-giveaway-logs', array($this, 'render_logs_page'));
         add_submenu_page('mgd-giveaway', 'E-Mail Einstellungen', 'E-Mail', 'manage_options', 'mgd-giveaway-settings', array($this, 'render_settings_page'));
         add_submenu_page('mgd-giveaway', 'Credits', 'Credits', 'manage_options', 'mgd-giveaway-credits', array($this, 'render_credits_page'));
     }
@@ -162,6 +197,7 @@ class MGD_Giveaway_Plugin
             'mail_method' => 'php',
             'from_name' => get_bloginfo('name'),
             'from_email' => get_option('admin_email'),
+            'notification_recipient' => get_option('admin_email'),
             'smtp_host' => '',
             'smtp_port' => '587',
             'smtp_encryption' => 'tls',
@@ -304,6 +340,7 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>Versandart</span><select name="mail_method"><option value="php" ' . selected($settings['mail_method'], 'php', false) . '>PHP mail / wp_mail</option><option value="smtp" ' . selected($settings['mail_method'], 'smtp', false) . '>SMTP</option></select></label>';
         echo '<label class="mgd-field"><span>Absender Name</span><input type="text" name="from_name" value="' . esc_attr($settings['from_name']) . '"></label>';
         echo '<label class="mgd-field"><span>Absender E-Mail</span><input type="email" name="from_email" value="' . esc_attr($settings['from_email']) . '"></label>';
+        echo '<label class="mgd-field"><span>Empfaenger fuer neue Anmeldungen</span><input type="email" name="notification_recipient" value="' . esc_attr($settings['notification_recipient']) . '"><small>An diese Adresse wird jede neue Formularanmeldung gesendet.</small></label>';
         echo '<label class="mgd-field"><span>SMTP Host</span><input type="text" name="smtp_host" value="' . esc_attr($settings['smtp_host']) . '"></label>';
         echo '<label class="mgd-field"><span>SMTP Port</span><input type="number" name="smtp_port" value="' . esc_attr($settings['smtp_port']) . '"></label>';
         echo '<label class="mgd-field"><span>Verschluesselung</span><select name="smtp_encryption"><option value="none" ' . selected($settings['smtp_encryption'], 'none', false) . '>Keine</option><option value="tls" ' . selected($settings['smtp_encryption'], 'tls', false) . '>TLS</option><option value="ssl" ' . selected($settings['smtp_encryption'], 'ssl', false) . '>SSL</option></select></label>';
@@ -311,6 +348,113 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>SMTP Passwort</span><input type="password" name="smtp_password" value="' . esc_attr($settings['smtp_password']) . '"></label>';
         echo '<p><button class="button button-primary" type="submit">Speichern</button></p>';
         echo '</form></div>';
+    }
+
+    public function render_mail_list_page()
+    {
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('Keine Berechtigung.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+        $where = '1=1';
+        $params = array();
+
+        if ($search) {
+            $where .= ' AND (email LIKE %s OR data LIKE %s)';
+            $like = '%' . $wpdb->esc_like($search) . '%';
+            $params[] = $like;
+            $params[] = $like;
+        }
+
+        $sql = "SELECT * FROM {$this->submission_table} WHERE {$where} ORDER BY created_at DESC LIMIT 200";
+        $items = $params ? $wpdb->get_results($wpdb->prepare($sql, $params)) : $wpdb->get_results($sql);
+
+        echo '<div class="wrap mgd-admin"><h1>Mail-Liste</h1>';
+        $this->render_notices();
+        echo '<form method="get" class="mgd-toolbar"><input type="hidden" name="page" value="mgd-giveaway-mail-list"><input type="search" name="s" value="' . esc_attr($search) . '" placeholder="E-Mail oder Daten suchen"><button class="button">Suchen</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway-mail-list')) . '">Zuruecksetzen</a></form>';
+        echo '<div class="mgd-toolbar">';
+        echo '<a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_export_mail_list'), 'mgd_giveaway_export_mail_list')) . '">CSV exportieren</a>';
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
+        wp_nonce_field('mgd_giveaway_import_mail_list');
+        echo '<input type="hidden" name="action" value="mgd_giveaway_import_mail_list"><input type="file" name="mail_list_csv" accept=".csv,text/csv" required> <button class="button">CSV importieren</button></form>';
+        echo '</div>';
+        echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Formular</th><th>E-Mail</th><th>Daten</th><th>Datum</th></tr></thead><tbody>';
+
+        if (!$items) {
+            echo '<tr><td colspan="5">Keine Eintraege gefunden.</td></tr>';
+        }
+
+        foreach ($items as $item) {
+            $data = json_decode($item->data, true);
+            echo '<tr>';
+            echo '<td>' . esc_html((string) $item->id) . '</td>';
+            echo '<td>' . esc_html($item->form_id ? get_the_title((int) $item->form_id) : 'Import') . '</td>';
+            echo '<td><a href="mailto:' . esc_attr($item->email) . '">' . esc_html($item->email) . '</a></td>';
+            echo '<td><code>' . esc_html($data ? wp_json_encode($data) : '') . '</code></td>';
+            echo '<td>' . esc_html($item->created_at) . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody></table><p><small>Anzeige ist auf 200 Eintraege begrenzt. Der CSV-Export enthaelt alle Eintraege.</small></p></div>';
+    }
+
+    public function render_logs_page()
+    {
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('Keine Berechtigung.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $search = isset($_GET['s']) ? sanitize_text_field(wp_unslash($_GET['s'])) : '';
+        $level = isset($_GET['level']) ? sanitize_key($_GET['level']) : '';
+        $where = '1=1';
+        $params = array();
+
+        if ($search) {
+            $where .= ' AND (event LIKE %s OR message LIKE %s OR context LIKE %s)';
+            $like = '%' . $wpdb->esc_like($search) . '%';
+            $params[] = $like;
+            $params[] = $like;
+            $params[] = $like;
+        }
+
+        if ($level && in_array($level, array('info', 'warning', 'error'), true)) {
+            $where .= ' AND level = %s';
+            $params[] = $level;
+        }
+
+        $sql = "SELECT * FROM {$this->log_table} WHERE {$where} ORDER BY created_at DESC LIMIT 300";
+        $logs = $params ? $wpdb->get_results($wpdb->prepare($sql, $params)) : $wpdb->get_results($sql);
+        $storage = $this->get_log_storage_usage();
+
+        echo '<div class="wrap mgd-admin"><h1>Logs</h1>';
+        $this->render_notices();
+        echo '<div class="mgd-stats"><div><strong>' . esc_html((string) $this->count_logs()) . '</strong><span>Log-Eintraege</span></div><div><strong>' . esc_html($storage) . '</strong><span>Speicherverbrauch</span></div></div>';
+        echo '<form method="get" class="mgd-toolbar"><input type="hidden" name="page" value="mgd-giveaway-logs"><input type="search" name="s" value="' . esc_attr($search) . '" placeholder="Logs durchsuchen"><select name="level"><option value="">Alle Level</option><option value="info" ' . selected($level, 'info', false) . '>Info</option><option value="warning" ' . selected($level, 'warning', false) . '>Warnung</option><option value="error" ' . selected($level, 'error', false) . '>Fehler</option></select><button class="button">Filtern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway-logs')) . '">Zuruecksetzen</a></form>';
+        echo '<div class="mgd-toolbar"><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_export_logs'), 'mgd_giveaway_export_logs')) . '">Logs exportieren</a>';
+        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(\'Logs wirklich leeren?\');">';
+        wp_nonce_field('mgd_giveaway_clear_logs');
+        echo '<input type="hidden" name="action" value="mgd_giveaway_clear_logs"><button class="button button-link-delete">Leeren</button></form></div>';
+        echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Level</th><th>Event</th><th>Nachricht</th><th>Kontext</th><th>Datum</th></tr></thead><tbody>';
+
+        if (!$logs) {
+            echo '<tr><td colspan="6">Keine Logs gefunden.</td></tr>';
+        }
+
+        foreach ($logs as $log) {
+            echo '<tr>';
+            echo '<td>' . esc_html((string) $log->id) . '</td>';
+            echo '<td>' . esc_html($log->level) . '</td>';
+            echo '<td>' . esc_html($log->event) . '</td>';
+            echo '<td>' . esc_html($log->message) . '</td>';
+            echo '<td><code>' . esc_html($log->context) . '</code></td>';
+            echo '<td>' . esc_html($log->created_at) . '</td>';
+            echo '</tr>';
+        }
+
+        echo '</tbody></table><p><small>Anzeige ist auf 300 Eintraege begrenzt. Der CSV-Export enthaelt alle Logs.</small></p></div>';
     }
 
     public function render_credits_page()
@@ -374,6 +518,7 @@ class MGD_Giveaway_Plugin
         );
 
         update_post_meta($form_id, '_mgd_giveaway_config', $config);
+        $this->add_log('info', 'form_saved', 'Formular gespeichert.', array('form_id' => $form_id, 'title' => $post_data['post_title']));
 
         wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-form&form_id=' . (int) $form_id . '&mgd_notice=saved'));
         exit;
@@ -420,6 +565,7 @@ class MGD_Giveaway_Plugin
         }
 
         wp_delete_post($form_id, true);
+        $this->add_log('info', 'form_deleted', 'Formular geloescht.', array('form_id' => $form_id));
         wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway&mgd_notice=deleted'));
         exit;
     }
@@ -443,6 +589,7 @@ class MGD_Giveaway_Plugin
         ));
 
         update_post_meta($new_id, '_mgd_giveaway_config', $this->get_form_config($form_id));
+        $this->add_log('info', 'form_duplicated', 'Formular dupliziert.', array('source_form_id' => $form_id, 'new_form_id' => $new_id));
 
         wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-form&form_id=' . (int) $new_id . '&mgd_notice=duplicated'));
         exit;
@@ -458,6 +605,7 @@ class MGD_Giveaway_Plugin
             'mail_method' => isset($_POST['mail_method']) && 'smtp' === $_POST['mail_method'] ? 'smtp' : 'php',
             'from_name' => isset($_POST['from_name']) ? sanitize_text_field(wp_unslash($_POST['from_name'])) : '',
             'from_email' => isset($_POST['from_email']) ? sanitize_email(wp_unslash($_POST['from_email'])) : '',
+            'notification_recipient' => isset($_POST['notification_recipient']) ? sanitize_email(wp_unslash($_POST['notification_recipient'])) : '',
             'smtp_host' => isset($_POST['smtp_host']) ? sanitize_text_field(wp_unslash($_POST['smtp_host'])) : '',
             'smtp_port' => isset($_POST['smtp_port']) ? absint($_POST['smtp_port']) : 587,
             'smtp_encryption' => isset($_POST['smtp_encryption']) && in_array($_POST['smtp_encryption'], array('none', 'tls', 'ssl'), true) ? sanitize_key($_POST['smtp_encryption']) : 'tls',
@@ -466,7 +614,92 @@ class MGD_Giveaway_Plugin
         );
 
         update_option('mgd_giveaway_settings', $settings, false);
+        $this->add_log('info', 'settings_saved', 'E-Mail Einstellungen gespeichert.', array('notification_recipient' => $settings['notification_recipient'], 'mail_method' => $settings['mail_method']));
         wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-settings&mgd_notice=saved'));
+        exit;
+    }
+
+    public function handle_export_mail_list()
+    {
+        if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_export_mail_list')) {
+            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $items = $wpdb->get_results("SELECT * FROM {$this->submission_table} ORDER BY created_at DESC", ARRAY_A);
+        $this->add_log('info', 'mail_list_export', 'Mail-Liste als CSV exportiert.', array('count' => count($items)));
+
+        $this->output_csv('mgd-giveaway-mail-liste.csv', array('id', 'form_id', 'email', 'data', 'created_at'), $items);
+    }
+
+    public function handle_import_mail_list()
+    {
+        if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_import_mail_list')) {
+            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        if (empty($_FILES['mail_list_csv']['tmp_name'])) {
+            wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-mail-list&mgd_notice=import_empty'));
+            exit;
+        }
+
+        $file = $_FILES['mail_list_csv'];
+        $filename = isset($file['name']) ? sanitize_file_name($file['name']) : '';
+        $tmp_name = isset($file['tmp_name']) ? $file['tmp_name'] : '';
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        if ('csv' !== $extension || !is_uploaded_file($tmp_name)) {
+            $this->add_log('warning', 'mail_list_import_rejected', 'CSV Import abgelehnt.', array('filename' => $filename));
+            wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-mail-list&mgd_notice=import_invalid'));
+            exit;
+        }
+
+        $handle = fopen($tmp_name, 'r');
+        $imported = 0;
+
+        if ($handle) {
+            $header = fgetcsv($handle, 0, ',');
+            while (($row = fgetcsv($handle, 0, ',')) !== false) {
+                $record = $this->map_csv_row($header, $row);
+                $email = isset($record['email']) ? sanitize_email($record['email']) : '';
+
+                if (!$email) {
+                    continue;
+                }
+
+                $data = $record;
+                unset($data['email']);
+                $this->store_submission(0, $email, array_merge(array('import_source' => $filename), $data));
+                $imported++;
+            }
+            fclose($handle);
+        }
+
+        $this->add_log('info', 'mail_list_import', 'Mail-Liste als CSV importiert.', array('filename' => $filename, 'count' => $imported));
+        wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-mail-list&mgd_notice=imported'));
+        exit;
+    }
+
+    public function handle_export_logs()
+    {
+        if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_export_logs')) {
+            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $logs = $wpdb->get_results("SELECT * FROM {$this->log_table} ORDER BY created_at DESC", ARRAY_A);
+        $this->output_csv('mgd-giveaway-logs.csv', array('id', 'level', 'event', 'message', 'context', 'created_at'), $logs);
+    }
+
+    public function handle_clear_logs()
+    {
+        if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_clear_logs')) {
+            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $wpdb->query("TRUNCATE TABLE {$this->log_table}");
+        wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-logs&mgd_notice=logs_cleared'));
         exit;
     }
 
@@ -550,10 +783,13 @@ class MGD_Giveaway_Plugin
         }
 
         $download_url = $this->get_download_url((int) $config['download_attachment_id']);
-        $this->store_submission($form_id, $email, $data);
+        $submission_id = $this->store_submission($form_id, $email, $data);
+        $this->add_log('info', 'form_submission', 'Neue Formularanmeldung gespeichert.', array('form_id' => $form_id, 'submission_id' => $submission_id, 'email' => $email));
+        $this->send_notification_email($form_id, $email, $data);
 
         if (!empty($config['send_email']) && $email && $download_url) {
-            $this->send_download_email($email, $download_url, $config);
+            $sent = $this->send_download_email($email, $download_url, $config);
+            $this->add_log($sent ? 'info' : 'error', 'download_email', $sent ? 'Download-E-Mail versendet.' : 'Download-E-Mail konnte nicht versendet werden.', array('form_id' => $form_id, 'email' => $email));
         }
 
         echo '<!doctype html><html><head><meta charset="' . esc_attr(get_bloginfo('charset')) . '"><meta name="viewport" content="width=device-width, initial-scale=1">';
@@ -600,6 +836,8 @@ class MGD_Giveaway_Plugin
             ),
             array('%d', '%s', '%s', '%s', '%s', '%s')
         );
+
+        return (int) $wpdb->insert_id;
     }
 
     private function send_download_email($email, $download_url, $config)
@@ -630,7 +868,123 @@ class MGD_Giveaway_Plugin
             });
         }
 
-        wp_mail($email, $subject, $body, $headers);
+        return wp_mail($email, $subject, $body, $headers);
+    }
+
+    private function send_notification_email($form_id, $email, $data)
+    {
+        $settings = $this->get_settings();
+        $recipient = sanitize_email($settings['notification_recipient']);
+
+        if (!$recipient) {
+            $this->add_log('warning', 'notification_email_skipped', 'Keine Empfaengeradresse fuer neue Anmeldungen hinterlegt.', array('form_id' => $form_id, 'email' => $email));
+            return false;
+        }
+
+        $subject = 'Neue MGD Giveaway Anmeldung';
+        $lines = array(
+            'Formular: ' . get_the_title($form_id),
+            'E-Mail: ' . $email,
+            '',
+            'Daten:',
+        );
+
+        foreach ($data as $key => $value) {
+            $lines[] = $key . ': ' . $value;
+        }
+
+        $sent = $this->send_mail($recipient, $subject, implode("\n", $lines));
+        $this->add_log($sent ? 'info' : 'error', 'notification_email', $sent ? 'Benachrichtigung versendet.' : 'Benachrichtigung konnte nicht versendet werden.', array('recipient' => $recipient, 'form_id' => $form_id));
+
+        return $sent;
+    }
+
+    private function send_mail($to, $subject, $body)
+    {
+        $settings = $this->get_settings();
+        $headers = array('Content-Type: text/plain; charset=UTF-8');
+
+        add_filter('wp_mail_from', function () use ($settings) {
+            return $settings['from_email'];
+        });
+        add_filter('wp_mail_from_name', function () use ($settings) {
+            return $settings['from_name'];
+        });
+
+        if ('smtp' === $settings['mail_method']) {
+            add_action('phpmailer_init', function ($phpmailer) use ($settings) {
+                $phpmailer->isSMTP();
+                $phpmailer->Host = $settings['smtp_host'];
+                $phpmailer->Port = (int) $settings['smtp_port'];
+                $phpmailer->SMTPAuth = !empty($settings['smtp_username']);
+                $phpmailer->Username = $settings['smtp_username'];
+                $phpmailer->Password = $settings['smtp_password'];
+                if ('none' !== $settings['smtp_encryption']) {
+                    $phpmailer->SMTPSecure = $settings['smtp_encryption'];
+                }
+            });
+        }
+
+        return wp_mail($to, $subject, $body, $headers);
+    }
+
+    private function output_csv($filename, $columns, $rows)
+    {
+        nocache_headers();
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $output = fopen('php://output', 'w');
+        fputcsv($output, $columns);
+
+        foreach ($rows as $row) {
+            $line = array();
+            foreach ($columns as $column) {
+                $line[] = isset($row[$column]) ? $row[$column] : '';
+            }
+            fputcsv($output, $line);
+        }
+
+        fclose($output);
+        exit;
+    }
+
+    private function map_csv_row($header, $row)
+    {
+        $record = array();
+
+        if (!is_array($header)) {
+            return $record;
+        }
+
+        foreach ($header as $index => $column) {
+            $key = sanitize_key($column);
+            if (!$key) {
+                continue;
+            }
+            $record[$key] = isset($row[$index]) ? sanitize_text_field($row[$index]) : '';
+        }
+
+        return $record;
+    }
+
+    private function add_log($level, $event, $message, $context = array())
+    {
+        global $wpdb;
+        $allowed_levels = array('info', 'warning', 'error');
+        $level = in_array($level, $allowed_levels, true) ? $level : 'info';
+
+        $wpdb->insert(
+            $this->log_table,
+            array(
+                'level' => $level,
+                'event' => sanitize_key($event),
+                'message' => sanitize_text_field($message),
+                'context' => wp_json_encode($context),
+                'created_at' => current_time('mysql'),
+            ),
+            array('%s', '%s', '%s', '%s', '%s')
+        );
     }
 
     private function count_submissions($form_id = 0)
@@ -643,6 +997,29 @@ class MGD_Giveaway_Plugin
         return (int) $wpdb->get_var("SELECT COUNT(*) FROM {$this->submission_table}");
     }
 
+    private function count_logs()
+    {
+        global $wpdb;
+
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM {$this->log_table}");
+    }
+
+    private function get_log_storage_usage()
+    {
+        global $wpdb;
+        $bytes = (int) $wpdb->get_var("SELECT COALESCE(SUM(CHAR_LENGTH(level) + CHAR_LENGTH(event) + CHAR_LENGTH(message) + CHAR_LENGTH(context) + 32), 0) FROM {$this->log_table}");
+
+        if ($bytes >= 1048576) {
+            return round($bytes / 1048576, 2) . ' MB';
+        }
+
+        if ($bytes >= 1024) {
+            return round($bytes / 1024, 2) . ' KB';
+        }
+
+        return $bytes . ' B';
+    }
+
     private function render_notices()
     {
         if (empty($_GET['mgd_notice'])) {
@@ -653,6 +1030,10 @@ class MGD_Giveaway_Plugin
             'saved' => 'Gespeichert.',
             'deleted' => 'Geloescht.',
             'duplicated' => 'Dupliziert.',
+            'imported' => 'CSV importiert.',
+            'import_empty' => 'Keine CSV-Datei ausgewaehlt.',
+            'import_invalid' => 'CSV-Datei konnte nicht importiert werden.',
+            'logs_cleared' => 'Logs geleert.',
         );
         $notice = sanitize_key($_GET['mgd_notice']);
 

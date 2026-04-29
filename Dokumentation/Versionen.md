@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.2
+
+Beschreibung: Mail-Liste mit CSV Import/Export, Benachrichtigungs-Empfaenger, Log-Reiter mit Suche/Filter/Export/Speicheranzeige/Leeren und lokale Asset-Dokumentation ergaenzt.  
+Begruendung: Anforderungen an Empfaengerverwaltung, Nachvollziehbarkeit und Datenschutz wurden erweitert.  
+Betroffene Bereiche: WordPress Plugin, Backend, E-Mail, CSV, Logs, Dokumentation.  
+Ruecknahme: Version 0.0.1 aus Git-Historie oder ZIP wiederherstellen; bei Datenbank-Rollback Tabellen `wp_mgd_giveaway_submissions` und `wp_mgd_giveaway_logs` pruefen.
+
 ## 2026-04-29 - Version 0.0.1
 
 Beschreibung: Erste Version von MGD Giveaway erstellt.  

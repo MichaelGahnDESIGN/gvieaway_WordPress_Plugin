@@ -12,3 +12,7 @@
 ## Kosten
 
 Das Plugin fuehrt keine kostenpflichtigen Drittanbieter ein. Hosting, Domain, SMTP-Anbieter oder WordPress-Betrieb koennen separat Kosten verursachen.
+
+## Lokale Assets und Datenschutz
+
+Das Plugin laedt keine externen Schriften, Icons, Skripte oder Stylesheets. Verwendete SVG-Logos liegen lokal im Plugin. Dashicons stammen aus der lokalen WordPress-Installation. Es werden System-Fonts referenziert, ohne Verbindung zu externen Font-Diensten.

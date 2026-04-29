@@ -59,6 +59,22 @@
     margin-bottom: 10px;
 }
 
+.mgd-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.mgd-toolbar form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
 .mgd-preview {
     margin-top: 16px;
 }
