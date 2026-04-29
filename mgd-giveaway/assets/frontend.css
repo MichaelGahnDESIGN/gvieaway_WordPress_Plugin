@@ -70,15 +70,24 @@
     align-items: center;
     justify-content: center;
     min-height: 42px;
-    border: 0;
+    border: 0 !important;
     border-radius: var(--mgd-radius, 6px);
-    background: var(--mgd-button-bg, #151515);
-    color: var(--mgd-button-text, #fff);
+    background: var(--mgd-button-bg, #151515) !important;
+    color: var(--mgd-button-text, #fff) !important;
     padding: 10px 16px;
     text-decoration: none;
     cursor: pointer;
     justify-self: start;
     margin-top: 2px;
+    box-shadow: none;
+}
+
+.mgd-giveaway-form > button[type="submit"]:hover,
+.mgd-giveaway-form > button[type="submit"]:focus,
+.mgd-giveaway-download:hover,
+.mgd-giveaway-download:focus {
+    background: var(--mgd-button-bg, #151515) !important;
+    color: var(--mgd-button-text, #fff) !important;
 }
 
 .mgd-giveaway-success {

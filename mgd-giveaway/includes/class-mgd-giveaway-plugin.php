@@ -13,7 +13,7 @@ class MGD_Giveaway_Plugin
     private $max_csv_upload_bytes = 2097152;
     private $max_csv_import_rows = 5000;
     private $spam_min_seconds = 1;
-    private $spam_max_seconds = 86400;
+    private $spam_max_seconds = 0;
 
     public static function instance()
     {
@@ -1056,7 +1056,6 @@ class MGD_Giveaway_Plugin
         echo '<input type="hidden" name="mgd_giveaway_return_url" value="' . esc_attr($this->get_current_page_url()) . '">';
         echo '<input type="text" name="mgd_giveaway_website" value="" class="mgd-giveaway-hp" tabindex="-1" autocomplete="off" aria-hidden="true">';
         echo '<input type="hidden" name="mgd_giveaway_started" value="' . esc_attr($this->create_spam_token()) . '">';
-        wp_nonce_field('mgd_giveaway_submit_' . $form_id);
 
         foreach ($config['fields'] as $field) {
             $this->render_frontend_field($field);
@@ -1201,7 +1200,7 @@ class MGD_Giveaway_Plugin
     public function handle_frontend_submit()
     {
         $form_id = isset($_POST['form_id']) ? absint($_POST['form_id']) : 0;
-        if (!$form_id || !check_admin_referer('mgd_giveaway_submit_' . $form_id)) {
+        if (!$form_id) {
             wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
@@ -1294,7 +1293,7 @@ class MGD_Giveaway_Plugin
         }
 
         $age = time() - (int) $timestamp;
-        if ($age < $this->spam_min_seconds || $age > $this->spam_max_seconds) {
+        if ($age < $this->spam_min_seconds || ($this->spam_max_seconds > 0 && $age > $this->spam_max_seconds)) {
             $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Absendezeit außerhalb des erlaubten Bereichs.', array('form_id' => $form_id, 'age' => $age));
             return false;
         }

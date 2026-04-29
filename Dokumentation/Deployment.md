@@ -1,6 +1,6 @@
 # Deployment
 
-Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.22.zip`.
+Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.23.zip`.
 
 Vor einem produktiven Release prüfen:
 
@@ -13,6 +13,7 @@ Vor einem produktiven Release prüfen:
 - Geschützte Download-Kopie und Datei-Auslieferung
 - Optionales Double-Opt-In
 - Design-Einstellungen im Frontend
+- Absenden auf gecachten Frontend-Seiten
 - Einzelner Kontakt-Export und Kontakt-Löschung
 - Speichern-Feedback und Tab-Erhalt im Formular-Editor
 - Datenschutz-Popup im Frontend

@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.23
+
+Beschreibung: Frontend-Absenden cache-toleranter gemacht und Button-Farben robuster gegen Theme-Styles geschützt.
+Begründung: Der Absenden-Button darf durch Seiten-Caches nicht blockiert werden; Design-Einstellungen sollen im Frontend sichtbar greifen.
+Betroffene Bereiche: Frontend Formularausgabe, Spam-Schutz, Frontend CSS, Backend-Vorschau, Dokumentation.
+Rücknahme: Version 0.0.22 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.22
 
 Beschreibung: Sichtbare deutsche Texte und Dokumentation auf UTF-8-Umlaute umgestellt.
