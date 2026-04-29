@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.20
+
+Beschreibung: Formular-Abstaende im Frontend und in der Backend-Vorschau kompakter und konsistenter gestaltet.
+Begruendung: Das Formular soll ruhiger wirken; Datenschutztext und Button-Abstand sollen optisch besser zum Layout passen.
+Betroffene Bereiche: Frontend CSS, Admin CSS, Formular-Vorschau, Dokumentation.
+Ruecknahme: Version 0.0.19 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.19
 
 Beschreibung: Absenden-Button und Download-Button textlich getrennt; Spam-Mindestzeit fuer bessere Bedienbarkeit reduziert.
