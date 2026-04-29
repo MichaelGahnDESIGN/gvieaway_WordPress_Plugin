@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.27
+
+Beschreibung: Abstand über dem Absenden-Button vergrößert.
+Begründung: Der Button soll optisch mehr Luft zum Datenschutztext haben.
+Betroffene Bereiche: Frontend CSS, Backend-Vorschau, Dokumentation.
+Rücknahme: Version 0.0.26 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.26
 
 Beschreibung: Frontend-Absenden per JavaScript-Fallback robuster gemacht und sichtbare Fehlermeldung ergänzt.
