@@ -1,0 +1,49 @@
+.mgd-giveaway-form {
+    display: grid;
+    gap: 14px;
+    max-width: 560px;
+}
+
+.mgd-giveaway-field {
+    display: grid;
+    gap: 5px;
+}
+
+.mgd-giveaway-field span {
+    font-weight: 600;
+}
+
+.mgd-giveaway-field input:not([type="checkbox"]),
+.mgd-giveaway-field textarea {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+.mgd-giveaway-form button,
+.mgd-giveaway-download {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 0;
+    border-radius: 6px;
+    background: #151515;
+    color: #fff;
+    padding: 10px 16px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.mgd-giveaway-success {
+    max-width: 680px;
+    margin: 48px auto;
+    padding: 24px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.mgd-giveaway-error {
+    color: #b32d2e;
+}

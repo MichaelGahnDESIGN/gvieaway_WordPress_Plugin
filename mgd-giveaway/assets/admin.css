@@ -1,0 +1,90 @@
+.mgd-admin .mgd-stats {
+    display: flex;
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.mgd-admin .mgd-stats div,
+.mgd-panel {
+    background: #fff;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    padding: 16px;
+}
+
+.mgd-admin .mgd-stats strong {
+    display: block;
+    font-size: 28px;
+    line-height: 1.1;
+}
+
+.mgd-admin .mgd-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.mgd-field {
+    display: block;
+    margin-bottom: 14px;
+}
+
+.mgd-field span {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.mgd-field input,
+.mgd-field textarea,
+.mgd-field select,
+.mgd-media-row input {
+    width: 100%;
+    max-width: 680px;
+}
+
+.mgd-media-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    max-width: 680px;
+}
+
+.mgd-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 140px auto auto;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.mgd-preview {
+    margin-top: 16px;
+}
+
+.mgd-credit-list {
+    display: grid;
+    gap: 12px;
+}
+
+.mgd-credit {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 12px;
+    align-items: start;
+    border-top: 1px solid #dcdcde;
+    padding-top: 12px;
+}
+
+.mgd-credit img {
+    width: 48px;
+    height: 48px;
+}
+
+@media (max-width: 900px) {
+    .mgd-admin .mgd-grid,
+    .mgd-field-row {
+        grid-template-columns: 1fr;
+    }
+}
