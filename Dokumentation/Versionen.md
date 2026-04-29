@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.15
+
+Beschreibung: Backend-Vorschau mit eigenen Formular-Styles verbessert, damit Felder sauber untereinander angezeigt werden.
+Begruendung: Die statische Vorschau soll visuell verstaendlich bleiben und nicht durch fehlende Frontend-Styles kaputt wirken.
+Betroffene Bereiche: Backend Formular-Editor, Vorschau, Admin CSS, Dokumentation.
+Ruecknahme: Version 0.0.14 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.14
 
 Beschreibung: Speichern-Buttons im Formular-Editor zu echten Submit-Buttons gemacht.

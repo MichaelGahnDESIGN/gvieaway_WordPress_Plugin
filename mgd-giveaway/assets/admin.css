@@ -392,6 +392,70 @@
     color: #646970;
 }
 
+.mgd-editor-preview .mgd-giveaway-form {
+    display: grid;
+    gap: 14px;
+    max-width: var(--mgd-form-max-width, 560px);
+}
+
+.mgd-editor-preview .mgd-giveaway-field {
+    display: grid;
+    gap: 5px;
+    margin: 0;
+}
+
+.mgd-editor-preview .mgd-giveaway-field > span:first-child {
+    display: block;
+    font-weight: 600;
+}
+
+.mgd-editor-preview .mgd-giveaway-field input:not([type="checkbox"]),
+.mgd-editor-preview .mgd-giveaway-field textarea {
+    width: 100%;
+    min-height: 42px;
+    border: 1px solid var(--mgd-field-border, #bbb);
+    border-radius: var(--mgd-radius, 6px);
+    padding: 8px 10px;
+    box-sizing: border-box;
+}
+
+.mgd-editor-preview .mgd-giveaway-checkbox {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.mgd-editor-preview .mgd-giveaway-checkbox input {
+    margin-top: 4px;
+}
+
+.mgd-editor-preview .mgd-privacy-link {
+    display: inline;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    color: currentColor;
+    text-decoration: underline;
+    padding: 0;
+    font: inherit;
+}
+
+.mgd-editor-preview .mgd-giveaway-form button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    border: 0;
+    border-radius: var(--mgd-radius, 6px);
+    background: var(--mgd-button-bg, #151515);
+    color: var(--mgd-button-text, #fff);
+    padding: 10px 16px;
+}
+
+.mgd-editor-preview > .description {
+    margin: 14px 0 0;
+}
+
 .mgd-save-notice {
     border-left-color: #00a32a;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
