@@ -13,6 +13,10 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 - Shortcode-Ausgabe im Frontend: `[mgd_giveaway id="123"]`
 - Download-Button nach erfolgreicher Anmeldung direkt anstelle des Formulars
 - Maskierter Download-Link ohne sichtbaren `wp-content/uploads` Pfad
+- Geschuetzte Download-Kopie im Upload-Verzeichnis mit Zugriffsschutz
+- Optionales Double-Opt-In vor Download-Freigabe
+- Formular-Design pro Formular einstellbar
+- DSGVO-Werkzeuge: einzelner Kontakt-Export und Loeschung
 - Optionaler Versand des Download-Links per E-Mail
 - Neue Anmeldungen per E-Mail an den in den Einstellungen festgelegten Empfaenger
 - E-Mail-Versand ueber WordPress/PHP-Mail oder SMTP
@@ -22,7 +26,7 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 
 ## Installation
 
-1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.8.zip` in WordPress hochladen.
+1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.9.zip` in WordPress hochladen.
 2. Plugin aktivieren.
 3. Unter `MGD Giveaway` ein Formular anlegen.
 4. Den angezeigten Shortcode in eine Seite oder einen Beitrag einfuegen.
@@ -46,7 +50,7 @@ Das Plugin laedt keine externen Schriften, Icons, Skripte oder Stylesheets. Genu
 
 ## Maskierte Downloads
 
-Download-Links werden als Plugin-Link ausgegeben und nicht als direkter Mediathek-Pfad. Die Datei wird vom Plugin ausgeliefert. Hinweis: Bereits bekannte direkte Upload-URLs koennen dadurch nicht automatisch serverseitig gesperrt werden; dafuer waere eine Ablage ausserhalb der oeffentlichen Mediathek oder eine Serverregel noetig.
+Download-Links werden als Plugin-Link ausgegeben und nicht als direkter Mediathek-Pfad. Beim Speichern eines Formulars legt das Plugin eine geschuetzte Kopie im Upload-Verzeichnis an und liefert diese Kopie aus. Hinweis: Bereits bekannte direkte Upload-URLs aus der WordPress-Mediathek koennen dadurch nicht rueckwirkend ungueltig gemacht werden; dafuer muesste die originale Mediathek-Datei entfernt oder serverseitig blockiert werden.
 
 ## CSV Mail-Liste
 
@@ -54,7 +58,7 @@ Der Import erwartet eine CSV-Datei mit Kopfzeile. Mindestens die Spalte `email` 
 
 ## Version
 
-Aktuelle Version: `0.0.8`
+Aktuelle Version: `0.0.9`
 
 ## Autor
 

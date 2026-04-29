@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.9
+
+Beschreibung: Geschuetzte Download-Kopie, optionales Double-Opt-In, Frontend-Design-Einstellungen und DSGVO-Kontaktaktionen umgesetzt.
+Begruendung: Download-Auslieferung soll besser geschuetzt, E-Mail-Einwilligung optional bestaetigt, Formularoptik steuerbar und personenbezogene Daten besser verwaltbar werden.
+Betroffene Bereiche: Datenbank, Formular-Editor, Frontend-Ausgabe, Download-Auslieferung, E-Mail-Prozess, Mail-Liste, Dokumentation.
+Ruecknahme: Version 0.0.8 aus Git-Historie oder Backup-ZIP wiederherstellen; Datenbankspalten `status`, `confirmed_at` und `download_count` koennen bestehen bleiben.
+
 ## 2026-04-29 - Version 0.0.8
 
 Beschreibung: Download-Links werden ueber einen signierten Plugin-Link maskiert und nicht mehr als direkter Mediathek-Pfad in Button oder E-Mail ausgegeben.

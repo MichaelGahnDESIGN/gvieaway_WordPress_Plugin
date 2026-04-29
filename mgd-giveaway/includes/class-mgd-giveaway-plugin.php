@@ -36,6 +36,7 @@ class MGD_Giveaway_Plugin
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
         add_action('template_redirect', array($this, 'handle_masked_download'));
+        add_action('template_redirect', array($this, 'handle_double_opt_in_confirm'));
         add_shortcode('mgd_giveaway', array($this, 'render_shortcode'));
 
         add_action('admin_post_mgd_giveaway_save_form', array($this, 'handle_save_form'));
@@ -44,6 +45,8 @@ class MGD_Giveaway_Plugin
         add_action('admin_post_mgd_giveaway_save_settings', array($this, 'handle_save_settings'));
         add_action('admin_post_mgd_giveaway_export_mail_list', array($this, 'handle_export_mail_list'));
         add_action('admin_post_mgd_giveaway_import_mail_list', array($this, 'handle_import_mail_list'));
+        add_action('admin_post_mgd_giveaway_export_contact', array($this, 'handle_export_contact'));
+        add_action('admin_post_mgd_giveaway_delete_contact', array($this, 'handle_delete_contact'));
         add_action('admin_post_mgd_giveaway_export_logs', array($this, 'handle_export_logs'));
         add_action('admin_post_mgd_giveaway_clear_logs', array($this, 'handle_clear_logs'));
         add_action('admin_post_nopriv_mgd_giveaway_submit', array($this, 'handle_frontend_submit'));
@@ -102,10 +105,14 @@ class MGD_Giveaway_Plugin
             data longtext NULL,
             ip_hash varchar(64) NOT NULL DEFAULT '',
             user_agent varchar(255) NOT NULL DEFAULT '',
+            status varchar(20) NOT NULL DEFAULT 'confirmed',
+            confirmed_at datetime NULL,
+            download_count int(11) unsigned NOT NULL DEFAULT 0,
             created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             KEY form_id (form_id),
-            KEY email (email)
+            KEY email (email),
+            KEY status (status)
         ) {$charset_collate};";
 
         $log_sql = "CREATE TABLE {$log_table} (
@@ -184,17 +191,33 @@ class MGD_Giveaway_Plugin
                 array('label' => 'Datenschutz', 'name' => 'privacy', 'type' => 'privacy', 'required' => true, 'text' => 'Ich habe die Datenschutzhinweise gelesen und bin mit der Verarbeitung meiner Angaben einverstanden.'),
             ),
             'download_attachment_id' => 0,
+            'protected_file' => array(),
             'button_label' => 'Jetzt herunterladen',
             'success_message' => 'Danke fuer deine Anmeldung. Der Download ist jetzt verfuegbar.',
             'email_subject' => 'Dein Download',
             'email_body' => "Hallo,\n\nvielen Dank fuer deine Anmeldung. Dein Download ist jetzt verfuegbar:\n{download_url}",
             'send_email' => true,
+            'double_opt_in' => false,
+            'confirm_subject' => 'Bitte bestaetige deine Anmeldung',
+            'confirm_body' => "Hallo,\n\nbitte bestaetige deine Anmeldung ueber diesen Link:\n{confirm_url}",
+            'confirm_message' => 'Bitte bestaetige deine Anmeldung ueber den Link in deiner E-Mail. Danach ist der Download verfuegbar.',
+            'style' => array(
+                'max_width' => '560',
+                'button_bg' => '#151515',
+                'button_text' => '#ffffff',
+                'field_border' => '#bbbbbb',
+                'radius' => '6',
+            ),
         );
 
         $raw = get_post_meta($form_id, '_mgd_giveaway_config', true);
         $config = is_array($raw) ? $raw : array();
 
-        return wp_parse_args($config, $default);
+        $config = wp_parse_args($config, $default);
+        $config['style'] = wp_parse_args(is_array($config['style']) ? $config['style'] : array(), $default['style']);
+        $config['protected_file'] = is_array($config['protected_file']) ? $config['protected_file'] : array();
+
+        return $config;
     }
 
     private function get_settings()
@@ -284,6 +307,7 @@ class MGD_Giveaway_Plugin
         echo '<button type="button" class="mgd-tab" data-tab="settings"><span class="dashicons dashicons-admin-generic"></span>Formular</button>';
         echo '<button type="button" class="mgd-tab" data-tab="download"><span class="dashicons dashicons-download"></span>Download</button>';
         echo '<button type="button" class="mgd-tab" data-tab="email"><span class="dashicons dashicons-email-alt"></span>E-Mail</button>';
+        echo '<button type="button" class="mgd-tab" data-tab="design"><span class="dashicons dashicons-admin-appearance"></span>Design</button>';
         echo '<button type="button" class="mgd-tab" data-tab="preview"><span class="dashicons dashicons-visibility"></span>Vorschau</button>';
         echo '</nav>';
 
@@ -310,14 +334,30 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>Erfolgsmeldung</span><textarea name="success_message" rows="4">' . esc_textarea($config['success_message']) . '</textarea></label>';
         echo '</section></div>';
 
-        echo '<div class="mgd-tab-panel" data-panel="download"><section class="mgd-panel mgd-editor-card"><h2>Download</h2><p class="description">Die Datei wird nach erfolgreicher Anmeldung als Button auf der Seite angezeigt.</p>';
+        echo '<div class="mgd-tab-panel" data-panel="download"><section class="mgd-panel mgd-editor-card"><h2>Download</h2><p class="description">Die Datei wird nach erfolgreicher Anmeldung als Button auf der Seite angezeigt. Beim Speichern wird eine geschuetzte Kopie fuer die Plugin-Auslieferung angelegt.</p>';
         echo '<label class="mgd-field"><span>Datei aus Mediathek</span><span class="mgd-media-row"><input type="hidden" id="download_attachment_id" name="download_attachment_id" value="' . esc_attr((string) $attachment_id) . '"><input type="text" id="download_attachment_title" value="' . esc_attr($attachment_title) . '" readonly><button type="button" class="button mgd-select-media">Auswaehlen</button></span></label>';
+        if (!empty($config['protected_file']['path'])) {
+            echo '<p class="description">Geschuetzte Kopie aktiv: ' . esc_html(isset($config['protected_file']['name']) ? $config['protected_file']['name'] : basename($config['protected_file']['path'])) . '</p>';
+        }
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel" data-panel="email"><section class="mgd-panel mgd-editor-card"><h2>E-Mail</h2><p class="description">Optionaler Versand des Download-Links an die eingetragene Adresse.</p>';
+        echo '<label class="mgd-check-row"><input type="checkbox" name="double_opt_in" value="1" ' . checked(!empty($config['double_opt_in']), true, false) . '> Double-Opt-In aktivieren</label>';
+        echo '<label class="mgd-field"><span>Hinweis nach Anmeldung</span><textarea name="confirm_message" rows="3">' . esc_textarea($config['confirm_message']) . '</textarea><small>Wird angezeigt, bevor der Bestaetigungslink angeklickt wurde.</small></label>';
+        echo '<label class="mgd-field"><span>Bestaetigungs-E-Mail Betreff</span><input type="text" name="confirm_subject" value="' . esc_attr($config['confirm_subject']) . '"></label>';
+        echo '<label class="mgd-field"><span>Bestaetigungs-E-Mail Text</span><textarea name="confirm_body" rows="6">' . esc_textarea($config['confirm_body']) . '</textarea><small>Platzhalter: {confirm_url}</small></label>';
+        echo '<hr>';
         echo '<label class="mgd-check-row"><input type="checkbox" name="send_email" value="1" ' . checked(!empty($config['send_email']), true, false) . '> Download-Link auch per E-Mail senden</label>';
         echo '<label class="mgd-field"><span>E-Mail Betreff</span><input type="text" name="email_subject" value="' . esc_attr($config['email_subject']) . '"></label>';
         echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="8">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
+        echo '</section></div>';
+
+        echo '<div class="mgd-tab-panel" data-panel="design"><section class="mgd-panel mgd-editor-card"><h2>Design</h2><p class="description">Einfache Formularoptik fuer die Ausgabe per Shortcode.</p>';
+        echo '<label class="mgd-field"><span>Maximale Breite in Pixel</span><input type="number" min="260" max="1200" name="style[max_width]" value="' . esc_attr((string) $config['style']['max_width']) . '"></label>';
+        echo '<label class="mgd-field"><span>Button Hintergrund</span><input type="color" name="style[button_bg]" value="' . esc_attr($config['style']['button_bg']) . '"></label>';
+        echo '<label class="mgd-field"><span>Button Textfarbe</span><input type="color" name="style[button_text]" value="' . esc_attr($config['style']['button_text']) . '"></label>';
+        echo '<label class="mgd-field"><span>Feld-Rahmenfarbe</span><input type="color" name="style[field_border]" value="' . esc_attr($config['style']['field_border']) . '"></label>';
+        echo '<label class="mgd-field"><span>Eckenradius in Pixel</span><input type="number" min="0" max="32" name="style[radius]" value="' . esc_attr((string) $config['style']['radius']) . '"></label>';
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel" data-panel="preview"><section class="mgd-panel mgd-editor-card"><h2>Vorschau</h2>';
@@ -464,20 +504,25 @@ class MGD_Giveaway_Plugin
         wp_nonce_field('mgd_giveaway_import_mail_list');
         echo '<input type="hidden" name="action" value="mgd_giveaway_import_mail_list"><input type="file" name="mail_list_csv" accept=".csv,text/csv" required> <button class="button">CSV importieren</button></form>';
         echo '</div>';
-        echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Formular</th><th>E-Mail</th><th>Daten</th><th>Datum</th></tr></thead><tbody>';
+        echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Formular</th><th>E-Mail</th><th>Status</th><th>Downloads</th><th>Daten</th><th>Datum</th><th>DSGVO</th></tr></thead><tbody>';
 
         if (!$items) {
-            echo '<tr><td colspan="5">Keine Eintraege gefunden.</td></tr>';
+            echo '<tr><td colspan="8">Keine Eintraege gefunden.</td></tr>';
         }
 
         foreach ($items as $item) {
             $data = json_decode($item->data, true);
+            $export_url = wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_export_contact&submission_id=' . (int) $item->id), 'mgd_giveaway_export_contact_' . (int) $item->id);
+            $delete_url = wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_delete_contact&submission_id=' . (int) $item->id), 'mgd_giveaway_delete_contact_' . (int) $item->id);
             echo '<tr>';
             echo '<td>' . esc_html((string) $item->id) . '</td>';
             echo '<td>' . esc_html($item->form_id ? get_the_title((int) $item->form_id) : 'Import') . '</td>';
             echo '<td><a href="mailto:' . esc_attr($item->email) . '">' . esc_html($item->email) . '</a></td>';
+            echo '<td>' . esc_html(isset($item->status) ? $item->status : 'confirmed') . '</td>';
+            echo '<td>' . esc_html(isset($item->download_count) ? (string) $item->download_count : '0') . '</td>';
             echo '<td><code>' . esc_html($data ? wp_json_encode($data) : '') . '</code></td>';
             echo '<td>' . esc_html($item->created_at) . '</td>';
+            echo '<td><a class="button" href="' . esc_url($export_url) . '">Export</a> <a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Eintrag wirklich loeschen?\');">Loeschen</a></td>';
             echo '</tr>';
         }
 
@@ -591,14 +636,24 @@ class MGD_Giveaway_Plugin
             $form_id = wp_insert_post($post_data);
         }
 
+        $download_attachment_id = isset($_POST['download_attachment_id']) ? absint($_POST['download_attachment_id']) : 0;
+        $old_config = $form_id ? $this->get_form_config($form_id) : array();
+        $protected_file = $download_attachment_id ? $this->ensure_protected_download_copy($form_id, $download_attachment_id, $old_config) : array();
+
         $config = array(
             'fields' => $fields,
-            'download_attachment_id' => isset($_POST['download_attachment_id']) ? absint($_POST['download_attachment_id']) : 0,
+            'download_attachment_id' => $download_attachment_id,
+            'protected_file' => $protected_file,
             'button_label' => isset($_POST['button_label']) ? sanitize_text_field(wp_unslash($_POST['button_label'])) : 'Jetzt herunterladen',
             'success_message' => isset($_POST['success_message']) ? sanitize_textarea_field(wp_unslash($_POST['success_message'])) : '',
             'email_subject' => isset($_POST['email_subject']) ? sanitize_text_field(wp_unslash($_POST['email_subject'])) : '',
             'email_body' => isset($_POST['email_body']) ? sanitize_textarea_field(wp_unslash($_POST['email_body'])) : '',
             'send_email' => !empty($_POST['send_email']),
+            'double_opt_in' => !empty($_POST['double_opt_in']),
+            'confirm_subject' => isset($_POST['confirm_subject']) ? sanitize_text_field(wp_unslash($_POST['confirm_subject'])) : '',
+            'confirm_body' => isset($_POST['confirm_body']) ? sanitize_textarea_field(wp_unslash($_POST['confirm_body'])) : '',
+            'confirm_message' => isset($_POST['confirm_message']) ? sanitize_textarea_field(wp_unslash($_POST['confirm_message'])) : '',
+            'style' => $this->sanitize_style(isset($_POST['style']) ? wp_unslash($_POST['style']) : array()),
         );
 
         update_post_meta($form_id, '_mgd_giveaway_config', $config);
@@ -640,6 +695,81 @@ class MGD_Giveaway_Plugin
         }
 
         return $fields;
+    }
+
+    private function sanitize_style($raw_style)
+    {
+        $raw_style = is_array($raw_style) ? $raw_style : array();
+
+        return array(
+            'max_width' => (string) min(1200, max(260, isset($raw_style['max_width']) ? absint($raw_style['max_width']) : 560)),
+            'button_bg' => !empty($raw_style['button_bg']) && sanitize_hex_color($raw_style['button_bg']) ? sanitize_hex_color($raw_style['button_bg']) : '#151515',
+            'button_text' => !empty($raw_style['button_text']) && sanitize_hex_color($raw_style['button_text']) ? sanitize_hex_color($raw_style['button_text']) : '#ffffff',
+            'field_border' => !empty($raw_style['field_border']) && sanitize_hex_color($raw_style['field_border']) ? sanitize_hex_color($raw_style['field_border']) : '#bbbbbb',
+            'radius' => (string) min(32, max(0, isset($raw_style['radius']) ? absint($raw_style['radius']) : 6)),
+        );
+    }
+
+    private function ensure_protected_download_copy($form_id, $attachment_id, $old_config)
+    {
+        if (!empty($old_config['download_attachment_id']) && (int) $old_config['download_attachment_id'] === $attachment_id && !empty($old_config['protected_file']['path']) && is_readable($old_config['protected_file']['path'])) {
+            return $old_config['protected_file'];
+        }
+
+        $source_path = get_attached_file($attachment_id);
+        if (!$source_path || !is_readable($source_path)) {
+            $this->add_log('warning', 'protected_copy_failed', 'Geschuetzte Download-Kopie konnte nicht erstellt werden.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
+            return array();
+        }
+
+        $dir = $this->get_protected_download_dir();
+        if (!$dir || !wp_mkdir_p($dir)) {
+            $this->add_log('error', 'protected_dir_failed', 'Geschuetzter Download-Ordner konnte nicht erstellt werden.', array('form_id' => $form_id));
+            return array();
+        }
+
+        $this->write_protected_dir_files($dir);
+        $filename = sanitize_file_name(basename($source_path));
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $stored_name = 'form-' . $form_id . '-file-' . $attachment_id . '-' . substr(hash('sha256', wp_salt('auth') . $source_path . time()), 0, 12) . ($extension ? '.' . $extension : '');
+        $target_path = trailingslashit($dir) . $stored_name;
+
+        if (!copy($source_path, $target_path)) {
+            $this->add_log('error', 'protected_copy_failed', 'Download-Datei konnte nicht in geschuetzten Ordner kopiert werden.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
+            return array();
+        }
+
+        $this->add_log('info', 'protected_copy_created', 'Geschuetzte Download-Kopie erstellt.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
+
+        return array(
+            'path' => $target_path,
+            'name' => $filename,
+            'mime' => get_post_mime_type($attachment_id),
+            'attachment_id' => $attachment_id,
+        );
+    }
+
+    private function get_protected_download_dir()
+    {
+        $uploads = wp_upload_dir(null, false);
+        if (!empty($uploads['error']) || empty($uploads['basedir'])) {
+            return '';
+        }
+
+        return trailingslashit($uploads['basedir']) . 'mgd-giveaway-protected';
+    }
+
+    private function write_protected_dir_files($dir)
+    {
+        $htaccess = trailingslashit($dir) . '.htaccess';
+        if (!file_exists($htaccess)) {
+            file_put_contents($htaccess, "Deny from all\nRequire all denied\n");
+        }
+
+        $index = trailingslashit($dir) . 'index.php';
+        if (!file_exists($index)) {
+            file_put_contents($index, "<?php\n// Silence is golden.\n");
+        }
     }
 
     public function handle_delete_form()
@@ -714,7 +844,7 @@ class MGD_Giveaway_Plugin
         $items = $wpdb->get_results("SELECT * FROM {$this->submission_table} ORDER BY created_at DESC", ARRAY_A);
         $this->add_log('info', 'mail_list_export', 'Mail-Liste als CSV exportiert.', array('count' => count($items)));
 
-        $this->output_csv('mgd-giveaway-mail-liste.csv', array('id', 'form_id', 'email', 'data', 'created_at'), $items);
+        $this->output_csv('mgd-giveaway-mail-liste.csv', array('id', 'form_id', 'email', 'status', 'confirmed_at', 'download_count', 'data', 'created_at'), $items);
     }
 
     public function handle_import_mail_list()
@@ -766,6 +896,42 @@ class MGD_Giveaway_Plugin
         exit;
     }
 
+    public function handle_export_contact()
+    {
+        $submission_id = isset($_GET['submission_id']) ? absint($_GET['submission_id']) : 0;
+        if (!current_user_can('manage_options') || !$submission_id || !check_admin_referer('mgd_giveaway_export_contact_' . $submission_id)) {
+            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $item = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->submission_table} WHERE id = %d", $submission_id), ARRAY_A);
+        if (!$item) {
+            wp_die(esc_html__('Eintrag nicht gefunden.', 'mgd-giveaway'));
+        }
+
+        $this->add_log('info', 'contact_export', 'Kontakt-Daten exportiert.', array('submission_id' => $submission_id, 'email' => $item['email']));
+        nocache_headers();
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="mgd-giveaway-kontakt-' . $submission_id . '.json"');
+        echo wp_json_encode($item, JSON_PRETTY_PRINT);
+        exit;
+    }
+
+    public function handle_delete_contact()
+    {
+        $submission_id = isset($_GET['submission_id']) ? absint($_GET['submission_id']) : 0;
+        if (!current_user_can('manage_options') || !$submission_id || !check_admin_referer('mgd_giveaway_delete_contact_' . $submission_id)) {
+            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $item = $wpdb->get_row($wpdb->prepare("SELECT email FROM {$this->submission_table} WHERE id = %d", $submission_id), ARRAY_A);
+        $wpdb->delete($this->submission_table, array('id' => $submission_id), array('%d'));
+        $this->add_log('info', 'contact_deleted', 'Kontakt-Daten geloescht.', array('submission_id' => $submission_id, 'email' => isset($item['email']) ? $item['email'] : ''));
+        wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-mail-list&mgd_notice=contact_deleted'));
+        exit;
+    }
+
     public function handle_export_logs()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_export_logs')) {
@@ -802,7 +968,7 @@ class MGD_Giveaway_Plugin
         $config = $this->get_form_config($form_id);
         ob_start();
         $wrapper_id = 'mgd-giveaway-' . $form_id;
-        echo '<div id="' . esc_attr($wrapper_id) . '" class="mgd-giveaway-wrapper">';
+        echo '<div id="' . esc_attr($wrapper_id) . '" class="mgd-giveaway-wrapper" style="' . esc_attr($this->get_frontend_style_vars($config)) . '">';
 
         $success_payload = $this->get_success_payload($form_id);
         if ($success_payload) {
@@ -861,27 +1027,36 @@ class MGD_Giveaway_Plugin
         echo '<p>' . esc_html((string) $payload['success_message']) . '</p>';
         if (!empty($payload['download_url'])) {
             echo '<a class="mgd-giveaway-download" href="' . esc_url((string) $payload['download_url']) . '" download>' . esc_html((string) $payload['button_label']) . '</a>';
-        } else {
+        } elseif (empty($payload['message_only'])) {
             echo '<p>Es wurde noch keine Download-Datei hinterlegt.</p>';
         }
         echo '</div>';
     }
 
-    private function create_success_redirect_url($form_id, $config, $download_url)
+    private function get_frontend_style_vars($config)
+    {
+        $style = isset($config['style']) && is_array($config['style']) ? $config['style'] : array();
+        $style = $this->sanitize_style($style);
+
+        return '--mgd-form-max-width:' . (int) $style['max_width'] . 'px;--mgd-button-bg:' . $style['button_bg'] . ';--mgd-button-text:' . $style['button_text'] . ';--mgd-field-border:' . $style['field_border'] . ';--mgd-radius:' . (int) $style['radius'] . 'px;';
+    }
+
+    private function create_success_redirect_url($form_id, $config, $download_url, $message = '', $message_only = false, $return_url = '')
     {
         $token = wp_generate_password(32, false, false);
         set_transient(
             $this->get_success_transient_key($token),
             array(
                 'form_id' => $form_id,
-                'success_message' => $config['success_message'],
+                'success_message' => $message ? $message : $config['success_message'],
                 'button_label' => $config['button_label'],
                 'download_url' => $download_url,
+                'message_only' => $message_only,
             ),
             15 * MINUTE_IN_SECONDS
         );
 
-        $return_url = isset($_POST['mgd_giveaway_return_url']) ? esc_url_raw((string) wp_unslash($_POST['mgd_giveaway_return_url'])) : home_url('/');
+        $return_url = $return_url ? $return_url : (isset($_POST['mgd_giveaway_return_url']) ? esc_url_raw((string) wp_unslash($_POST['mgd_giveaway_return_url'])) : home_url('/'));
         $return_url = wp_validate_redirect($return_url, home_url('/'));
         $return_url = remove_query_arg(array('mgd_giveaway_success', 'mgd_form'), $return_url);
 
@@ -962,9 +1137,19 @@ class MGD_Giveaway_Plugin
             $data[$name] = $value;
         }
 
-        $submission_id = $this->store_submission($form_id, $email, $data);
+        $data['_return_url'] = isset($_POST['mgd_giveaway_return_url']) ? esc_url_raw((string) wp_unslash($_POST['mgd_giveaway_return_url'])) : home_url('/');
+        $requires_confirmation = !empty($config['double_opt_in']) && $email;
+        $submission_id = $this->store_submission($form_id, $email, $data, $requires_confirmation ? 'pending' : 'confirmed');
         $download_url = $this->get_masked_download_url($form_id, (int) $config['download_attachment_id'], $submission_id);
         $this->add_log('info', 'form_submission', 'Neue Formularanmeldung gespeichert.', array('form_id' => $form_id, 'submission_id' => $submission_id, 'email' => $email));
+
+        if ($requires_confirmation) {
+            $sent = $this->send_confirmation_email($email, $this->get_confirmation_url($form_id, $submission_id, $email), $config);
+            $this->add_log($sent ? 'info' : 'error', 'double_opt_in_email', $sent ? 'Double-Opt-In E-Mail versendet.' : 'Double-Opt-In E-Mail konnte nicht versendet werden.', array('form_id' => $form_id, 'submission_id' => $submission_id, 'email' => $email));
+            wp_safe_redirect($this->create_success_redirect_url($form_id, $config, '', $config['confirm_message'], true));
+            exit;
+        }
+
         $this->send_notification_email($form_id, $email, $data);
 
         if (!empty($config['send_email']) && $email && $download_url) {
@@ -1024,34 +1209,92 @@ class MGD_Giveaway_Plugin
         $token = sanitize_text_field((string) wp_unslash($_GET['mgd_giveaway_download']));
         $payload = $this->verify_download_token($token);
 
-        if (!$payload || empty($payload['attachment_id'])) {
+        if (!$payload || empty($payload['form_id'])) {
             $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link ungueltig.', array());
             status_header(404);
             wp_die(esc_html__('Download nicht gefunden.', 'mgd-giveaway'));
         }
 
-        $attachment_id = (int) $payload['attachment_id'];
-        $file_path = get_attached_file($attachment_id);
+        $form_id = (int) $payload['form_id'];
+        $config = $this->get_form_config($form_id);
+        $protected_file = isset($config['protected_file']) && is_array($config['protected_file']) ? $config['protected_file'] : array();
+        if ((empty($protected_file['path']) || !is_readable($protected_file['path'])) && !empty($config['download_attachment_id'])) {
+            $protected_file = $this->ensure_protected_download_copy($form_id, (int) $config['download_attachment_id'], $config);
+            if ($protected_file) {
+                $config['protected_file'] = $protected_file;
+                update_post_meta($form_id, '_mgd_giveaway_config', $config);
+            }
+        }
+        $file_path = !empty($protected_file['path']) ? $protected_file['path'] : '';
         if (!$file_path || !is_readable($file_path)) {
-            $this->add_log('error', 'download_missing_file', 'Download-Datei konnte nicht gelesen werden.', array('attachment_id' => $attachment_id));
+            $this->add_log('error', 'download_missing_file', 'Geschuetzte Download-Datei konnte nicht gelesen werden.', array('form_id' => $form_id));
             status_header(404);
             wp_die(esc_html__('Download-Datei nicht gefunden.', 'mgd-giveaway'));
         }
 
-        $filename = basename($file_path);
-        $mime = get_post_mime_type($attachment_id);
+        $filename = !empty($protected_file['name']) ? sanitize_file_name($protected_file['name']) : basename($file_path);
+        $mime = !empty($protected_file['mime']) ? $protected_file['mime'] : '';
         if (!$mime) {
             $filetype = wp_check_filetype($filename);
             $mime = !empty($filetype['type']) ? $filetype['type'] : 'application/octet-stream';
         }
 
-        $this->add_log('info', 'masked_download', 'Maskierter Download ausgeliefert.', array('form_id' => isset($payload['form_id']) ? (int) $payload['form_id'] : 0, 'attachment_id' => $attachment_id));
+        if (!empty($payload['submission_id'])) {
+            $this->increment_download_count((int) $payload['submission_id']);
+        }
+        $this->add_log('info', 'masked_download', 'Geschuetzter Download ausgeliefert.', array('form_id' => $form_id, 'submission_id' => isset($payload['submission_id']) ? (int) $payload['submission_id'] : 0));
 
         nocache_headers();
         header('Content-Type: ' . $mime);
         header('Content-Disposition: attachment; filename="' . sanitize_file_name($filename) . '"');
         header('Content-Length: ' . filesize($file_path));
         readfile($file_path);
+        exit;
+    }
+
+    public function handle_double_opt_in_confirm()
+    {
+        if (empty($_GET['mgd_giveaway_confirm'])) {
+            return;
+        }
+
+        $token = sanitize_text_field((string) wp_unslash($_GET['mgd_giveaway_confirm']));
+        $payload = $this->verify_download_token($token);
+        if (!$payload || empty($payload['form_id']) || empty($payload['submission_id']) || empty($payload['email'])) {
+            status_header(404);
+            wp_die(esc_html__('Bestaetigungslink ist ungueltig.', 'mgd-giveaway'));
+        }
+
+        global $wpdb;
+        $submission = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->submission_table} WHERE id = %d AND form_id = %d", (int) $payload['submission_id'], (int) $payload['form_id']));
+        if (!$submission || !hash_equals((string) $submission->email, (string) $payload['email'])) {
+            status_header(404);
+            wp_die(esc_html__('Bestaetigung nicht gefunden.', 'mgd-giveaway'));
+        }
+
+        $config = $this->get_form_config((int) $payload['form_id']);
+        $data = json_decode($submission->data, true);
+        $data = is_array($data) ? $data : array();
+        $return_url = !empty($data['_return_url']) ? esc_url_raw($data['_return_url']) : home_url('/');
+
+        if ('confirmed' !== $submission->status) {
+            $wpdb->update(
+                $this->submission_table,
+                array('status' => 'confirmed', 'confirmed_at' => current_time('mysql')),
+                array('id' => (int) $submission->id),
+                array('%s', '%s'),
+                array('%d')
+            );
+            $this->add_log('info', 'double_opt_in_confirmed', 'Double-Opt-In bestaetigt.', array('form_id' => (int) $payload['form_id'], 'submission_id' => (int) $submission->id));
+            $this->send_notification_email((int) $payload['form_id'], $submission->email, $data);
+        }
+
+        $download_url = $this->get_masked_download_url((int) $payload['form_id'], (int) $config['download_attachment_id'], (int) $submission->id);
+        if (!empty($config['send_email']) && $submission->email && $download_url) {
+            $this->send_download_email($submission->email, $download_url, $config);
+        }
+
+        wp_safe_redirect($this->create_success_redirect_url((int) $payload['form_id'], $config, $download_url, '', false, $return_url));
         exit;
     }
 
@@ -1068,7 +1311,7 @@ class MGD_Giveaway_Plugin
             'created_at' => time(),
         ));
 
-        return add_query_arg('mgd_giveaway_download', rawurlencode($token), home_url('/'));
+        return add_query_arg('mgd_giveaway_download', $token, home_url('/'));
     }
 
     private function create_download_token($payload)
@@ -1077,6 +1320,18 @@ class MGD_Giveaway_Plugin
         $signature = hash_hmac('sha256', $encoded, wp_salt('auth'));
 
         return $encoded . '.' . $signature;
+    }
+
+    private function get_confirmation_url($form_id, $submission_id, $email)
+    {
+        $token = $this->create_download_token(array(
+            'form_id' => $form_id,
+            'submission_id' => $submission_id,
+            'email' => $email,
+            'created_at' => time(),
+        ));
+
+        return add_query_arg('mgd_giveaway_confirm', $token, home_url('/'));
     }
 
     private function verify_download_token($token)
@@ -1091,7 +1346,9 @@ class MGD_Giveaway_Plugin
             return false;
         }
 
-        $json = base64_decode(strtr($encoded, '-_', '+/'), true);
+        $base64 = strtr($encoded, '-_', '+/');
+        $base64 .= str_repeat('=', (4 - strlen($base64) % 4) % 4);
+        $json = base64_decode($base64, true);
         $payload = $json ? json_decode($json, true) : null;
         if (!is_array($payload)) {
             return false;
@@ -1100,7 +1357,7 @@ class MGD_Giveaway_Plugin
         return $payload;
     }
 
-    private function store_submission($form_id, $email, $data)
+    private function store_submission($form_id, $email, $data, $status = 'confirmed')
     {
         global $wpdb;
         $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
@@ -1114,19 +1371,35 @@ class MGD_Giveaway_Plugin
                 'data' => wp_json_encode($data),
                 'ip_hash' => $ip ? hash('sha256', wp_salt('auth') . $ip) : '',
                 'user_agent' => $user_agent,
+                'status' => $status,
+                'confirmed_at' => 'confirmed' === $status ? current_time('mysql') : null,
+                'download_count' => 0,
                 'created_at' => current_time('mysql'),
             ),
-            array('%d', '%s', '%s', '%s', '%s', '%s')
+            array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s')
         );
 
         return (int) $wpdb->insert_id;
     }
 
+    private function increment_download_count($submission_id)
+    {
+        global $wpdb;
+        $wpdb->query($wpdb->prepare("UPDATE {$this->submission_table} SET download_count = download_count + 1 WHERE id = %d", $submission_id));
+    }
+
     private function send_download_email($email, $download_url, $config)
     {
-        $settings = $this->get_settings();
         $subject = $config['email_subject'] ? $config['email_subject'] : 'Dein Download';
         $body = str_replace('{download_url}', $download_url, $config['email_body']);
+
+        return $this->send_mail($email, $subject, $body);
+    }
+
+    private function send_confirmation_email($email, $confirm_url, $config)
+    {
+        $subject = $config['confirm_subject'] ? $config['confirm_subject'] : 'Bitte bestaetige deine Anmeldung';
+        $body = str_replace('{confirm_url}', $confirm_url, $config['confirm_body']);
 
         return $this->send_mail($email, $subject, $body);
     }

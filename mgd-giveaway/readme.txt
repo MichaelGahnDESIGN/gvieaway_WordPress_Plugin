@@ -4,7 +4,7 @@ Tags: download, forms, ebook, pdf, shortcode
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.0.8
+Stable tag: 0.0.9
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ MGD Giveaway erstellt einfache Download-Formulare fuer Gratis-eBooks und PDFs.
 
 == Description ==
 
-Mit MGD Giveaway koennen im WordPress-Backend Formulare angelegt, Felder ergaenzt und Dateien aus der Mediathek als Download hinterlegt werden. Das Formular wird per Shortcode eingebunden. Nach erfolgreicher Anmeldung wird der Download-Button direkt anstelle des Formulars angezeigt. Download-Links werden maskiert ausgegeben, damit kein direkter wp-content/uploads Pfad in Button oder E-Mail steht.
+Mit MGD Giveaway koennen im WordPress-Backend Formulare angelegt, Felder ergaenzt und Dateien aus der Mediathek als Download hinterlegt werden. Das Formular wird per Shortcode eingebunden. Nach erfolgreicher Anmeldung wird der Download-Button direkt anstelle des Formulars angezeigt. Download-Links werden maskiert ausgegeben und ueber eine geschuetzte Kopie ausgeliefert. Optional kann Double-Opt-In aktiviert werden.
 
 Anmeldungen werden in der Mail-Liste gespeichert und koennen als CSV importiert oder exportiert werden. Neue Anmeldungen werden an die in den Einstellungen hinterlegte Empfaengeradresse gesendet. Ein Log-Reiter protokolliert wichtige Aktionen und bietet Suche, Filter, Export, Speicheranzeige und Leeren-Funktion.
 
@@ -26,6 +26,12 @@ Der Formular-Editor enthaelt einen modernen Builder mit Tabs, Element-Palette, F
 4. Shortcode wie `[mgd_giveaway id="123"]` in eine Seite einfuegen.
 
 == Changelog ==
+
+= 0.0.9 =
+* Geschuetzte Download-Kopie mit Zugriffsschutz ergaenzt.
+* Optionales Double-Opt-In pro Formular ergaenzt.
+* Design-Einstellungen fuer Frontend-Formulare ergaenzt.
+* DSGVO-Werkzeuge fuer einzelnen Kontakt-Export und Kontakt-Loeschung ergaenzt.
 
 = 0.0.8 =
 * Download-Links werden ueber einen signierten Plugin-Link maskiert.
