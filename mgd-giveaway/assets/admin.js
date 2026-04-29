@@ -234,7 +234,10 @@
         updateBuilderState();
     }
 
-    function reindexFields() {
+    function reindexFields(reselect) {
+        if (typeof reselect === 'undefined') {
+            reselect = true;
+        }
         restoreInspector();
         $('#mgd-fields .mgd-field-row').each(function (index) {
             $(this).find('[name^="fields["]').each(function () {
@@ -244,7 +247,7 @@
         $('#mgd-fields').attr('data-next-index', $('#mgd-fields .mgd-field-row').length);
         updateBuilderState();
         var selected = $('#mgd-fields .mgd-field-row.mgd-selected');
-        if (selected.length) {
+        if (reselect && selected.length) {
             selectField(selected);
         }
     }
@@ -256,7 +259,7 @@
     }
 
     $(document).on('submit', '#mgd-giveaway-editor-form', function () {
-        reindexFields();
+        reindexFields(false);
         $('.mgd-editor-save').text('Speichert...').prop('disabled', true);
     });
 

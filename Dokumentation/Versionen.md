@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.17
+
+Beschreibung: Feldreihenfolge beim Speichern stabilisiert, damit das im Inspector ausgewaehlte Feld nicht ans Ende rutscht.
+Begruendung: Der Inspector verschiebt Feld-Einstellungen zur Bearbeitung in eine Seitenleiste; vor dem Submit muessen diese Inputs wieder in der Canvas-Reihenfolge stehen.
+Betroffene Bereiche: Admin JavaScript, Formular-Editor, Feldspeicherung, Dokumentation.
+Ruecknahme: Version 0.0.16 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.16
 
 Beschreibung: Frontend- und Backend-Vorschau-Styling angeglichen, damit der Datenschutz-Link nicht wie der Download-Button gestaltet wird.
