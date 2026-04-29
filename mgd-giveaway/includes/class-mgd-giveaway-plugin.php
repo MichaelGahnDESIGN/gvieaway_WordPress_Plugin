@@ -547,7 +547,7 @@ class MGD_Giveaway_Plugin
         wp_nonce_field('mgd_giveaway_import_mail_list');
         echo '<input type="hidden" name="action" value="mgd_giveaway_import_mail_list"><input type="file" name="mail_list_csv" accept=".csv,text/csv" required> <button class="button">CSV importieren</button></form>';
         echo '</div>';
-        echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Formular</th><th>E-Mail</th><th>Status</th><th>Downloads</th><th>Daten</th><th>Datum</th><th>DSGVO</th></tr></thead><tbody>';
+        echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Formular</th><th>E-Mail</th><th>Status</th><th>Downloads</th><th>Datum</th><th>Aktionen</th><th>DSGVO</th></tr></thead><tbody>';
 
         if (!$items) {
             echo '<tr><td colspan="8">Keine Eintraege gefunden.</td></tr>';
@@ -555,6 +555,7 @@ class MGD_Giveaway_Plugin
 
         foreach ($items as $item) {
             $data = json_decode($item->data, true);
+            $modal_id = 'mgd-submission-modal-' . (int) $item->id;
             $export_url = wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_export_contact&submission_id=' . (int) $item->id), 'mgd_giveaway_export_contact_' . (int) $item->id);
             $delete_url = wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_delete_contact&submission_id=' . (int) $item->id), 'mgd_giveaway_delete_contact_' . (int) $item->id);
             echo '<tr>';
@@ -563,13 +564,39 @@ class MGD_Giveaway_Plugin
             echo '<td><a href="mailto:' . esc_attr($item->email) . '">' . esc_html($item->email) . '</a></td>';
             echo '<td>' . esc_html(isset($item->status) ? $item->status : 'confirmed') . '</td>';
             echo '<td>' . esc_html(isset($item->download_count) ? (string) $item->download_count : '0') . '</td>';
-            echo '<td><code>' . esc_html($data ? wp_json_encode($data) : '') . '</code></td>';
             echo '<td>' . esc_html($item->created_at) . '</td>';
+            echo '<td><button type="button" class="button mgd-open-admin-modal" data-mgd-admin-modal="' . esc_attr($modal_id) . '">Ansehen</button></td>';
             echo '<td><a class="button" href="' . esc_url($export_url) . '">Export</a> <a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Eintrag wirklich loeschen?\');">Loeschen</a></td>';
             echo '</tr>';
+            $this->render_submission_modal($modal_id, $item, is_array($data) ? $data : array());
         }
 
         echo '</tbody></table><p><small>Anzeige ist auf 200 Eintraege begrenzt. Der CSV-Export enthaelt alle Eintraege.</small></p></div>';
+    }
+
+    private function render_submission_modal($modal_id, $item, $data)
+    {
+        echo '<div id="' . esc_attr($modal_id) . '" class="mgd-admin-modal" aria-hidden="true">';
+        echo '<div class="mgd-admin-modal-backdrop" data-mgd-admin-modal-close></div>';
+        echo '<div class="mgd-admin-modal-dialog" role="dialog" aria-modal="true" aria-label="Nutzerdaten">';
+        echo '<button type="button" class="mgd-admin-modal-close" data-mgd-admin-modal-close aria-label="Schliessen">&times;</button>';
+        echo '<h2>Nutzerdaten</h2>';
+        echo '<dl class="mgd-detail-list">';
+        echo '<dt>ID</dt><dd>' . esc_html((string) $item->id) . '</dd>';
+        echo '<dt>Formular</dt><dd>' . esc_html($item->form_id ? get_the_title((int) $item->form_id) : 'Import') . '</dd>';
+        echo '<dt>E-Mail</dt><dd><a href="mailto:' . esc_attr($item->email) . '">' . esc_html($item->email) . '</a></dd>';
+        echo '<dt>Status</dt><dd>' . esc_html(isset($item->status) ? $item->status : 'confirmed') . '</dd>';
+        echo '<dt>Downloads</dt><dd>' . esc_html(isset($item->download_count) ? (string) $item->download_count : '0') . '</dd>';
+        echo '<dt>Datum</dt><dd>' . esc_html($item->created_at) . '</dd>';
+        foreach ($data as $key => $value) {
+            if (0 === strpos((string) $key, '_')) {
+                continue;
+            }
+            echo '<dt>' . esc_html((string) $key) . '</dt><dd>' . esc_html(is_scalar($value) ? (string) $value : wp_json_encode($value)) . '</dd>';
+        }
+        echo '</dl>';
+        echo '</div>';
+        echo '</div>';
     }
 
     public function render_logs_page()

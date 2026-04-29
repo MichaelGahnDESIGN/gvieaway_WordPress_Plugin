@@ -287,6 +287,39 @@
         frame.open();
     });
 
+    $(document).on('click', '.mgd-open-admin-modal', function (event) {
+        event.preventDefault();
+        var modal = document.getElementById($(this).data('mgd-admin-modal'));
+        if (!modal) {
+            return;
+        }
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.documentElement.classList.add('mgd-admin-modal-open');
+    });
+
+    $(document).on('click', '[data-mgd-admin-modal-close]', function (event) {
+        event.preventDefault();
+        closeAdminModal($(this).closest('.mgd-admin-modal')[0]);
+    });
+
+    $(document).on('keydown', function (event) {
+        if (event.key === 'Escape') {
+            closeAdminModal(document.querySelector('.mgd-admin-modal.is-open'));
+        }
+    });
+
+    function closeAdminModal(modal) {
+        if (!modal) {
+            return;
+        }
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        if (!document.querySelector('.mgd-admin-modal.is-open')) {
+            document.documentElement.classList.remove('mgd-admin-modal-open');
+        }
+    }
+
     updateBuilderState();
     selectField($('#mgd-fields .mgd-field-row').first());
 })(jQuery);

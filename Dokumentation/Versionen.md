@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.21
+
+Beschreibung: Mail-Liste um Ansehen-Button mit Popup fuer Nutzerdaten erweitert und JSON-Daten aus der Tabelle entfernt.
+Begruendung: Personenbezogene Daten sollen im Backend uebersichtlich einsehbar sein, ohne die Tabellenansicht zu ueberladen.
+Betroffene Bereiche: Mail-Liste, Admin JavaScript, Admin CSS, Dokumentation.
+Ruecknahme: Version 0.0.20 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.20
 
 Beschreibung: Formular-Abstaende im Frontend und in der Backend-Vorschau kompakter und konsistenter gestaltet.
