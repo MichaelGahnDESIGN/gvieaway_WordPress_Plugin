@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.5
+
+Beschreibung: Erfolgsmeldung und Download-Button werden nach der Anmeldung direkt im Shortcode-Bereich anstelle des Formulars angezeigt.
+Begruendung: Die Nutzer sollen auf der urspruenglichen Landingpage bleiben und nicht auf eine separate technische Erfolgsseite wechseln.
+Betroffene Bereiche: Frontend Formularausgabe, Formular-Submit-Weiterleitung, Assets, Dokumentation.
+Ruecknahme: Version 0.0.4 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.4
 
 Beschreibung: Formular-Editor mit Drag & Drop Feldkarten modernisiert, Datenschutz-Element und Spam-Schutz ergaenzt.  

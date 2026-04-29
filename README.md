@@ -11,7 +11,7 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 - Spam-Schutz mit Honeypot und Zeitpruefung
 - Datei-Auswahl ueber die WordPress-Mediathek
 - Shortcode-Ausgabe im Frontend: `[mgd_giveaway id="123"]`
-- Download-Button nach erfolgreicher Anmeldung
+- Download-Button nach erfolgreicher Anmeldung direkt anstelle des Formulars
 - Optionaler Versand des Download-Links per E-Mail
 - Neue Anmeldungen per E-Mail an den in den Einstellungen festgelegten Empfaenger
 - E-Mail-Versand ueber WordPress/PHP-Mail oder SMTP
@@ -21,7 +21,7 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 
 ## Installation
 
-1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.4.zip` in WordPress hochladen.
+1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.5.zip` in WordPress hochladen.
 2. Plugin aktivieren.
 3. Unter `MGD Giveaway` ein Formular anlegen.
 4. Den angezeigten Shortcode in eine Seite oder einen Beitrag einfuegen.
@@ -49,7 +49,7 @@ Der Import erwartet eine CSV-Datei mit Kopfzeile. Mindestens die Spalte `email` 
 
 ## Version
 
-Aktuelle Version: `0.0.4`
+Aktuelle Version: `0.0.5`
 
 ## Autor
 

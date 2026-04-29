@@ -4,7 +4,7 @@ Tags: download, forms, ebook, pdf, shortcode
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.0.4
+Stable tag: 0.0.5
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ MGD Giveaway erstellt einfache Download-Formulare fuer Gratis-eBooks und PDFs.
 
 == Description ==
 
-Mit MGD Giveaway koennen im WordPress-Backend Formulare angelegt, Felder ergaenzt und Dateien aus der Mediathek als Download hinterlegt werden. Das Formular wird per Shortcode eingebunden. Nach erfolgreicher Anmeldung wird ein Download-Button angezeigt.
+Mit MGD Giveaway koennen im WordPress-Backend Formulare angelegt, Felder ergaenzt und Dateien aus der Mediathek als Download hinterlegt werden. Das Formular wird per Shortcode eingebunden. Nach erfolgreicher Anmeldung wird der Download-Button direkt anstelle des Formulars angezeigt.
 
 Anmeldungen werden in der Mail-Liste gespeichert und koennen als CSV importiert oder exportiert werden. Neue Anmeldungen werden an die in den Einstellungen hinterlegte Empfaengeradresse gesendet. Ein Log-Reiter protokolliert wichtige Aktionen und bietet Suche, Filter, Export, Speicheranzeige und Leeren-Funktion.
 
@@ -26,6 +26,10 @@ Der Formular-Editor enthaelt Drag & Drop Feldkarten, ein Datenschutz-Element und
 4. Shortcode wie `[mgd_giveaway id="123"]` in eine Seite einfuegen.
 
 == Changelog ==
+
+= 0.0.5 =
+* Download-Erfolgsmeldung wird nach der Anmeldung inline anstelle des Formulars angezeigt.
+* Weiterleitung zur separaten Erfolgsseite durch sicheren Ruecksprung zur Ursprungsseite ersetzt.
 
 = 0.0.4 =
 * Formular-Editor modernisiert: Feldkarten, Element-Palette und Drag & Drop Sortierung.

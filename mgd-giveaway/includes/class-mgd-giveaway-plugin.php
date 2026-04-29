@@ -746,9 +746,20 @@ class MGD_Giveaway_Plugin
 
         $config = $this->get_form_config($form_id);
         ob_start();
+        $wrapper_id = 'mgd-giveaway-' . $form_id;
+        echo '<div id="' . esc_attr($wrapper_id) . '" class="mgd-giveaway-wrapper">';
+
+        $success_payload = $this->get_success_payload($form_id);
+        if ($success_payload) {
+            $this->render_success_message($success_payload);
+            echo '</div>';
+            return ob_get_clean();
+        }
+
         echo '<form class="mgd-giveaway-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         echo '<input type="hidden" name="action" value="mgd_giveaway_submit">';
         echo '<input type="hidden" name="form_id" value="' . esc_attr((string) $form_id) . '">';
+        echo '<input type="hidden" name="mgd_giveaway_return_url" value="' . esc_attr($this->get_current_page_url()) . '">';
         echo '<input type="text" name="mgd_giveaway_website" value="" class="mgd-giveaway-hp" tabindex="-1" autocomplete="off" aria-hidden="true">';
         echo '<input type="hidden" name="mgd_giveaway_started" value="' . esc_attr($this->create_spam_token()) . '">';
         wp_nonce_field('mgd_giveaway_submit_' . $form_id);
@@ -759,8 +770,78 @@ class MGD_Giveaway_Plugin
 
         echo '<button type="submit">' . esc_html($config['button_label']) . '</button>';
         echo '</form>';
+        echo '</div>';
 
         return ob_get_clean();
+    }
+
+    private function get_current_page_url()
+    {
+        $request_uri = isset($_SERVER['REQUEST_URI']) ? (string) wp_unslash($_SERVER['REQUEST_URI']) : '/';
+        $request_uri = '/' . ltrim($request_uri, '/');
+        $current_url = home_url($request_uri);
+
+        return remove_query_arg(array('mgd_giveaway_success', 'mgd_form'), $current_url);
+    }
+
+    private function get_success_payload($form_id)
+    {
+        $success_form_id = isset($_GET['mgd_form']) ? absint($_GET['mgd_form']) : 0;
+        if ($success_form_id !== $form_id || empty($_GET['mgd_giveaway_success'])) {
+            return false;
+        }
+
+        $token = sanitize_text_field((string) wp_unslash($_GET['mgd_giveaway_success']));
+        $payload = get_transient($this->get_success_transient_key($token));
+        if (!is_array($payload) || empty($payload['form_id']) || (int) $payload['form_id'] !== $form_id) {
+            return false;
+        }
+
+        return $payload;
+    }
+
+    private function render_success_message($payload)
+    {
+        echo '<div class="mgd-giveaway-success-inline">';
+        echo '<p>' . esc_html((string) $payload['success_message']) . '</p>';
+        if (!empty($payload['download_url'])) {
+            echo '<a class="mgd-giveaway-download" href="' . esc_url((string) $payload['download_url']) . '" download>' . esc_html((string) $payload['button_label']) . '</a>';
+        } else {
+            echo '<p>Es wurde noch keine Download-Datei hinterlegt.</p>';
+        }
+        echo '</div>';
+    }
+
+    private function create_success_redirect_url($form_id, $config, $download_url)
+    {
+        $token = wp_generate_password(32, false, false);
+        set_transient(
+            $this->get_success_transient_key($token),
+            array(
+                'form_id' => $form_id,
+                'success_message' => $config['success_message'],
+                'button_label' => $config['button_label'],
+                'download_url' => $download_url,
+            ),
+            15 * MINUTE_IN_SECONDS
+        );
+
+        $return_url = isset($_POST['mgd_giveaway_return_url']) ? esc_url_raw((string) wp_unslash($_POST['mgd_giveaway_return_url'])) : home_url('/');
+        $return_url = wp_validate_redirect($return_url, home_url('/'));
+        $return_url = remove_query_arg(array('mgd_giveaway_success', 'mgd_form'), $return_url);
+
+        return add_query_arg(
+            array(
+                'mgd_giveaway_success' => $token,
+                'mgd_form' => $form_id,
+            ),
+            $return_url
+        ) . '#mgd-giveaway-' . $form_id;
+    }
+
+    private function get_success_transient_key($token)
+    {
+        return 'mgd_giveaway_success_' . md5($token);
     }
 
     private function render_frontend_field($field)
@@ -836,18 +917,7 @@ class MGD_Giveaway_Plugin
             $this->add_log($sent ? 'info' : 'error', 'download_email', $sent ? 'Download-E-Mail versendet.' : 'Download-E-Mail konnte nicht versendet werden.', array('form_id' => $form_id, 'email' => $email));
         }
 
-        echo '<!doctype html><html><head><meta charset="' . esc_attr(get_bloginfo('charset')) . '"><meta name="viewport" content="width=device-width, initial-scale=1">';
-        wp_head();
-        echo '</head><body class="mgd-giveaway-result"><main class="mgd-giveaway-success">';
-        echo '<p>' . esc_html($config['success_message']) . '</p>';
-        if ($download_url) {
-            echo '<a class="mgd-giveaway-download" href="' . esc_url($download_url) . '" download>' . esc_html($config['button_label']) . '</a>';
-        } else {
-            echo '<p>Es wurde noch keine Download-Datei hinterlegt.</p>';
-        }
-        echo '</main>';
-        wp_footer();
-        echo '</body></html>';
+        wp_safe_redirect($this->create_success_redirect_url($form_id, $config, $download_url));
         exit;
     }
 
