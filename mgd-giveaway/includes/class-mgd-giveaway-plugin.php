@@ -35,6 +35,7 @@ class MGD_Giveaway_Plugin
         add_action('admin_menu', array($this, 'register_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_assets'));
+        add_action('template_redirect', array($this, 'handle_masked_download'));
         add_shortcode('mgd_giveaway', array($this, 'render_shortcode'));
 
         add_action('admin_post_mgd_giveaway_save_form', array($this, 'handle_save_form'));
@@ -961,8 +962,8 @@ class MGD_Giveaway_Plugin
             $data[$name] = $value;
         }
 
-        $download_url = $this->get_download_url((int) $config['download_attachment_id']);
         $submission_id = $this->store_submission($form_id, $email, $data);
+        $download_url = $this->get_masked_download_url($form_id, (int) $config['download_attachment_id'], $submission_id);
         $this->add_log('info', 'form_submission', 'Neue Formularanmeldung gespeichert.', array('form_id' => $form_id, 'submission_id' => $submission_id, 'email' => $email));
         $this->send_notification_email($form_id, $email, $data);
 
@@ -1014,15 +1015,89 @@ class MGD_Giveaway_Plugin
         return true;
     }
 
-    private function get_download_url($attachment_id)
+    public function handle_masked_download()
+    {
+        if (empty($_GET['mgd_giveaway_download'])) {
+            return;
+        }
+
+        $token = sanitize_text_field((string) wp_unslash($_GET['mgd_giveaway_download']));
+        $payload = $this->verify_download_token($token);
+
+        if (!$payload || empty($payload['attachment_id'])) {
+            $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link ungueltig.', array());
+            status_header(404);
+            wp_die(esc_html__('Download nicht gefunden.', 'mgd-giveaway'));
+        }
+
+        $attachment_id = (int) $payload['attachment_id'];
+        $file_path = get_attached_file($attachment_id);
+        if (!$file_path || !is_readable($file_path)) {
+            $this->add_log('error', 'download_missing_file', 'Download-Datei konnte nicht gelesen werden.', array('attachment_id' => $attachment_id));
+            status_header(404);
+            wp_die(esc_html__('Download-Datei nicht gefunden.', 'mgd-giveaway'));
+        }
+
+        $filename = basename($file_path);
+        $mime = get_post_mime_type($attachment_id);
+        if (!$mime) {
+            $filetype = wp_check_filetype($filename);
+            $mime = !empty($filetype['type']) ? $filetype['type'] : 'application/octet-stream';
+        }
+
+        $this->add_log('info', 'masked_download', 'Maskierter Download ausgeliefert.', array('form_id' => isset($payload['form_id']) ? (int) $payload['form_id'] : 0, 'attachment_id' => $attachment_id));
+
+        nocache_headers();
+        header('Content-Type: ' . $mime);
+        header('Content-Disposition: attachment; filename="' . sanitize_file_name($filename) . '"');
+        header('Content-Length: ' . filesize($file_path));
+        readfile($file_path);
+        exit;
+    }
+
+    private function get_masked_download_url($form_id, $attachment_id, $submission_id)
     {
         if (!$attachment_id) {
             return '';
         }
 
-        $url = wp_get_attachment_url($attachment_id);
+        $token = $this->create_download_token(array(
+            'form_id' => $form_id,
+            'attachment_id' => $attachment_id,
+            'submission_id' => $submission_id,
+            'created_at' => time(),
+        ));
 
-        return $url ? $url : '';
+        return add_query_arg('mgd_giveaway_download', rawurlencode($token), home_url('/'));
+    }
+
+    private function create_download_token($payload)
+    {
+        $encoded = rtrim(strtr(base64_encode((string) wp_json_encode($payload)), '+/', '-_'), '=');
+        $signature = hash_hmac('sha256', $encoded, wp_salt('auth'));
+
+        return $encoded . '.' . $signature;
+    }
+
+    private function verify_download_token($token)
+    {
+        if (false === strpos($token, '.')) {
+            return false;
+        }
+
+        list($encoded, $signature) = explode('.', $token, 2);
+        $expected = hash_hmac('sha256', $encoded, wp_salt('auth'));
+        if (!hash_equals($expected, $signature)) {
+            return false;
+        }
+
+        $json = base64_decode(strtr($encoded, '-_', '+/'), true);
+        $payload = $json ? json_decode($json, true) : null;
+        if (!is_array($payload)) {
+            return false;
+        }
+
+        return $payload;
     }
 
     private function store_submission($form_id, $email, $data)
