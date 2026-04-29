@@ -368,7 +368,7 @@ class MGD_Giveaway_Plugin
 
         echo '<div class="mgd-tab-panel ' . esc_attr('preview' === $active_tab ? 'is-active' : '') . '" data-panel="preview"><section class="mgd-panel mgd-editor-card"><h2>Vorschau</h2>';
         if ($form_id) {
-            echo do_shortcode('[mgd_giveaway id="' . (int) $form_id . '"]');
+            $this->render_editor_preview($config);
         } else {
             echo '<p class="description">Speichere das Formular einmal, damit die Vorschau mit Shortcode angezeigt werden kann.</p>';
         }
@@ -378,6 +378,39 @@ class MGD_Giveaway_Plugin
         echo '</form>';
 
         echo '</div>';
+    }
+
+    private function render_editor_preview($config)
+    {
+        echo '<div class="mgd-editor-preview" style="' . esc_attr($this->get_frontend_style_vars($config)) . '">';
+        echo '<div class="mgd-giveaway-form">';
+        foreach ($config['fields'] as $field) {
+            $this->render_editor_preview_field($field);
+        }
+        echo '<button type="button" disabled>' . esc_html($config['button_label']) . '</button>';
+        echo '</div>';
+        echo '<p class="description">Diese Vorschau ist statisch und sendet keine Daten ab.</p>';
+        echo '</div>';
+    }
+
+    private function render_editor_preview_field($field)
+    {
+        $label = isset($field['label']) ? $field['label'] : '';
+        $type = isset($field['type']) ? $field['type'] : 'text';
+        $text = isset($field['text']) ? $field['text'] : '';
+
+        echo '<label class="mgd-giveaway-field"><span>' . esc_html($label) . '</span>';
+        if ('textarea' === $type) {
+            echo '<textarea disabled></textarea>';
+        } elseif ('privacy' === $type) {
+            $notice = $text ? $text : $label;
+            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" disabled> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" disabled>zur Datenschutzerkl&auml;rung</button></span></span>';
+        } elseif ('checkbox' === $type) {
+            echo '<input type="checkbox" disabled>';
+        } else {
+            echo '<input type="' . esc_attr($type) . '" disabled>';
+        }
+        echo '</label>';
     }
 
     private function render_field_editor_row($index, $field)

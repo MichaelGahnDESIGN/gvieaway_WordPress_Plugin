@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.13
+
+Beschreibung: Backend-Vorschau auf statische Formularausgabe umgestellt, damit beim Speichern kein Frontend-Submit ausgeloest wird.
+Begruendung: Die echte Shortcode-Ausgabe in der Vorschau konnte das Backend-Speichern stoeren und Pflichtfeldfehler ausloesen.
+Betroffene Bereiche: Backend Formular-Editor, Vorschau, Dokumentation.
+Ruecknahme: Version 0.0.12 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.12
 
 Beschreibung: Speichern im Formular-Editor robuster gemacht und Browser-Validierung fuer versteckte Tab-Felder deaktiviert.
