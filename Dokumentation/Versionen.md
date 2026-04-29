@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.28
+
+Beschreibung: Absenden-Button mit Inline-Abstand und direktem Submit-Fallback abgesichert.
+Begründung: Theme-/Cache-Konflikte konnten verhindern, dass Abstand und JavaScript-Verhalten sichtbar wurden.
+Betroffene Bereiche: Frontend-Shortcode, Button-Rendering, Dokumentation.
+Rücknahme: Version 0.0.27 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.27
 
 Beschreibung: Abstand über dem Absenden-Button vergrößert.

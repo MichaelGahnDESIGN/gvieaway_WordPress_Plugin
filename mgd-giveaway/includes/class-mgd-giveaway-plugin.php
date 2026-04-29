@@ -1102,7 +1102,8 @@ class MGD_Giveaway_Plugin
             $this->render_frontend_field($field);
         }
 
-        echo '<button type="submit" class="mgd-giveaway-submit" style="' . esc_attr($this->get_button_inline_style($config)) . '">' . esc_html($config['submit_button_label']) . '</button>';
+        $submit_fallback = "if(this.form){if(this.form.reportValidity&&!this.form.reportValidity()){return false;}this.disabled=true;this.textContent='Wird gesendet...';if(window.HTMLFormElement&&HTMLFormElement.prototype.submit){HTMLFormElement.prototype.submit.call(this.form);}else{this.form.submit();}return false;}";
+        echo '<button type="submit" class="mgd-giveaway-submit" style="' . esc_attr($this->get_button_inline_style($config)) . '" onclick="' . esc_attr($submit_fallback) . '">' . esc_html($config['submit_button_label']) . '</button>';
         echo '</form>';
         echo '</div>';
 
@@ -1193,7 +1194,7 @@ class MGD_Giveaway_Plugin
         $style = isset($config['style']) && is_array($config['style']) ? $config['style'] : array();
         $style = $this->sanitize_style($style);
 
-        return 'background:' . $style['button_bg'] . ' !important;background-color:' . $style['button_bg'] . ' !important;color:' . $style['button_text'] . ' !important;border-color:' . $style['button_bg'] . ' !important;border-radius:' . (int) $style['radius'] . 'px !important;';
+        return 'background:' . $style['button_bg'] . ' !important;background-color:' . $style['button_bg'] . ' !important;color:' . $style['button_text'] . ' !important;border-color:' . $style['button_bg'] . ' !important;border-radius:' . (int) $style['radius'] . 'px !important;margin-top:12px !important;';
     }
 
     private function render_frontend_field($field)
