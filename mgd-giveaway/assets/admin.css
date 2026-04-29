@@ -429,18 +429,20 @@
     margin-top: 4px;
 }
 
-.mgd-editor-preview .mgd-privacy-link {
+.mgd-editor-preview .mgd-giveaway-form .mgd-privacy-link {
     display: inline;
     min-height: 0;
-    border: 0;
-    background: transparent;
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
     color: currentColor;
     text-decoration: underline;
-    padding: 0;
+    padding: 0 !important;
     font: inherit;
+    box-shadow: none;
 }
 
-.mgd-editor-preview .mgd-giveaway-form button {
+.mgd-editor-preview .mgd-giveaway-form > button {
     display: inline-flex;
     align-items: center;
     justify-content: center;

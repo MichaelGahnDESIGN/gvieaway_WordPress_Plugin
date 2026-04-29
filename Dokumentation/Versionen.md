@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.16
+
+Beschreibung: Frontend- und Backend-Vorschau-Styling angeglichen, damit der Datenschutz-Link nicht wie der Download-Button gestaltet wird.
+Begruendung: Nur der echte Formular-Submit soll das Button-Design erhalten; der Datenschutz-Link soll in Vorschau und Frontend als Textlink erscheinen.
+Betroffene Bereiche: Frontend CSS, Admin CSS, Formularausgabe, Dokumentation.
+Ruecknahme: Version 0.0.15 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.15
 
 Beschreibung: Backend-Vorschau mit eigenen Formular-Styles verbessert, damit Felder sauber untereinander angezeigt werden.

@@ -32,16 +32,18 @@
     margin-top: 4px;
 }
 
-.mgd-privacy-link {
+.mgd-giveaway-form .mgd-privacy-link {
     display: inline;
     min-height: 0;
-    border: 0;
-    background: transparent;
+    border: 0 !important;
+    border-radius: 0;
+    background: transparent !important;
     color: currentColor;
     text-decoration: underline;
     cursor: pointer;
-    padding: 0;
+    padding: 0 !important;
     font: inherit;
+    box-shadow: none;
 }
 
 .mgd-giveaway-hp {
@@ -52,7 +54,7 @@
     opacity: 0;
 }
 
-.mgd-giveaway-form button,
+.mgd-giveaway-form > button[type="submit"],
 .mgd-giveaway-download {
     display: inline-flex;
     align-items: center;
