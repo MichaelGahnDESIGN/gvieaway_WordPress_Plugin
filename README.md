@@ -27,7 +27,7 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 
 ## Installation
 
-1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.18.zip` in WordPress hochladen.
+1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.19.zip` in WordPress hochladen.
 2. Plugin aktivieren.
 3. Unter `MGD Giveaway` ein Formular anlegen.
 4. Den angezeigten Shortcode in eine Seite oder einen Beitrag einfuegen.
@@ -59,7 +59,7 @@ Der Import erwartet eine CSV-Datei mit Kopfzeile. Mindestens die Spalte `email` 
 
 ## Version
 
-Aktuelle Version: `0.0.18`
+Aktuelle Version: `0.0.19`
 
 ## Autor
 

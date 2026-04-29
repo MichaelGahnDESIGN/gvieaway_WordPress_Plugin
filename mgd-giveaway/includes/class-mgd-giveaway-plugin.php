@@ -12,7 +12,7 @@ class MGD_Giveaway_Plugin
     private $log_table;
     private $max_csv_upload_bytes = 2097152;
     private $max_csv_import_rows = 5000;
-    private $spam_min_seconds = 3;
+    private $spam_min_seconds = 1;
     private $spam_max_seconds = 86400;
 
     public static function instance()
@@ -192,6 +192,7 @@ class MGD_Giveaway_Plugin
             ),
             'download_attachment_id' => 0,
             'protected_file' => array(),
+            'submit_button_label' => 'Gratis-Ratgeber anfordern',
             'button_label' => 'Jetzt herunterladen',
             'success_message' => 'Danke fuer deine Anmeldung. Der Download ist jetzt verfuegbar.',
             'email_subject' => 'Dein Download',
@@ -336,11 +337,12 @@ class MGD_Giveaway_Plugin
 
         echo '<div class="mgd-tab-panel ' . esc_attr('settings' === $active_tab ? 'is-active' : '') . '" data-panel="settings"><section class="mgd-panel mgd-editor-card"><h2>Formular</h2><p class="description">Grunddaten und Texte, die nach der Anmeldung angezeigt werden.</p>';
         echo '<label class="mgd-field"><span>Name</span><input type="text" name="form_title" value="' . esc_attr($post ? $post->post_title : '') . '"></label>';
-        echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"></label>';
+        echo '<label class="mgd-field"><span>Absenden Button Text</span><input type="text" name="submit_button_label" value="' . esc_attr($config['submit_button_label']) . '"><small>Text fuer den Button, der die Formulardaten absendet.</small></label>';
         echo '<label class="mgd-field"><span>Erfolgsmeldung</span><textarea name="success_message" rows="4">' . esc_textarea($config['success_message']) . '</textarea></label>';
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel ' . esc_attr('download' === $active_tab ? 'is-active' : '') . '" data-panel="download"><section class="mgd-panel mgd-editor-card"><h2>Download</h2><p class="description">Die Datei wird nach erfolgreicher Anmeldung als Button auf der Seite angezeigt. Beim Speichern wird eine geschuetzte Kopie fuer die Plugin-Auslieferung angelegt.</p>';
+        echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"><small>Text fuer den Button, der nach erfolgreicher Anmeldung den Download startet.</small></label>';
         echo '<label class="mgd-field"><span>Datei aus Mediathek</span><span class="mgd-media-row"><input type="hidden" id="download_attachment_id" name="download_attachment_id" value="' . esc_attr((string) $attachment_id) . '"><input type="text" id="download_attachment_title" value="' . esc_attr($attachment_title) . '" readonly><button type="button" class="button mgd-select-media">Auswaehlen</button></span></label>';
         if (!empty($config['protected_file']['path'])) {
             echo '<p class="description">Geschuetzte Kopie aktiv: ' . esc_html(isset($config['protected_file']['name']) ? $config['protected_file']['name'] : basename($config['protected_file']['path'])) . '</p>';
@@ -387,7 +389,7 @@ class MGD_Giveaway_Plugin
         foreach ($config['fields'] as $field) {
             $this->render_editor_preview_field($field);
         }
-        echo '<button type="button" disabled>' . esc_html($config['button_label']) . '</button>';
+        echo '<button type="button" disabled>' . esc_html($config['submit_button_label']) . '</button>';
         echo '</div>';
         echo '<p class="description">Diese Vorschau ist statisch und sendet keine Daten ab.</p>';
         echo '</div>';
@@ -685,6 +687,7 @@ class MGD_Giveaway_Plugin
             'fields' => $fields,
             'download_attachment_id' => $download_attachment_id,
             'protected_file' => $protected_file,
+            'submit_button_label' => isset($_POST['submit_button_label']) ? sanitize_text_field(wp_unslash($_POST['submit_button_label'])) : 'Gratis-Ratgeber anfordern',
             'button_label' => isset($_POST['button_label']) ? sanitize_text_field(wp_unslash($_POST['button_label'])) : 'Jetzt herunterladen',
             'success_message' => isset($_POST['success_message']) ? sanitize_textarea_field(wp_unslash($_POST['success_message'])) : '',
             'email_subject' => isset($_POST['email_subject']) ? sanitize_text_field(wp_unslash($_POST['email_subject'])) : '',
@@ -1032,7 +1035,7 @@ class MGD_Giveaway_Plugin
             $this->render_frontend_field($field);
         }
 
-        echo '<button type="submit">' . esc_html($config['button_label']) . '</button>';
+        echo '<button type="submit">' . esc_html($config['submit_button_label']) . '</button>';
         echo '</form>';
         echo '</div>';
 

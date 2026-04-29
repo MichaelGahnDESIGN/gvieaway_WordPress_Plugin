@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.19
+
+Beschreibung: Absenden-Button und Download-Button textlich getrennt; Spam-Mindestzeit fuer bessere Bedienbarkeit reduziert.
+Begruendung: Der erste Button sendet zunaechst die Formulardaten ab und soll nicht wie ein direkter Download wirken. Zu strenge Mindestzeit kann schnelles Absenden wie einen defekten Button erscheinen lassen.
+Betroffene Bereiche: Formular-Editor, Frontend Formularausgabe, Spam-Schutz, Vorschau, Dokumentation.
+Ruecknahme: Version 0.0.18 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.18
 
 Beschreibung: Datenschutz-Feld um eine eigene URL zur Datenschutzerklaerung erweitert und Popup-Ausgabe darauf umgestellt.
