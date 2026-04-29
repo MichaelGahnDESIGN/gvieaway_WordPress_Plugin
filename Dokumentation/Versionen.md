@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.25
+
+Beschreibung: Formularspeicherung, Feldnamen, E-Mail-Validierung, Mail-Filter und Token-Gültigkeit robuster gemacht.
+Begründung: Edge Cases sollen nicht zu kaputten Formularen, überschriebenen Daten, ungültigen E-Mail-Prozessen oder dauerhaft gültigen Links führen.
+Betroffene Bereiche: Formular-Editor, Frontend-Submit, E-Mail-Versand, Download- und Bestätigungslinks, Dokumentation.
+Rücknahme: Version 0.0.24 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.24
 
 Beschreibung: Absenden ohne Mindestwartezeit erlaubt, Button-Design inline abgesichert und Farbfelder im Backend korrigiert.

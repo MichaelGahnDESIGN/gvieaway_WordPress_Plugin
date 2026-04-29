@@ -14,6 +14,8 @@ class MGD_Giveaway_Plugin
     private $max_csv_import_rows = 5000;
     private $spam_min_seconds = 0;
     private $spam_max_seconds = 0;
+    private $download_token_max_age = 2592000;
+    private $confirm_token_max_age = 1209600;
 
     public static function instance()
     {
@@ -693,6 +695,13 @@ class MGD_Giveaway_Plugin
         $title = isset($_POST['form_title']) ? sanitize_text_field(wp_unslash($_POST['form_title'])) : '';
         $fields = $this->sanitize_fields(isset($_POST['fields']) ? wp_unslash($_POST['fields']) : array());
 
+        if ($form_id) {
+            $existing_post = get_post($form_id);
+            if (!$existing_post || $existing_post->post_type !== $this->post_type) {
+                wp_die(esc_html__('Formular nicht gefunden.', 'mgd-giveaway'));
+            }
+        }
+
         $post_data = array(
             'post_type' => $this->post_type,
             'post_title' => $title ? $title : 'Unbenanntes Formular',
@@ -701,9 +710,15 @@ class MGD_Giveaway_Plugin
 
         if ($form_id) {
             $post_data['ID'] = $form_id;
-            wp_update_post($post_data);
+            $updated = wp_update_post($post_data, true);
+            if (is_wp_error($updated)) {
+                wp_die(esc_html($updated->get_error_message()));
+            }
         } else {
-            $form_id = wp_insert_post($post_data);
+            $form_id = wp_insert_post($post_data, true);
+            if (is_wp_error($form_id) || !$form_id) {
+                wp_die(esc_html(is_wp_error($form_id) ? $form_id->get_error_message() : __('Formular konnte nicht gespeichert werden.', 'mgd-giveaway')));
+            }
         }
 
         $download_attachment_id = isset($_POST['download_attachment_id']) ? absint($_POST['download_attachment_id']) : 0;
@@ -738,7 +753,15 @@ class MGD_Giveaway_Plugin
     private function sanitize_fields($raw_fields)
     {
         $allowed_types = array_keys($this->get_field_types());
+        $reserved_names = array(
+            'action' => true,
+            'form_id' => true,
+            'mgd_giveaway_return_url' => true,
+            'mgd_giveaway_started' => true,
+            'mgd_giveaway_website' => true,
+        );
         $fields = array();
+        $used_names = array();
 
         if (!is_array($raw_fields)) {
             return array();
@@ -756,6 +779,18 @@ class MGD_Giveaway_Plugin
             if (!$label || !$name) {
                 continue;
             }
+
+            if (isset($reserved_names[$name])) {
+                $name = 'field_' . $name;
+            }
+
+            $base_name = $name;
+            $suffix = 2;
+            while (isset($used_names[$name])) {
+                $name = $base_name . '_' . $suffix;
+                $suffix++;
+            }
+            $used_names[$name] = true;
 
             $fields[] = array(
                 'label' => $label,
@@ -874,7 +909,11 @@ class MGD_Giveaway_Plugin
             'post_type' => $this->post_type,
             'post_title' => $post->post_title . ' Kopie',
             'post_status' => 'publish',
-        ));
+        ), true);
+
+        if (is_wp_error($new_id) || !$new_id) {
+            wp_die(esc_html(is_wp_error($new_id) ? $new_id->get_error_message() : __('Formular konnte nicht dupliziert werden.', 'mgd-giveaway')));
+        }
 
         update_post_meta($new_id, '_mgd_giveaway_config', $this->get_form_config($form_id));
         $this->add_log('info', 'form_duplicated', 'Formular dupliziert.', array('source_form_id' => $form_id, 'new_form_id' => $new_id));
@@ -889,11 +928,13 @@ class MGD_Giveaway_Plugin
             wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
+        $from_email = isset($_POST['from_email']) ? sanitize_email(wp_unslash($_POST['from_email'])) : '';
+        $notification_recipient = isset($_POST['notification_recipient']) ? sanitize_email(wp_unslash($_POST['notification_recipient'])) : '';
         $settings = array(
             'mail_method' => isset($_POST['mail_method']) && 'smtp' === $_POST['mail_method'] ? 'smtp' : 'php',
             'from_name' => isset($_POST['from_name']) ? sanitize_text_field(wp_unslash($_POST['from_name'])) : '',
-            'from_email' => isset($_POST['from_email']) ? sanitize_email(wp_unslash($_POST['from_email'])) : '',
-            'notification_recipient' => isset($_POST['notification_recipient']) ? sanitize_email(wp_unslash($_POST['notification_recipient'])) : '',
+            'from_email' => is_email($from_email) ? $from_email : get_option('admin_email'),
+            'notification_recipient' => is_email($notification_recipient) ? $notification_recipient : get_option('admin_email'),
             'smtp_host' => isset($_POST['smtp_host']) ? sanitize_text_field(wp_unslash($_POST['smtp_host'])) : '',
             'smtp_port' => isset($_POST['smtp_port']) ? absint($_POST['smtp_port']) : 587,
             'smtp_encryption' => isset($_POST['smtp_encryption']) && in_array($_POST['smtp_encryption'], array('none', 'tls', 'ssl'), true) ? sanitize_key($_POST['smtp_encryption']) : 'tls',
@@ -1213,6 +1254,11 @@ class MGD_Giveaway_Plugin
             wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
+        $post = get_post($form_id);
+        if (!$post || $post->post_type !== $this->post_type) {
+            wp_die(esc_html__('Formular nicht gefunden.', 'mgd-giveaway'));
+        }
+
         if (!$this->passes_spam_check($form_id)) {
             wp_die(esc_html__('Die Anmeldung wurde aus Sicherheitsgründen abgelehnt. Bitte lade die Seite neu und versuche es erneut.', 'mgd-giveaway'));
         }
@@ -1234,7 +1280,7 @@ class MGD_Giveaway_Plugin
 
             if ('email' === $field['type']) {
                 $value = sanitize_email($value);
-                if (!empty($field['required']) && !is_email($value)) {
+                if ('' !== $value && !is_email($value)) {
                     wp_die(esc_html__('Bitte eine gültige E-Mail-Adresse eingeben.', 'mgd-giveaway'));
                 }
                 $email = $value;
@@ -1283,7 +1329,7 @@ class MGD_Giveaway_Plugin
     {
         $honeypot = isset($_POST['mgd_giveaway_website']) ? trim((string) wp_unslash($_POST['mgd_giveaway_website'])) : '';
         if ('' !== $honeypot) {
-            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Honeypot ausgefuellt.', array('form_id' => $form_id));
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Honeypot ausgefüllt.', array('form_id' => $form_id));
             return false;
         }
 
@@ -1317,7 +1363,7 @@ class MGD_Giveaway_Plugin
         }
 
         $token = sanitize_text_field((string) wp_unslash($_GET['mgd_giveaway_download']));
-        $payload = $this->verify_download_token($token);
+        $payload = $this->verify_download_token($token, $this->download_token_max_age);
 
         if (!$payload || empty($payload['form_id'])) {
             $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link ungültig.', array());
@@ -1326,7 +1372,21 @@ class MGD_Giveaway_Plugin
         }
 
         $form_id = (int) $payload['form_id'];
+        $post = get_post($form_id);
+        if (!$post || $post->post_type !== $this->post_type) {
+            $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link verweist auf kein gültiges Formular.', array('form_id' => $form_id));
+            status_header(404);
+            wp_die(esc_html__('Download nicht gefunden.', 'mgd-giveaway'));
+        }
+
         $config = $this->get_form_config($form_id);
+        $token_attachment_id = isset($payload['attachment_id']) ? (int) $payload['attachment_id'] : 0;
+        if (empty($config['download_attachment_id']) || (int) $config['download_attachment_id'] !== $token_attachment_id) {
+            $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link passt nicht zur hinterlegten Datei.', array('form_id' => $form_id));
+            status_header(404);
+            wp_die(esc_html__('Download nicht gefunden.', 'mgd-giveaway'));
+        }
+
         $protected_file = isset($config['protected_file']) && is_array($config['protected_file']) ? $config['protected_file'] : array();
         if ((empty($protected_file['path']) || !is_readable($protected_file['path'])) && !empty($config['download_attachment_id'])) {
             $protected_file = $this->ensure_protected_download_copy($form_id, (int) $config['download_attachment_id'], $config);
@@ -1369,13 +1429,19 @@ class MGD_Giveaway_Plugin
         }
 
         $token = sanitize_text_field((string) wp_unslash($_GET['mgd_giveaway_confirm']));
-        $payload = $this->verify_download_token($token);
+        $payload = $this->verify_download_token($token, $this->confirm_token_max_age);
         if (!$payload || empty($payload['form_id']) || empty($payload['submission_id']) || empty($payload['email'])) {
             status_header(404);
             wp_die(esc_html__('Bestätigungslink ist ungültig.', 'mgd-giveaway'));
         }
 
         global $wpdb;
+        $post = get_post((int) $payload['form_id']);
+        if (!$post || $post->post_type !== $this->post_type) {
+            status_header(404);
+            wp_die(esc_html__('Bestätigungslink ist ungültig.', 'mgd-giveaway'));
+        }
+
         $submission = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->submission_table} WHERE id = %d AND form_id = %d", (int) $payload['submission_id'], (int) $payload['form_id']));
         if (!$submission || !hash_equals((string) $submission->email, (string) $payload['email'])) {
             status_header(404);
@@ -1444,7 +1510,7 @@ class MGD_Giveaway_Plugin
         return add_query_arg('mgd_giveaway_confirm', $token, home_url('/'));
     }
 
-    private function verify_download_token($token)
+    private function verify_download_token($token, $max_age = 0)
     {
         if (false === strpos($token, '.')) {
             return false;
@@ -1462,6 +1528,13 @@ class MGD_Giveaway_Plugin
         $payload = $json ? json_decode($json, true) : null;
         if (!is_array($payload)) {
             return false;
+        }
+
+        if ($max_age > 0) {
+            $created_at = isset($payload['created_at']) ? (int) $payload['created_at'] : 0;
+            if (!$created_at || time() - $created_at > $max_age) {
+                return false;
+            }
         }
 
         return $payload;
@@ -1546,16 +1619,19 @@ class MGD_Giveaway_Plugin
     {
         $settings = $this->get_settings();
         $headers = array('Content-Type: text/plain; charset=UTF-8');
-
-        add_filter('wp_mail_from', function () use ($settings) {
+        $from_filter = function () use ($settings) {
             return $settings['from_email'];
-        });
-        add_filter('wp_mail_from_name', function () use ($settings) {
+        };
+        $from_name_filter = function () use ($settings) {
             return $settings['from_name'];
-        });
+        };
+        $smtp_action = null;
 
-        if ('smtp' === $settings['mail_method']) {
-            add_action('phpmailer_init', function ($phpmailer) use ($settings) {
+        add_filter('wp_mail_from', $from_filter);
+        add_filter('wp_mail_from_name', $from_name_filter);
+
+        if ('smtp' === $settings['mail_method'] && !empty($settings['smtp_host'])) {
+            $smtp_action = function ($phpmailer) use ($settings) {
                 $phpmailer->isSMTP();
                 $phpmailer->Host = $settings['smtp_host'];
                 $phpmailer->Port = (int) $settings['smtp_port'];
@@ -1565,10 +1641,19 @@ class MGD_Giveaway_Plugin
                 if ('none' !== $settings['smtp_encryption']) {
                     $phpmailer->SMTPSecure = $settings['smtp_encryption'];
                 }
-            });
+            };
+            add_action('phpmailer_init', $smtp_action);
         }
 
-        return wp_mail($to, $subject, $body, $headers);
+        $sent = wp_mail($to, $subject, $body, $headers);
+
+        remove_filter('wp_mail_from', $from_filter);
+        remove_filter('wp_mail_from_name', $from_name_filter);
+        if ($smtp_action) {
+            remove_action('phpmailer_init', $smtp_action);
+        }
+
+        return $sent;
     }
 
     private function output_csv($filename, $columns, $rows)
