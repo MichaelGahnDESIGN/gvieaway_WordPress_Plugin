@@ -48,23 +48,57 @@
     align-items: center;
 }
 
-.mgd-editor-layout {
-    display: grid;
-    grid-template-columns: minmax(300px, 420px) minmax(0, 1fr);
-    gap: 16px;
-    margin-top: 16px;
-    align-items: start;
+.mgd-editor-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 18px 0 0;
+    padding: 6px;
+    max-width: 980px;
+    background: #e9eef5;
+    border: 1px solid #d7dee8;
+    border-radius: 10px;
 }
 
-.mgd-form-settings {
-    position: sticky;
-    top: 48px;
+.mgd-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 40px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: #3c4653;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 0 13px;
+}
+
+.mgd-tab:hover,
+.mgd-tab:focus {
+    background: #f8fafc;
+    color: #1f2933;
+}
+
+.mgd-tab.is-active {
+    background: #fff;
+    color: #0f1720;
+    box-shadow: 0 1px 3px rgba(31, 41, 51, 0.12);
+}
+
+.mgd-tab-panel {
+    display: none;
+    margin-top: 16px;
+}
+
+.mgd-tab-panel.is-active {
+    display: block;
 }
 
 .mgd-builder-shell {
     display: grid;
-    grid-template-columns: 230px minmax(360px, 1fr) 300px;
-    min-height: 620px;
+    grid-template-columns: 260px minmax(420px, 1fr) 320px;
+    min-height: 680px;
     background: #f8fafc;
     border: 1px solid #d7dee8;
     border-radius: 10px;
@@ -106,7 +140,7 @@
 }
 
 .mgd-builder-canvas {
-    padding: 18px;
+    padding: 24px;
 }
 
 .mgd-canvas-head {
@@ -215,8 +249,8 @@
 }
 
 .mgd-fields-canvas {
-    min-height: 470px;
-    padding: 16px;
+    min-height: 540px;
+    padding: 20px;
     border: 1px dashed #b8c2cc;
     border-radius: 10px;
     background: linear-gradient(180deg, #fff 0%, #f8fafc 100%);
@@ -333,6 +367,28 @@
     margin-top: 14px;
 }
 
+.mgd-editor-card {
+    max-width: 760px;
+    padding: 22px;
+}
+
+.mgd-editor-card h2 {
+    margin-top: 0;
+}
+
+.mgd-editor-card .description {
+    margin: -4px 0 20px;
+    color: #646970;
+}
+
+.mgd-check-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 18px;
+    font-weight: 600;
+}
+
 .mgd-config-head {
     display: flex;
     justify-content: space-between;
@@ -417,18 +473,17 @@
 
 @media (max-width: 900px) {
     .mgd-editor-header,
-    .mgd-editor-layout,
     .mgd-builder-shell,
     .mgd-field-row {
         grid-template-columns: 1fr;
     }
 
-    .mgd-form-settings {
-        position: static;
-    }
-
     .mgd-builder-palette,
     .mgd-field-inspector {
         border: 0;
+    }
+
+    .mgd-editor-tabs {
+        max-width: none;
     }
 }

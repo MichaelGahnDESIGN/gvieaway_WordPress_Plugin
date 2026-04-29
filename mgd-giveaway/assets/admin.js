@@ -91,6 +91,18 @@
         addField($(this).data('type') || 'text');
     });
 
+    $(document).on('click', '.mgd-tab', function () {
+        var tab = $(this).data('tab');
+        if (!tab) {
+            return;
+        }
+
+        $('.mgd-tab').removeClass('is-active').attr('aria-selected', 'false');
+        $(this).addClass('is-active').attr('aria-selected', 'true');
+        $('.mgd-tab-panel').removeClass('is-active');
+        $('.mgd-tab-panel[data-panel="' + tab + '"]').addClass('is-active');
+    });
+
     $(document).on('dragstart', '.mgd-add-field', function (event) {
         event.originalEvent.dataTransfer.setData('mgd-field-type', $(this).data('type') || 'text');
         event.originalEvent.dataTransfer.effectAllowed = 'copy';

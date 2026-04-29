@@ -271,23 +271,22 @@ class MGD_Giveaway_Plugin
         $attachment_id = (int) $config['download_attachment_id'];
         $attachment_title = $attachment_id ? get_the_title($attachment_id) : '';
 
-        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Baue dein Download-Formular mit Elementen, Canvas und Feld-Einstellungen.</p></div><div class="mgd-editor-actions"><button class="button button-primary" type="submit" form="mgd-giveaway-editor-form">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></div></div>';
+        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Bearbeite Felder, Grundeinstellungen, Download, E-Mail und Vorschau in getrennten Bereichen.</p></div><div class="mgd-editor-actions"><button class="button button-primary" type="submit" form="mgd-giveaway-editor-form">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></div></div>';
         $this->render_notices();
         echo '<form id="mgd-giveaway-editor-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         wp_nonce_field('mgd_giveaway_save_form');
         echo '<input type="hidden" name="action" value="mgd_giveaway_save_form">';
         echo '<input type="hidden" name="form_id" value="' . esc_attr((string) $form_id) . '">';
-        echo '<div class="mgd-editor-layout">';
-        echo '<section class="mgd-panel mgd-form-settings"><h2>Formular</h2>';
-        echo '<label class="mgd-field"><span>Name</span><input type="text" name="form_title" value="' . esc_attr($post ? $post->post_title : '') . '" required></label>';
-        echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"></label>';
-        echo '<label class="mgd-field"><span>Erfolgsmeldung</span><textarea name="success_message" rows="3">' . esc_textarea($config['success_message']) . '</textarea></label>';
-        echo '<label class="mgd-field"><span>Datei aus Mediathek</span><span class="mgd-media-row"><input type="hidden" id="download_attachment_id" name="download_attachment_id" value="' . esc_attr((string) $attachment_id) . '"><input type="text" id="download_attachment_title" value="' . esc_attr($attachment_title) . '" readonly><button type="button" class="button mgd-select-media">Auswaehlen</button></span></label>';
-        echo '<label><input type="checkbox" name="send_email" value="1" ' . checked(!empty($config['send_email']), true, false) . '> Download-Link auch per E-Mail senden</label>';
-        echo '<label class="mgd-field"><span>E-Mail Betreff</span><input type="text" name="email_subject" value="' . esc_attr($config['email_subject']) . '"></label>';
-        echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="6">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
-        echo '</section>';
 
+        echo '<nav class="mgd-editor-tabs" aria-label="Editor Bereiche">';
+        echo '<button type="button" class="mgd-tab is-active" data-tab="fields"><span class="dashicons dashicons-feedback"></span>Felder</button>';
+        echo '<button type="button" class="mgd-tab" data-tab="settings"><span class="dashicons dashicons-admin-generic"></span>Formular</button>';
+        echo '<button type="button" class="mgd-tab" data-tab="download"><span class="dashicons dashicons-download"></span>Download</button>';
+        echo '<button type="button" class="mgd-tab" data-tab="email"><span class="dashicons dashicons-email-alt"></span>E-Mail</button>';
+        echo '<button type="button" class="mgd-tab" data-tab="preview"><span class="dashicons dashicons-visibility"></span>Vorschau</button>';
+        echo '</nav>';
+
+        echo '<div class="mgd-tab-panel is-active" data-panel="fields">';
         echo '<section class="mgd-builder-shell" aria-label="Formular Builder">';
         echo '<aside class="mgd-builder-palette"><h2>Elemente</h2><p>Per Klick oder Drag & Drop in das Formular ziehen.</p><div class="mgd-element-palette" aria-label="Formular Elemente">';
         foreach ($this->get_field_types() as $type_key => $type_label) {
@@ -304,14 +303,32 @@ class MGD_Giveaway_Plugin
         echo '<aside class="mgd-field-inspector"><h2>Einstellungen</h2><div id="mgd-inspector-empty"><span class="dashicons dashicons-edit-page"></span><strong>Kein Feld ausgewaehlt</strong><small>Klicke ein Feld im Formular an.</small></div><div id="mgd-inspector-content"></div></aside>';
         echo '</section></div>';
 
+        echo '<div class="mgd-tab-panel" data-panel="settings"><section class="mgd-panel mgd-editor-card"><h2>Formular</h2><p class="description">Grunddaten und Texte, die nach der Anmeldung angezeigt werden.</p>';
+        echo '<label class="mgd-field"><span>Name</span><input type="text" name="form_title" value="' . esc_attr($post ? $post->post_title : '') . '"></label>';
+        echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"></label>';
+        echo '<label class="mgd-field"><span>Erfolgsmeldung</span><textarea name="success_message" rows="4">' . esc_textarea($config['success_message']) . '</textarea></label>';
+        echo '</section></div>';
+
+        echo '<div class="mgd-tab-panel" data-panel="download"><section class="mgd-panel mgd-editor-card"><h2>Download</h2><p class="description">Die Datei wird nach erfolgreicher Anmeldung als Button auf der Seite angezeigt.</p>';
+        echo '<label class="mgd-field"><span>Datei aus Mediathek</span><span class="mgd-media-row"><input type="hidden" id="download_attachment_id" name="download_attachment_id" value="' . esc_attr((string) $attachment_id) . '"><input type="text" id="download_attachment_title" value="' . esc_attr($attachment_title) . '" readonly><button type="button" class="button mgd-select-media">Auswaehlen</button></span></label>';
+        echo '</section></div>';
+
+        echo '<div class="mgd-tab-panel" data-panel="email"><section class="mgd-panel mgd-editor-card"><h2>E-Mail</h2><p class="description">Optionaler Versand des Download-Links an die eingetragene Adresse.</p>';
+        echo '<label class="mgd-check-row"><input type="checkbox" name="send_email" value="1" ' . checked(!empty($config['send_email']), true, false) . '> Download-Link auch per E-Mail senden</label>';
+        echo '<label class="mgd-field"><span>E-Mail Betreff</span><input type="text" name="email_subject" value="' . esc_attr($config['email_subject']) . '"></label>';
+        echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="8">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
+        echo '</section></div>';
+
+        echo '<div class="mgd-tab-panel" data-panel="preview"><section class="mgd-panel mgd-editor-card"><h2>Vorschau</h2>';
+        if ($form_id) {
+            echo do_shortcode('[mgd_giveaway id="' . (int) $form_id . '"]');
+        } else {
+            echo '<p class="description">Speichere das Formular einmal, damit die Vorschau mit Shortcode angezeigt werden kann.</p>';
+        }
+        echo '</section></div>';
+
         echo '<p class="mgd-editor-bottom-actions"><button class="button button-primary" type="submit">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></p>';
         echo '</form>';
-
-        if ($form_id) {
-            echo '<section class="mgd-panel mgd-preview"><h2>Vorschau</h2>';
-            echo do_shortcode('[mgd_giveaway id="' . (int) $form_id . '"]');
-            echo '</section>';
-        }
 
         echo '</div>';
     }
