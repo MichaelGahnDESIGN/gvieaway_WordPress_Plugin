@@ -12,7 +12,7 @@ class MGD_Giveaway_Plugin
     private $log_table;
     private $max_csv_upload_bytes = 2097152;
     private $max_csv_import_rows = 5000;
-    private $spam_min_seconds = 1;
+    private $spam_min_seconds = 0;
     private $spam_max_seconds = 0;
 
     public static function instance()
@@ -1061,7 +1061,7 @@ class MGD_Giveaway_Plugin
             $this->render_frontend_field($field);
         }
 
-        echo '<button type="submit">' . esc_html($config['submit_button_label']) . '</button>';
+        echo '<button type="submit" class="mgd-giveaway-submit" style="' . esc_attr($this->get_button_inline_style($config)) . '">' . esc_html($config['submit_button_label']) . '</button>';
         echo '</form>';
         echo '</div>';
 
@@ -1098,7 +1098,7 @@ class MGD_Giveaway_Plugin
         echo '<div class="mgd-giveaway-success-inline">';
         echo '<p>' . esc_html((string) $payload['success_message']) . '</p>';
         if (!empty($payload['download_url'])) {
-            echo '<a class="mgd-giveaway-download" href="' . esc_url((string) $payload['download_url']) . '" download>' . esc_html((string) $payload['button_label']) . '</a>';
+            echo '<a class="mgd-giveaway-download" href="' . esc_url((string) $payload['download_url']) . '" download style="' . esc_attr($this->get_button_inline_style($payload)) . '">' . esc_html((string) $payload['button_label']) . '</a>';
         } elseif (empty($payload['message_only'])) {
             echo '<p>Es wurde noch keine Download-Datei hinterlegt.</p>';
         }
@@ -1124,6 +1124,7 @@ class MGD_Giveaway_Plugin
                 'button_label' => $config['button_label'],
                 'download_url' => $download_url,
                 'message_only' => $message_only,
+                'style' => isset($config['style']) ? $config['style'] : array(),
             ),
             15 * MINUTE_IN_SECONDS
         );
@@ -1144,6 +1145,14 @@ class MGD_Giveaway_Plugin
     private function get_success_transient_key($token)
     {
         return 'mgd_giveaway_success_' . md5($token);
+    }
+
+    private function get_button_inline_style($config)
+    {
+        $style = isset($config['style']) && is_array($config['style']) ? $config['style'] : array();
+        $style = $this->sanitize_style($style);
+
+        return 'background:' . $style['button_bg'] . ' !important;background-color:' . $style['button_bg'] . ' !important;color:' . $style['button_text'] . ' !important;border-color:' . $style['button_bg'] . ' !important;border-radius:' . (int) $style['radius'] . 'px !important;';
     }
 
     private function render_frontend_field($field)

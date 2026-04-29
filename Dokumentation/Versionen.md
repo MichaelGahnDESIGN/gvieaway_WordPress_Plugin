@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.24
+
+Beschreibung: Absenden ohne Mindestwartezeit erlaubt, Button-Design inline abgesichert und Farbfelder im Backend korrigiert.
+Begründung: Schnelle Tests sollen nicht durch die Spam-Zeitprüfung scheitern; Theme-Styles sollen die gewählte Buttonfarbe nicht überschreiben; Farbfelder sollen im Backend als kompakte Picker erscheinen.
+Betroffene Bereiche: Frontend Formularausgabe, Spam-Schutz, Design-Einstellungen, Admin CSS, Dokumentation.
+Rücknahme: Version 0.0.23 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.23
 
 Beschreibung: Frontend-Absenden cache-toleranter gemacht und Button-Farben robuster gegen Theme-Styles geschützt.

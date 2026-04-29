@@ -184,6 +184,13 @@
     max-width: 680px;
 }
 
+.mgd-field input[type="color"] {
+    width: 76px;
+    height: 40px;
+    max-width: 76px;
+    padding: 3px;
+}
+
 .mgd-field small,
 .mgd-field-config small {
     display: block;
@@ -458,6 +465,7 @@
     border: 0 !important;
     border-radius: var(--mgd-radius, 6px);
     background: var(--mgd-button-bg, #151515) !important;
+    background-color: var(--mgd-button-bg, #151515) !important;
     color: var(--mgd-button-text, #fff) !important;
     padding: 10px 16px;
     justify-self: start;

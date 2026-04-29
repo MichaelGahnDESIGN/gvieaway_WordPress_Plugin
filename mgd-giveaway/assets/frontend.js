@@ -1,6 +1,20 @@
 (function () {
     'use strict';
 
+    document.addEventListener('submit', function (event) {
+        var form = event.target.closest('.mgd-giveaway-form');
+        if (!form || (typeof form.checkValidity === 'function' && !form.checkValidity())) {
+            return;
+        }
+
+        var submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.dataset.mgdOriginalText = submitButton.textContent;
+            submitButton.textContent = 'Wird gesendet...';
+        }
+    });
+
     document.addEventListener('click', function (event) {
         var openButton = event.target.closest('[data-mgd-modal]');
         if (openButton) {

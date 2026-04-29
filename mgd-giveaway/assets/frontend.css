@@ -65,6 +65,7 @@
 }
 
 .mgd-giveaway-form > button[type="submit"],
+.mgd-giveaway-form > .mgd-giveaway-submit,
 .mgd-giveaway-download {
     display: inline-flex;
     align-items: center;
@@ -73,6 +74,7 @@
     border: 0 !important;
     border-radius: var(--mgd-radius, 6px);
     background: var(--mgd-button-bg, #151515) !important;
+    background-color: var(--mgd-button-bg, #151515) !important;
     color: var(--mgd-button-text, #fff) !important;
     padding: 10px 16px;
     text-decoration: none;
@@ -84,9 +86,12 @@
 
 .mgd-giveaway-form > button[type="submit"]:hover,
 .mgd-giveaway-form > button[type="submit"]:focus,
+.mgd-giveaway-form > .mgd-giveaway-submit:hover,
+.mgd-giveaway-form > .mgd-giveaway-submit:focus,
 .mgd-giveaway-download:hover,
 .mgd-giveaway-download:focus {
     background: var(--mgd-button-bg, #151515) !important;
+    background-color: var(--mgd-button-bg, #151515) !important;
     color: var(--mgd-button-text, #fff) !important;
 }
 
