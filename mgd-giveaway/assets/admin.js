@@ -124,6 +124,20 @@
         reindexFields();
     });
 
+    $(document).on('click', '.mgd-editor-save', function () {
+        var form = document.getElementById('mgd-giveaway-editor-form');
+        if (!form) {
+            return;
+        }
+
+        if (form.requestSubmit) {
+            form.requestSubmit();
+        } else {
+            $(form).trigger('submit');
+            form.submit();
+        }
+    });
+
     $(document).on('input change', '.mgd-field-config input, .mgd-field-config select, .mgd-field-config textarea', function () {
         updateSelectedPreview();
     });
@@ -257,8 +271,7 @@
 
     $(document).on('submit', '#mgd-giveaway-editor-form', function () {
         reindexFields();
-        $(this).find('button[type="submit"]').text('Speichert...');
-        $('.mgd-editor-actions button[type="submit"]').text('Speichert...');
+        $('.mgd-editor-save').text('Speichert...').prop('disabled', true);
     });
 
     $(document).on('submit', '.mgd-admin form:not(#mgd-giveaway-editor-form)', function () {

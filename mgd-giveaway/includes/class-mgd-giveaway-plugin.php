@@ -300,9 +300,9 @@ class MGD_Giveaway_Plugin
             $active_tab = 'fields';
         }
 
-        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Bearbeite Felder, Grundeinstellungen, Download, E-Mail und Vorschau in getrennten Bereichen.</p></div><div class="mgd-editor-actions"><button class="button button-primary" type="submit" form="mgd-giveaway-editor-form">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></div></div>';
+        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Bearbeite Felder, Grundeinstellungen, Download, E-Mail und Vorschau in getrennten Bereichen.</p></div><div class="mgd-editor-actions"><button class="button button-primary mgd-editor-save" type="button">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></div></div>';
         $this->render_notices();
-        echo '<form id="mgd-giveaway-editor-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        echo '<form id="mgd-giveaway-editor-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '" novalidate>';
         wp_nonce_field('mgd_giveaway_save_form');
         echo '<input type="hidden" name="action" value="mgd_giveaway_save_form">';
         echo '<input type="hidden" name="form_id" value="' . esc_attr((string) $form_id) . '">';
@@ -374,7 +374,7 @@ class MGD_Giveaway_Plugin
         }
         echo '</section></div>';
 
-        echo '<p class="mgd-editor-bottom-actions"><button class="button button-primary" type="submit">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></p>';
+        echo '<p class="mgd-editor-bottom-actions"><button class="button button-primary mgd-editor-save" type="button">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></p>';
         echo '</form>';
 
         echo '</div>';

@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.12
+
+Beschreibung: Speichern im Formular-Editor robuster gemacht und Browser-Validierung fuer versteckte Tab-Felder deaktiviert.
+Begruendung: Der Speichern-Button soll unabhaengig vom aktiven Tab zuverlaessig absenden.
+Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Dokumentation.
+Ruecknahme: Version 0.0.11 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.11
 
 Beschreibung: Datenschutz-Element im Frontend um Link und Popup zur WordPress-Datenschutzerklaerung erweitert.
