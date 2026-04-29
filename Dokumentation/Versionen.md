@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.6
+
+Beschreibung: Formular-Editor zu einem modernen Builder mit Element-Palette, Canvas, Drag & Drop und Feld-Inspector umgebaut.
+Begruendung: Die Formularerstellung soll sich eher wie WPForms anfuehlen und weniger wie eine technische Feldliste.
+Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Admin CSS, Dokumentation.
+Ruecknahme: Version 0.0.5 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.5
 
 Beschreibung: Erfolgsmeldung und Download-Button werden nach der Anmeldung direkt im Shortcode-Bereich anstelle des Formulars angezeigt.

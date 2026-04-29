@@ -271,14 +271,14 @@ class MGD_Giveaway_Plugin
         $attachment_id = (int) $config['download_attachment_id'];
         $attachment_title = $attachment_id ? get_the_title($attachment_id) : '';
 
-        echo '<div class="wrap mgd-admin"><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1>';
+        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Baue dein Download-Formular mit Elementen, Canvas und Feld-Einstellungen.</p></div><div class="mgd-editor-actions"><button class="button button-primary" type="submit" form="mgd-giveaway-editor-form">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></div></div>';
         $this->render_notices();
-        echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        echo '<form id="mgd-giveaway-editor-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         wp_nonce_field('mgd_giveaway_save_form');
         echo '<input type="hidden" name="action" value="mgd_giveaway_save_form">';
         echo '<input type="hidden" name="form_id" value="' . esc_attr((string) $form_id) . '">';
-        echo '<div class="mgd-grid">';
-        echo '<section class="mgd-panel"><h2>Formular</h2>';
+        echo '<div class="mgd-editor-layout">';
+        echo '<section class="mgd-panel mgd-form-settings"><h2>Formular</h2>';
         echo '<label class="mgd-field"><span>Name</span><input type="text" name="form_title" value="' . esc_attr($post ? $post->post_title : '') . '" required></label>';
         echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"></label>';
         echo '<label class="mgd-field"><span>Erfolgsmeldung</span><textarea name="success_message" rows="3">' . esc_textarea($config['success_message']) . '</textarea></label>';
@@ -288,22 +288,23 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="6">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
         echo '</section>';
 
-        echo '<section class="mgd-panel mgd-builder"><h2>Felder</h2>';
-        echo '<div class="mgd-element-palette" aria-label="Formular Elemente">';
+        echo '<section class="mgd-builder-shell" aria-label="Formular Builder">';
+        echo '<aside class="mgd-builder-palette"><h2>Elemente</h2><p>Per Klick oder Drag & Drop in das Formular ziehen.</p><div class="mgd-element-palette" aria-label="Formular Elemente">';
         foreach ($this->get_field_types() as $type_key => $type_label) {
-            echo '<button type="button" class="button mgd-add-field" data-type="' . esc_attr($type_key) . '">' . esc_html($type_label) . '</button>';
+            echo '<button type="button" class="mgd-add-field" draggable="true" data-type="' . esc_attr($type_key) . '"><span class="dashicons ' . esc_attr($this->get_field_type_icon($type_key)) . '"></span><strong>' . esc_html($type_label) . '</strong><small>' . esc_html($this->get_field_type_description($type_key)) . '</small></button>';
         }
-        echo '</div>';
-        echo '<p class="description">Elemente koennen per Drag & Drop sortiert werden.</p>';
-        echo '<div id="mgd-fields" data-next-index="' . esc_attr((string) count($config['fields'])) . '">';
+        echo '</div></aside>';
+        echo '<main class="mgd-builder-canvas"><div class="mgd-canvas-head"><div><h2>Formular</h2><p>Felder anklicken, um rechts die Einstellungen zu bearbeiten.</p></div><span class="mgd-builder-count">' . esc_html((string) count($config['fields'])) . ' Felder</span></div>';
+        echo '<div id="mgd-fields" class="mgd-fields-canvas" data-next-index="' . esc_attr((string) count($config['fields'])) . '">';
+        echo '<div class="mgd-empty-state"><span class="dashicons dashicons-plus-alt2"></span><strong>Element hier ablegen</strong><small>Waehle links ein Feld oder ziehe es in diese Flaeche.</small></div>';
         foreach ($config['fields'] as $index => $field) {
             $this->render_field_editor_row($index, $field);
         }
-        echo '</div>';
-        echo '</section>';
-        echo '</div>';
+        echo '</div></main>';
+        echo '<aside class="mgd-field-inspector"><h2>Einstellungen</h2><div id="mgd-inspector-empty"><span class="dashicons dashicons-edit-page"></span><strong>Kein Feld ausgewaehlt</strong><small>Klicke ein Feld im Formular an.</small></div><div id="mgd-inspector-content"></div></aside>';
+        echo '</section></div>';
 
-        echo '<p><button class="button button-primary" type="submit">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></p>';
+        echo '<p class="mgd-editor-bottom-actions"><button class="button button-primary" type="submit">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></p>';
         echo '</form>';
 
         if ($form_id) {
@@ -321,13 +322,19 @@ class MGD_Giveaway_Plugin
         $label = isset($field['label']) ? $field['label'] : '';
         $name = isset($field['name']) ? $field['name'] : '';
         $type = isset($field['type']) ? $field['type'] : 'text';
+        $type_label = isset($types[$type]) ? $types[$type] : $types['text'];
         $required = !empty($field['required']);
         $text = isset($field['text']) ? $field['text'] : '';
 
-        echo '<div class="mgd-field-row" draggable="true">';
-        echo '<button type="button" class="mgd-drag-handle" aria-label="Element verschieben">::</button>';
-        echo '<div class="mgd-field-row-main">';
-        echo '<label><span>Label</span><input type="text" name="fields[' . esc_attr((string) $index) . '][label]" value="' . esc_attr($label) . '" placeholder="Label"></label>';
+        echo '<div class="mgd-field-row" draggable="true" data-type="' . esc_attr($type) . '">';
+        echo '<button type="button" class="mgd-drag-handle" aria-label="Element verschieben"><span class="dashicons dashicons-move"></span></button>';
+        echo '<button type="button" class="mgd-field-preview" aria-label="Feld bearbeiten">';
+        echo '<span class="mgd-field-preview-icon dashicons ' . esc_attr($this->get_field_type_icon($type)) . '"></span><span class="mgd-field-preview-body"><strong>' . esc_html($label ? $label : $type_label) . '</strong><small>' . esc_html($type_label . ($required ? ' - Pflichtfeld' : '')) . '</small><span class="mgd-preview-control"></span></span>';
+        echo '</button>';
+        echo '<div class="mgd-field-config-slot">';
+        echo '<div class="mgd-field-config">';
+        echo '<div class="mgd-config-head"><strong>Feld bearbeiten</strong><button type="button" class="button-link-delete mgd-remove-field">Entfernen</button></div>';
+        echo '<label><span>Label</span><input class="mgd-field-label-input" type="text" name="fields[' . esc_attr((string) $index) . '][label]" value="' . esc_attr($label) . '" placeholder="Label"></label>';
         echo '<label><span>Feldname</span><input type="text" name="fields[' . esc_attr((string) $index) . '][name]" value="' . esc_attr($name) . '" placeholder="feldname"></label>';
         echo '<label><span>Typ</span><select class="mgd-field-type" name="fields[' . esc_attr((string) $index) . '][type]">';
         foreach ($types as $value => $title) {
@@ -335,8 +342,8 @@ class MGD_Giveaway_Plugin
         }
         echo '</select></label>';
         echo '<label class="mgd-required-toggle"><input type="checkbox" name="fields[' . esc_attr((string) $index) . '][required]" value="1" ' . checked($required, true, false) . '> Pflichtfeld</label>';
-        echo '<button type="button" class="button mgd-remove-field">Entfernen</button>';
         echo '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' . esc_attr((string) $index) . '][text]" rows="3" placeholder="Optionaler Text, besonders fuer Datenschutz-Hinweise">' . esc_textarea($text) . '</textarea></label>';
+        echo '</div>';
         echo '</div>';
         echo '</div>';
     }
@@ -352,6 +359,36 @@ class MGD_Giveaway_Plugin
             'textarea' => 'Mehrzeilig',
             'privacy' => 'Datenschutz',
         );
+    }
+
+    private function get_field_type_icon($type)
+    {
+        $icons = array(
+            'text' => 'dashicons-editor-textcolor',
+            'email' => 'dashicons-email-alt',
+            'number' => 'dashicons-editor-ol',
+            'date' => 'dashicons-calendar-alt',
+            'checkbox' => 'dashicons-yes-alt',
+            'textarea' => 'dashicons-text-page',
+            'privacy' => 'dashicons-shield',
+        );
+
+        return isset($icons[$type]) ? $icons[$type] : 'dashicons-feedback';
+    }
+
+    private function get_field_type_description($type)
+    {
+        $descriptions = array(
+            'text' => 'Einzeilige Eingabe',
+            'email' => 'E-Mail Adresse',
+            'number' => 'Numerischer Wert',
+            'date' => 'Datumsauswahl',
+            'checkbox' => 'Ja/Nein Auswahl',
+            'textarea' => 'Langer Text',
+            'privacy' => 'DSGVO Hinweis',
+        );
+
+        return isset($descriptions[$type]) ? $descriptions[$type] : 'Formularfeld';
     }
 
     public function render_settings_page()
