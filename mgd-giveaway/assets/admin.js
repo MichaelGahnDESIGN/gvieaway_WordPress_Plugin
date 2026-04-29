@@ -124,20 +124,6 @@
         reindexFields();
     });
 
-    $(document).on('click', '.mgd-editor-save', function () {
-        var form = document.getElementById('mgd-giveaway-editor-form');
-        if (!form) {
-            return;
-        }
-
-        if (form.requestSubmit) {
-            form.requestSubmit();
-        } else {
-            $(form).trigger('submit');
-            form.submit();
-        }
-    });
-
     $(document).on('input change', '.mgd-field-config input, .mgd-field-config select, .mgd-field-config textarea', function () {
         updateSelectedPreview();
     });

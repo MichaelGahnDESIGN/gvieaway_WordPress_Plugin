@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.14
+
+Beschreibung: Speichern-Buttons im Formular-Editor zu echten Submit-Buttons gemacht.
+Begruendung: Speichern soll auch funktionieren, wenn das Admin-JavaScript nicht geladen, blockiert oder noch veraltet aus dem Cache geladen wird.
+Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Dokumentation.
+Ruecknahme: Version 0.0.13 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.13
 
 Beschreibung: Backend-Vorschau auf statische Formularausgabe umgestellt, damit beim Speichern kein Frontend-Submit ausgeloest wird.
