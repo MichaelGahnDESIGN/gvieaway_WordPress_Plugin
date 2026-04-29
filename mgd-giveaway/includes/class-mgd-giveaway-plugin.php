@@ -12,6 +12,8 @@ class MGD_Giveaway_Plugin
     private $log_table;
     private $max_csv_upload_bytes = 2097152;
     private $max_csv_import_rows = 5000;
+    private $spam_min_seconds = 3;
+    private $spam_max_seconds = 86400;
 
     public static function instance()
     {
@@ -178,6 +180,7 @@ class MGD_Giveaway_Plugin
         $default = array(
             'fields' => array(
                 array('label' => 'E-Mail', 'name' => 'email', 'type' => 'email', 'required' => true),
+                array('label' => 'Datenschutz', 'name' => 'privacy', 'type' => 'privacy', 'required' => true, 'text' => 'Ich habe die Datenschutzhinweise gelesen und bin mit der Verarbeitung meiner Angaben einverstanden.'),
             ),
             'download_attachment_id' => 0,
             'button_label' => 'Jetzt herunterladen',
@@ -285,12 +288,18 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="6">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
         echo '</section>';
 
-        echo '<section class="mgd-panel"><h2>Felder</h2>';
+        echo '<section class="mgd-panel mgd-builder"><h2>Felder</h2>';
+        echo '<div class="mgd-element-palette" aria-label="Formular Elemente">';
+        foreach ($this->get_field_types() as $type_key => $type_label) {
+            echo '<button type="button" class="button mgd-add-field" data-type="' . esc_attr($type_key) . '">' . esc_html($type_label) . '</button>';
+        }
+        echo '</div>';
+        echo '<p class="description">Elemente koennen per Drag & Drop sortiert werden.</p>';
         echo '<div id="mgd-fields" data-next-index="' . esc_attr((string) count($config['fields'])) . '">';
         foreach ($config['fields'] as $index => $field) {
             $this->render_field_editor_row($index, $field);
         }
-        echo '</div><button type="button" class="button mgd-add-field">Feld hinzufuegen</button>';
+        echo '</div>';
         echo '</section>';
         echo '</div>';
 
@@ -308,23 +317,41 @@ class MGD_Giveaway_Plugin
 
     private function render_field_editor_row($index, $field)
     {
-        $types = array('text' => 'Text', 'email' => 'E-Mail', 'number' => 'Zahl', 'date' => 'Datum', 'checkbox' => 'Checkbox', 'textarea' => 'Mehrzeilig');
+        $types = $this->get_field_types();
         $label = isset($field['label']) ? $field['label'] : '';
         $name = isset($field['name']) ? $field['name'] : '';
         $type = isset($field['type']) ? $field['type'] : 'text';
         $required = !empty($field['required']);
+        $text = isset($field['text']) ? $field['text'] : '';
 
-        echo '<div class="mgd-field-row">';
-        echo '<input type="text" name="fields[' . esc_attr((string) $index) . '][label]" value="' . esc_attr($label) . '" placeholder="Label">';
-        echo '<input type="text" name="fields[' . esc_attr((string) $index) . '][name]" value="' . esc_attr($name) . '" placeholder="feldname">';
-        echo '<select name="fields[' . esc_attr((string) $index) . '][type]">';
+        echo '<div class="mgd-field-row" draggable="true">';
+        echo '<button type="button" class="mgd-drag-handle" aria-label="Element verschieben">::</button>';
+        echo '<div class="mgd-field-row-main">';
+        echo '<label><span>Label</span><input type="text" name="fields[' . esc_attr((string) $index) . '][label]" value="' . esc_attr($label) . '" placeholder="Label"></label>';
+        echo '<label><span>Feldname</span><input type="text" name="fields[' . esc_attr((string) $index) . '][name]" value="' . esc_attr($name) . '" placeholder="feldname"></label>';
+        echo '<label><span>Typ</span><select class="mgd-field-type" name="fields[' . esc_attr((string) $index) . '][type]">';
         foreach ($types as $value => $title) {
             echo '<option value="' . esc_attr($value) . '" ' . selected($type, $value, false) . '>' . esc_html($title) . '</option>';
         }
-        echo '</select>';
-        echo '<label><input type="checkbox" name="fields[' . esc_attr((string) $index) . '][required]" value="1" ' . checked($required, true, false) . '> Pflicht</label>';
+        echo '</select></label>';
+        echo '<label class="mgd-required-toggle"><input type="checkbox" name="fields[' . esc_attr((string) $index) . '][required]" value="1" ' . checked($required, true, false) . '> Pflichtfeld</label>';
         echo '<button type="button" class="button mgd-remove-field">Entfernen</button>';
+        echo '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' . esc_attr((string) $index) . '][text]" rows="3" placeholder="Optionaler Text, besonders fuer Datenschutz-Hinweise">' . esc_textarea($text) . '</textarea></label>';
         echo '</div>';
+        echo '</div>';
+    }
+
+    private function get_field_types()
+    {
+        return array(
+            'text' => 'Text',
+            'email' => 'E-Mail',
+            'number' => 'Zahl',
+            'date' => 'Datum',
+            'checkbox' => 'Checkbox',
+            'textarea' => 'Mehrzeilig',
+            'privacy' => 'Datenschutz',
+        );
     }
 
     public function render_settings_page()
@@ -528,7 +555,7 @@ class MGD_Giveaway_Plugin
 
     private function sanitize_fields($raw_fields)
     {
-        $allowed_types = array('text', 'email', 'number', 'date', 'checkbox', 'textarea');
+        $allowed_types = array_keys($this->get_field_types());
         $fields = array();
 
         if (!is_array($raw_fields)) {
@@ -553,6 +580,7 @@ class MGD_Giveaway_Plugin
                 'name' => $name,
                 'type' => $type,
                 'required' => !empty($field['required']),
+                'text' => isset($field['text']) ? sanitize_textarea_field($field['text']) : '',
             );
         }
 
@@ -721,6 +749,8 @@ class MGD_Giveaway_Plugin
         echo '<form class="mgd-giveaway-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         echo '<input type="hidden" name="action" value="mgd_giveaway_submit">';
         echo '<input type="hidden" name="form_id" value="' . esc_attr((string) $form_id) . '">';
+        echo '<input type="text" name="mgd_giveaway_website" value="" class="mgd-giveaway-hp" tabindex="-1" autocomplete="off" aria-hidden="true">';
+        echo '<input type="hidden" name="mgd_giveaway_started" value="' . esc_attr($this->create_spam_token()) . '">';
         wp_nonce_field('mgd_giveaway_submit_' . $form_id);
 
         foreach ($config['fields'] as $field) {
@@ -739,10 +769,14 @@ class MGD_Giveaway_Plugin
         $label = isset($field['label']) ? $field['label'] : $name;
         $type = isset($field['type']) ? $field['type'] : 'text';
         $required = !empty($field['required']) ? ' required' : '';
+        $text = isset($field['text']) ? $field['text'] : '';
 
         echo '<label class="mgd-giveaway-field"><span>' . esc_html($label) . '</span>';
         if ('textarea' === $type) {
             echo '<textarea name="' . esc_attr($name) . '"' . $required . '></textarea>';
+        } elseif ('privacy' === $type) {
+            $notice = $text ? $text : $label;
+            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '> <span>' . esc_html($notice) . '</span></span>';
         } elseif ('checkbox' === $type) {
             echo '<input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '>';
         } else {
@@ -756,6 +790,10 @@ class MGD_Giveaway_Plugin
         $form_id = isset($_POST['form_id']) ? absint($_POST['form_id']) : 0;
         if (!$form_id || !check_admin_referer('mgd_giveaway_submit_' . $form_id)) {
             wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+        }
+
+        if (!$this->passes_spam_check($form_id)) {
+            wp_die(esc_html__('Die Anmeldung wurde aus Sicherheitsgruenden abgelehnt. Bitte lade die Seite neu und versuche es erneut.', 'mgd-giveaway'));
         }
 
         $config = $this->get_form_config($form_id);
@@ -779,7 +817,7 @@ class MGD_Giveaway_Plugin
                     wp_die(esc_html__('Bitte eine gueltige E-Mail-Adresse eingeben.', 'mgd-giveaway'));
                 }
                 $email = $value;
-            } elseif ('checkbox' === $field['type']) {
+            } elseif ('checkbox' === $field['type'] || 'privacy' === $field['type']) {
                 $value = $value ? '1' : '0';
             } else {
                 $value = sanitize_text_field($value);
@@ -811,6 +849,45 @@ class MGD_Giveaway_Plugin
         wp_footer();
         echo '</body></html>';
         exit;
+    }
+
+    private function create_spam_token()
+    {
+        $timestamp = time();
+        $hash = hash_hmac('sha256', (string) $timestamp, wp_salt('nonce'));
+
+        return base64_encode($timestamp . '|' . $hash);
+    }
+
+    private function passes_spam_check($form_id)
+    {
+        $honeypot = isset($_POST['mgd_giveaway_website']) ? trim((string) wp_unslash($_POST['mgd_giveaway_website'])) : '';
+        if ('' !== $honeypot) {
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Honeypot ausgefuellt.', array('form_id' => $form_id));
+            return false;
+        }
+
+        $token = isset($_POST['mgd_giveaway_started']) ? (string) wp_unslash($_POST['mgd_giveaway_started']) : '';
+        $decoded = base64_decode($token, true);
+        if (!$decoded || false === strpos($decoded, '|')) {
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Start-Token fehlt oder ist ungueltig.', array('form_id' => $form_id));
+            return false;
+        }
+
+        list($timestamp, $hash) = explode('|', $decoded, 2);
+        $expected = hash_hmac('sha256', (string) $timestamp, wp_salt('nonce'));
+        if (!hash_equals($expected, $hash)) {
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Start-Token Signatur ungueltig.', array('form_id' => $form_id));
+            return false;
+        }
+
+        $age = time() - (int) $timestamp;
+        if ($age < $this->spam_min_seconds || $age > $this->spam_max_seconds) {
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Absendezeit ausserhalb des erlaubten Bereichs.', array('form_id' => $form_id, 'age' => $age));
+            return false;
+        }
+
+        return true;
     }
 
     private function get_download_url($attachment_id)

@@ -1,6 +1,6 @@
 # Deployment
 
-Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.3.zip`.
+Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.4.zip`.
 
 Vor einem produktiven Release pruefen:
 
@@ -11,4 +11,7 @@ Vor einem produktiven Release pruefen:
 - E-Mail-Versand mit PHP-Mail und/oder SMTP
 - Mail-Liste Import/Export
 - Log Suche, Filter, Export und Leeren-Funktion
+- Drag & Drop Sortierung im Formular-Editor
+- Datenschutz-Element im Frontend
+- Spam-Schutz mit Honeypot und Zeitpruefung
 - Datenschutz- und Rechtstexte

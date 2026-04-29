@@ -22,6 +22,24 @@
     padding: 8px 10px;
 }
 
+.mgd-giveaway-checkbox {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.mgd-giveaway-checkbox input {
+    margin-top: 4px;
+}
+
+.mgd-giveaway-hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
 .mgd-giveaway-form button,
 .mgd-giveaway-download {
     display: inline-flex;

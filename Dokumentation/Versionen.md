@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.4
+
+Beschreibung: Formular-Editor mit Drag & Drop Feldkarten modernisiert, Datenschutz-Element und Spam-Schutz ergaenzt.  
+Begruendung: Bedienung im Backend verbessern und Frontend-Anmeldungen besser gegen einfache Bots schuetzen.  
+Betroffene Bereiche: Backend Formular-Editor, Frontend Formularausgabe, Formularvalidierung, Assets, Dokumentation.  
+Ruecknahme: Version 0.0.3 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.3
 
 Beschreibung: Sicherheitsverbesserungen fuer CSV-Import/Export und Formular-E-Mail-Validierung umgesetzt.  

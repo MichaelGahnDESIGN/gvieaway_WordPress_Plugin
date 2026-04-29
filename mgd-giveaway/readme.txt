@@ -4,7 +4,7 @@ Tags: download, forms, ebook, pdf, shortcode
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.0.3
+Stable tag: 0.0.4
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,6 +16,8 @@ Mit MGD Giveaway koennen im WordPress-Backend Formulare angelegt, Felder ergaenz
 
 Anmeldungen werden in der Mail-Liste gespeichert und koennen als CSV importiert oder exportiert werden. Neue Anmeldungen werden an die in den Einstellungen hinterlegte Empfaengeradresse gesendet. Ein Log-Reiter protokolliert wichtige Aktionen und bietet Suche, Filter, Export, Speicheranzeige und Leeren-Funktion.
 
+Der Formular-Editor enthaelt Drag & Drop Feldkarten, ein Datenschutz-Element und einen integrierten Spam-Schutz mit Honeypot und Zeitpruefung.
+
 == Installation ==
 
 1. Plugin-Ordner `mgd-giveaway` nach `wp-content/plugins/` kopieren oder ZIP hochladen.
@@ -24,6 +26,11 @@ Anmeldungen werden in der Mail-Liste gespeichert und koennen als CSV importiert 
 4. Shortcode wie `[mgd_giveaway id="123"]` in eine Seite einfuegen.
 
 == Changelog ==
+
+= 0.0.4 =
+* Formular-Editor modernisiert: Feldkarten, Element-Palette und Drag & Drop Sortierung.
+* Neues Datenschutz-Element ergaenzt.
+* Spam-Schutz mit Honeypot und Zeitpruefung ergaenzt.
 
 = 0.0.3 =
 * Sicherheitsverbesserungen: CSV-Formel-Schutz beim Export, CSV-Groessen- und Zeilenlimit beim Import, strengere E-Mail-Validierung.

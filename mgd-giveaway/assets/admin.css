@@ -51,12 +51,75 @@
     max-width: 680px;
 }
 
+.mgd-builder {
+    min-height: 420px;
+}
+
+.mgd-element-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+#mgd-fields {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+}
+
 .mgd-field-row {
     display: grid;
-    grid-template-columns: 1fr 1fr 140px auto auto;
-    gap: 8px;
-    align-items: center;
-    margin-bottom: 10px;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    align-items: stretch;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.mgd-field-row-main {
+    display: grid;
+    grid-template-columns: minmax(120px, 1.2fr) minmax(120px, 1fr) minmax(120px, 0.8fr) auto auto;
+    gap: 10px;
+    align-items: end;
+}
+
+.mgd-field-row label span {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.mgd-field-row input[type="text"],
+.mgd-field-row select,
+.mgd-field-row textarea {
+    width: 100%;
+}
+
+.mgd-drag-handle {
+    width: 36px;
+    min-height: 36px;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    background: #fff;
+    color: #50575e;
+    cursor: grab;
+    font-weight: 700;
+}
+
+.mgd-dragging {
+    opacity: 0.55;
+}
+
+.mgd-required-toggle {
+    white-space: nowrap;
+    padding-bottom: 5px;
+}
+
+.mgd-field-text {
+    grid-column: 1 / -1;
 }
 
 .mgd-toolbar {
@@ -100,7 +163,8 @@
 
 @media (max-width: 900px) {
     .mgd-admin .mgd-grid,
-    .mgd-field-row {
+    .mgd-field-row,
+    .mgd-field-row-main {
         grid-template-columns: 1fr;
     }
 }

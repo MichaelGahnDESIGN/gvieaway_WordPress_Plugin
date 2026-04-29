@@ -6,7 +6,9 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 
 - Backend-Dashboard mit Formularliste und Statistik
 - Formular erstellen, bearbeiten, duplizieren und loeschen
-- Feldtypen: Text, E-Mail, Zahl, Datum, Checkbox, Textarea
+- Feldtypen: Text, E-Mail, Zahl, Datum, Checkbox, Textarea, Datenschutz
+- Moderner Formular-Editor mit Feldkarten, Element-Palette und Drag & Drop Sortierung
+- Spam-Schutz mit Honeypot und Zeitpruefung
 - Datei-Auswahl ueber die WordPress-Mediathek
 - Shortcode-Ausgabe im Frontend: `[mgd_giveaway id="123"]`
 - Download-Button nach erfolgreicher Anmeldung
@@ -19,7 +21,7 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 
 ## Installation
 
-1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.3.zip` in WordPress hochladen.
+1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.4.zip` in WordPress hochladen.
 2. Plugin aktivieren.
 3. Unter `MGD Giveaway` ein Formular anlegen.
 4. Den angezeigten Shortcode in eine Seite oder einen Beitrag einfuegen.
@@ -47,7 +49,7 @@ Der Import erwartet eine CSV-Datei mit Kopfzeile. Mindestens die Spalte `email` 
 
 ## Version
 
-Aktuelle Version: `0.0.3`
+Aktuelle Version: `0.0.4`
 
 ## Autor
 

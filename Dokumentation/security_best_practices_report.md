@@ -2,11 +2,11 @@
 
 Datum: 2026-04-29  
 Projekt: MGD Giveaway  
-Version geprueft: 0.0.3
+Version geprueft: 0.0.4
 
 ## Kurzfazit
 
-Das Plugin ist fuer einen ersten kontrollierten WordPress-Test grundsaetzlich verwendbar, aber vor Live-Nutzung muessen Datenschutztexte, Einwilligungen, Speicherfristen und der konkrete Mailprozess geprueft werden. Kritische technische Punkte aus dem Review wurden in Version 0.0.3 behoben.
+Das Plugin ist fuer einen ersten kontrollierten WordPress-Test grundsaetzlich verwendbar, aber vor Live-Nutzung muessen Datenschutztexte, Einwilligungen, Speicherfristen und der konkrete Mailprozess geprueft werden. Kritische technische Punkte aus dem Review wurden in Version 0.0.3 behoben; Version 0.0.4 ergaenzt zusaetzlichen Spam-Schutz.
 
 ## Behobene Punkte
 
@@ -48,6 +48,7 @@ Das Plugin speichert personenbezogene Daten. Vor produktiver Nutzung muessen Dat
 - Lokale CSV-Helfer-Tests mit PHP-Stubs: bestanden.
 - Externe Asset-Pruefung auf Google Fonts, CDN-Skripte und externe Styles: keine Treffer.
 - ZIP Build und Inhaltspruefung: bestanden.
+- Spam-Schutz mit Honeypot und signierter Zeitpruefung ergaenzt.
 
 ## Nicht durchgefuehrt
 
