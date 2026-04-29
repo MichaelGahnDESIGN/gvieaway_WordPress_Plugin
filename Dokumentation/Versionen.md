@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.26
+
+Beschreibung: Frontend-Absenden per JavaScript-Fallback robuster gemacht und sichtbare Fehlermeldung ergänzt.
+Begründung: Der Absenden-Button soll auch dann zuverlässig reagieren, wenn Theme- oder Builder-Skripte normale Formular-Submits stören.
+Betroffene Bereiche: Frontend JavaScript, Formular-Submit, Dokumentation.
+Rücknahme: Version 0.0.25 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.25
 
 Beschreibung: Formularspeicherung, Feldnamen, E-Mail-Validierung, Mail-Filter und Token-Gültigkeit robuster gemacht.
