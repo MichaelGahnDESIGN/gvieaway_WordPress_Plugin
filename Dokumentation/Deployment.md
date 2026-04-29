@@ -1,8 +1,8 @@
 # Deployment
 
-Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.21.zip`.
+Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.22.zip`.
 
-Vor einem produktiven Release pruefen:
+Vor einem produktiven Release prüfen:
 
 - Plugin-Aktivierung
 - Formular-Erstellung
@@ -10,10 +10,10 @@ Vor einem produktiven Release pruefen:
 - Download nach Anmeldung
 - Inline-Erfolgsmeldung anstelle des Formulars
 - Maskierter Download-Link ohne sichtbaren Mediathek-Pfad
-- Geschuetzte Download-Kopie und Datei-Auslieferung
+- Geschützte Download-Kopie und Datei-Auslieferung
 - Optionales Double-Opt-In
 - Design-Einstellungen im Frontend
-- Einzelner Kontakt-Export und Kontakt-Loeschung
+- Einzelner Kontakt-Export und Kontakt-Löschung
 - Speichern-Feedback und Tab-Erhalt im Formular-Editor
 - Datenschutz-Popup im Frontend
 - Robuster Speichern-Button im Formular-Editor
@@ -23,7 +23,7 @@ Vor einem produktiven Release pruefen:
 - Log Suche, Filter, Export und Leeren-Funktion
 - Drag & Drop Sortierung im Formular-Editor
 - Element-Palette, Canvas und Feld-Inspector im Formular-Builder
-- Tabs fuer Felder, Formular, Download, E-Mail und Vorschau
+- Tabs für Felder, Formular, Download, E-Mail und Vorschau
 - Datenschutz-Element im Frontend
-- Spam-Schutz mit Honeypot und Zeitpruefung
+- Spam-Schutz mit Honeypot und Zeitprüfung
 - Datenschutz- und Rechtstexte

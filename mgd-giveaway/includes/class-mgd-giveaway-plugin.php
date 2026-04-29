@@ -194,14 +194,14 @@ class MGD_Giveaway_Plugin
             'protected_file' => array(),
             'submit_button_label' => 'Gratis-Ratgeber anfordern',
             'button_label' => 'Jetzt herunterladen',
-            'success_message' => 'Danke fuer deine Anmeldung. Der Download ist jetzt verfuegbar.',
+            'success_message' => 'Danke für deine Anmeldung. Der Download ist jetzt verfügbar.',
             'email_subject' => 'Dein Download',
-            'email_body' => "Hallo,\n\nvielen Dank fuer deine Anmeldung. Dein Download ist jetzt verfuegbar:\n{download_url}",
+            'email_body' => "Hallo,\n\nvielen Dank für deine Anmeldung. Dein Download ist jetzt verfügbar:\n{download_url}",
             'send_email' => true,
             'double_opt_in' => false,
-            'confirm_subject' => 'Bitte bestaetige deine Anmeldung',
-            'confirm_body' => "Hallo,\n\nbitte bestaetige deine Anmeldung ueber diesen Link:\n{confirm_url}",
-            'confirm_message' => 'Bitte bestaetige deine Anmeldung ueber den Link in deiner E-Mail. Danach ist der Download verfuegbar.',
+            'confirm_subject' => 'Bitte bestätige deine Anmeldung',
+            'confirm_body' => "Hallo,\n\nbitte bestätige deine Anmeldung über diesen Link:\n{confirm_url}",
+            'confirm_message' => 'Bitte bestätige deine Anmeldung über den Link in deiner E-Mail. Danach ist der Download verfügbar.',
             'style' => array(
                 'max_width' => '560',
                 'button_bg' => '#151515',
@@ -277,7 +277,7 @@ class MGD_Giveaway_Plugin
             echo '<td>' . esc_html($this->count_submissions((int) $form->ID)) . '</td>';
             echo '<td><a class="button" href="' . esc_url($edit_url) . '">Bearbeiten</a> ';
             echo '<a class="button" href="' . esc_url($duplicate_url) . '">Duplizieren</a> ';
-            echo '<a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Formular wirklich loeschen?\');">Loeschen</a></td>';
+            echo '<a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Formular wirklich löschen?\');">Löschen</a></td>';
             echo '</tr>';
         }
 
@@ -301,7 +301,7 @@ class MGD_Giveaway_Plugin
             $active_tab = 'fields';
         }
 
-        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Bearbeite Felder, Grundeinstellungen, Download, E-Mail und Vorschau in getrennten Bereichen.</p></div><div class="mgd-editor-actions"><button class="button button-primary mgd-editor-save" type="submit" form="mgd-giveaway-editor-form">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></div></div>';
+        echo '<div class="wrap mgd-admin mgd-editor-page"><div class="mgd-editor-header"><div><h1>' . esc_html($form_id ? 'Formular bearbeiten' : 'Neues Formular') . '</h1><p>Bearbeite Felder, Grundeinstellungen, Download, E-Mail und Vorschau in getrennten Bereichen.</p></div><div class="mgd-editor-actions"><button class="button button-primary mgd-editor-save" type="submit" form="mgd-giveaway-editor-form">Speichern</button><a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurück</a></div></div>';
         $this->render_notices();
         echo '<form id="mgd-giveaway-editor-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '" novalidate>';
         wp_nonce_field('mgd_giveaway_save_form');
@@ -327,40 +327,40 @@ class MGD_Giveaway_Plugin
         echo '</div></aside>';
         echo '<main class="mgd-builder-canvas"><div class="mgd-canvas-head"><div><h2>Formular</h2><p>Felder anklicken, um rechts die Einstellungen zu bearbeiten.</p></div><span class="mgd-builder-count">' . esc_html((string) count($config['fields'])) . ' Felder</span></div>';
         echo '<div id="mgd-fields" class="mgd-fields-canvas" data-next-index="' . esc_attr((string) count($config['fields'])) . '">';
-        echo '<div class="mgd-empty-state"><span class="dashicons dashicons-plus-alt2"></span><strong>Element hier ablegen</strong><small>Waehle links ein Feld oder ziehe es in diese Flaeche.</small></div>';
+        echo '<div class="mgd-empty-state"><span class="dashicons dashicons-plus-alt2"></span><strong>Element hier ablegen</strong><small>Wähle links ein Feld oder ziehe es in diese Fläche.</small></div>';
         foreach ($config['fields'] as $index => $field) {
             $this->render_field_editor_row($index, $field);
         }
         echo '</div></main>';
-        echo '<aside class="mgd-field-inspector"><h2>Einstellungen</h2><div id="mgd-inspector-empty"><span class="dashicons dashicons-edit-page"></span><strong>Kein Feld ausgewaehlt</strong><small>Klicke ein Feld im Formular an.</small></div><div id="mgd-inspector-content"></div></aside>';
+        echo '<aside class="mgd-field-inspector"><h2>Einstellungen</h2><div id="mgd-inspector-empty"><span class="dashicons dashicons-edit-page"></span><strong>Kein Feld ausgewählt</strong><small>Klicke ein Feld im Formular an.</small></div><div id="mgd-inspector-content"></div></aside>';
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel ' . esc_attr('settings' === $active_tab ? 'is-active' : '') . '" data-panel="settings"><section class="mgd-panel mgd-editor-card"><h2>Formular</h2><p class="description">Grunddaten und Texte, die nach der Anmeldung angezeigt werden.</p>';
         echo '<label class="mgd-field"><span>Name</span><input type="text" name="form_title" value="' . esc_attr($post ? $post->post_title : '') . '"></label>';
-        echo '<label class="mgd-field"><span>Absenden Button Text</span><input type="text" name="submit_button_label" value="' . esc_attr($config['submit_button_label']) . '"><small>Text fuer den Button, der die Formulardaten absendet.</small></label>';
+        echo '<label class="mgd-field"><span>Absenden Button Text</span><input type="text" name="submit_button_label" value="' . esc_attr($config['submit_button_label']) . '"><small>Text für den Button, der die Formulardaten absendet.</small></label>';
         echo '<label class="mgd-field"><span>Erfolgsmeldung</span><textarea name="success_message" rows="4">' . esc_textarea($config['success_message']) . '</textarea></label>';
         echo '</section></div>';
 
-        echo '<div class="mgd-tab-panel ' . esc_attr('download' === $active_tab ? 'is-active' : '') . '" data-panel="download"><section class="mgd-panel mgd-editor-card"><h2>Download</h2><p class="description">Die Datei wird nach erfolgreicher Anmeldung als Button auf der Seite angezeigt. Beim Speichern wird eine geschuetzte Kopie fuer die Plugin-Auslieferung angelegt.</p>';
-        echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"><small>Text fuer den Button, der nach erfolgreicher Anmeldung den Download startet.</small></label>';
-        echo '<label class="mgd-field"><span>Datei aus Mediathek</span><span class="mgd-media-row"><input type="hidden" id="download_attachment_id" name="download_attachment_id" value="' . esc_attr((string) $attachment_id) . '"><input type="text" id="download_attachment_title" value="' . esc_attr($attachment_title) . '" readonly><button type="button" class="button mgd-select-media">Auswaehlen</button></span></label>';
+        echo '<div class="mgd-tab-panel ' . esc_attr('download' === $active_tab ? 'is-active' : '') . '" data-panel="download"><section class="mgd-panel mgd-editor-card"><h2>Download</h2><p class="description">Die Datei wird nach erfolgreicher Anmeldung als Button auf der Seite angezeigt. Beim Speichern wird eine geschützte Kopie für die Plugin-Auslieferung angelegt.</p>';
+        echo '<label class="mgd-field"><span>Download Button Text</span><input type="text" name="button_label" value="' . esc_attr($config['button_label']) . '"><small>Text für den Button, der nach erfolgreicher Anmeldung den Download startet.</small></label>';
+        echo '<label class="mgd-field"><span>Datei aus Mediathek</span><span class="mgd-media-row"><input type="hidden" id="download_attachment_id" name="download_attachment_id" value="' . esc_attr((string) $attachment_id) . '"><input type="text" id="download_attachment_title" value="' . esc_attr($attachment_title) . '" readonly><button type="button" class="button mgd-select-media">Auswählen</button></span></label>';
         if (!empty($config['protected_file']['path'])) {
-            echo '<p class="description">Geschuetzte Kopie aktiv: ' . esc_html(isset($config['protected_file']['name']) ? $config['protected_file']['name'] : basename($config['protected_file']['path'])) . '</p>';
+            echo '<p class="description">Geschützte Kopie aktiv: ' . esc_html(isset($config['protected_file']['name']) ? $config['protected_file']['name'] : basename($config['protected_file']['path'])) . '</p>';
         }
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel ' . esc_attr('email' === $active_tab ? 'is-active' : '') . '" data-panel="email"><section class="mgd-panel mgd-editor-card"><h2>E-Mail</h2><p class="description">Optionaler Versand des Download-Links an die eingetragene Adresse.</p>';
         echo '<label class="mgd-check-row"><input type="checkbox" name="double_opt_in" value="1" ' . checked(!empty($config['double_opt_in']), true, false) . '> Double-Opt-In aktivieren</label>';
-        echo '<label class="mgd-field"><span>Hinweis nach Anmeldung</span><textarea name="confirm_message" rows="3">' . esc_textarea($config['confirm_message']) . '</textarea><small>Wird angezeigt, bevor der Bestaetigungslink angeklickt wurde.</small></label>';
-        echo '<label class="mgd-field"><span>Bestaetigungs-E-Mail Betreff</span><input type="text" name="confirm_subject" value="' . esc_attr($config['confirm_subject']) . '"></label>';
-        echo '<label class="mgd-field"><span>Bestaetigungs-E-Mail Text</span><textarea name="confirm_body" rows="6">' . esc_textarea($config['confirm_body']) . '</textarea><small>Platzhalter: {confirm_url}</small></label>';
+        echo '<label class="mgd-field"><span>Hinweis nach Anmeldung</span><textarea name="confirm_message" rows="3">' . esc_textarea($config['confirm_message']) . '</textarea><small>Wird angezeigt, bevor der Bestätigungslink angeklickt wurde.</small></label>';
+        echo '<label class="mgd-field"><span>Bestätigungs-E-Mail Betreff</span><input type="text" name="confirm_subject" value="' . esc_attr($config['confirm_subject']) . '"></label>';
+        echo '<label class="mgd-field"><span>Bestätigungs-E-Mail Text</span><textarea name="confirm_body" rows="6">' . esc_textarea($config['confirm_body']) . '</textarea><small>Platzhalter: {confirm_url}</small></label>';
         echo '<hr>';
         echo '<label class="mgd-check-row"><input type="checkbox" name="send_email" value="1" ' . checked(!empty($config['send_email']), true, false) . '> Download-Link auch per E-Mail senden</label>';
         echo '<label class="mgd-field"><span>E-Mail Betreff</span><input type="text" name="email_subject" value="' . esc_attr($config['email_subject']) . '"></label>';
         echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="8">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
         echo '</section></div>';
 
-        echo '<div class="mgd-tab-panel ' . esc_attr('design' === $active_tab ? 'is-active' : '') . '" data-panel="design"><section class="mgd-panel mgd-editor-card"><h2>Design</h2><p class="description">Einfache Formularoptik fuer die Ausgabe per Shortcode.</p>';
+        echo '<div class="mgd-tab-panel ' . esc_attr('design' === $active_tab ? 'is-active' : '') . '" data-panel="design"><section class="mgd-panel mgd-editor-card"><h2>Design</h2><p class="description">Einfache Formularoptik für die Ausgabe per Shortcode.</p>';
         echo '<label class="mgd-field"><span>Maximale Breite in Pixel</span><input type="number" min="260" max="1200" name="style[max_width]" value="' . esc_attr((string) $config['style']['max_width']) . '"></label>';
         echo '<label class="mgd-field"><span>Button Hintergrund</span><input type="color" name="style[button_bg]" value="' . esc_attr($config['style']['button_bg']) . '"></label>';
         echo '<label class="mgd-field"><span>Button Textfarbe</span><input type="color" name="style[button_text]" value="' . esc_attr($config['style']['button_text']) . '"></label>';
@@ -376,7 +376,7 @@ class MGD_Giveaway_Plugin
         }
         echo '</section></div>';
 
-        echo '<p class="mgd-editor-bottom-actions"><button class="button button-primary mgd-editor-save" type="submit">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurueck</a></p>';
+        echo '<p class="mgd-editor-bottom-actions"><button class="button button-primary mgd-editor-save" type="submit">Speichern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway')) . '">Zurück</a></p>';
         echo '</form>';
 
         echo '</div>';
@@ -406,7 +406,7 @@ class MGD_Giveaway_Plugin
             echo '<textarea disabled></textarea>';
         } elseif ('privacy' === $type) {
             $notice = $text ? $text : $label;
-            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" disabled> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" disabled>zur Datenschutzerkl&auml;rung</button></span></span>';
+            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" disabled> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" disabled>zur Datenschutzerklärung</button></span></span>';
         } elseif ('checkbox' === $type) {
             echo '<input type="checkbox" disabled>';
         } else {
@@ -442,8 +442,8 @@ class MGD_Giveaway_Plugin
         }
         echo '</select></label>';
         echo '<label class="mgd-required-toggle"><input type="checkbox" name="fields[' . esc_attr((string) $index) . '][required]" value="1" ' . checked($required, true, false) . '> Pflichtfeld</label>';
-        echo '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' . esc_attr((string) $index) . '][text]" rows="3" placeholder="Optionaler Text, besonders fuer Datenschutz-Hinweise">' . esc_textarea($text) . '</textarea></label>';
-        echo '<label class="mgd-privacy-url-field"><span>URL zur Datenschutzerklaerung</span><input type="url" name="fields[' . esc_attr((string) $index) . '][privacy_url]" value="' . esc_attr($privacy_url) . '" placeholder="https://example.de/datenschutzerklaerung/"><small>Nur fuer Datenschutz-Felder. Interne WordPress-Seiten werden direkt im Popup angezeigt.</small></label>';
+        echo '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' . esc_attr((string) $index) . '][text]" rows="3" placeholder="Optionaler Text, besonders für Datenschutz-Hinweise">' . esc_textarea($text) . '</textarea></label>';
+        echo '<label class="mgd-privacy-url-field"><span>URL zur Datenschutzerklärung</span><input type="url" name="fields[' . esc_attr((string) $index) . '][privacy_url]" value="' . esc_attr($privacy_url) . '" placeholder="https://example.de/datenschutzerklaerung/"><small>Nur für Datenschutz-Felder. Interne WordPress-Seiten werden direkt im Popup angezeigt.</small></label>';
         echo '</div>';
         echo '</div>';
         echo '</div>';
@@ -507,10 +507,10 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>Versandart</span><select name="mail_method"><option value="php" ' . selected($settings['mail_method'], 'php', false) . '>PHP mail / wp_mail</option><option value="smtp" ' . selected($settings['mail_method'], 'smtp', false) . '>SMTP</option></select></label>';
         echo '<label class="mgd-field"><span>Absender Name</span><input type="text" name="from_name" value="' . esc_attr($settings['from_name']) . '"></label>';
         echo '<label class="mgd-field"><span>Absender E-Mail</span><input type="email" name="from_email" value="' . esc_attr($settings['from_email']) . '"></label>';
-        echo '<label class="mgd-field"><span>Empfaenger fuer neue Anmeldungen</span><input type="email" name="notification_recipient" value="' . esc_attr($settings['notification_recipient']) . '"><small>An diese Adresse wird jede neue Formularanmeldung gesendet.</small></label>';
+        echo '<label class="mgd-field"><span>Empfänger für neue Anmeldungen</span><input type="email" name="notification_recipient" value="' . esc_attr($settings['notification_recipient']) . '"><small>An diese Adresse wird jede neue Formularanmeldung gesendet.</small></label>';
         echo '<label class="mgd-field"><span>SMTP Host</span><input type="text" name="smtp_host" value="' . esc_attr($settings['smtp_host']) . '"></label>';
         echo '<label class="mgd-field"><span>SMTP Port</span><input type="number" name="smtp_port" value="' . esc_attr($settings['smtp_port']) . '"></label>';
-        echo '<label class="mgd-field"><span>Verschluesselung</span><select name="smtp_encryption"><option value="none" ' . selected($settings['smtp_encryption'], 'none', false) . '>Keine</option><option value="tls" ' . selected($settings['smtp_encryption'], 'tls', false) . '>TLS</option><option value="ssl" ' . selected($settings['smtp_encryption'], 'ssl', false) . '>SSL</option></select></label>';
+        echo '<label class="mgd-field"><span>Verschlüsselung</span><select name="smtp_encryption"><option value="none" ' . selected($settings['smtp_encryption'], 'none', false) . '>Keine</option><option value="tls" ' . selected($settings['smtp_encryption'], 'tls', false) . '>TLS</option><option value="ssl" ' . selected($settings['smtp_encryption'], 'ssl', false) . '>SSL</option></select></label>';
         echo '<label class="mgd-field"><span>SMTP Benutzer</span><input type="text" name="smtp_username" value="' . esc_attr($settings['smtp_username']) . '"></label>';
         echo '<label class="mgd-field"><span>SMTP Passwort</span><input type="password" name="smtp_password" value="' . esc_attr($settings['smtp_password']) . '"></label>';
         echo '<p><button class="button button-primary" type="submit">Speichern</button></p>';
@@ -540,7 +540,7 @@ class MGD_Giveaway_Plugin
 
         echo '<div class="wrap mgd-admin"><h1>Mail-Liste</h1>';
         $this->render_notices();
-        echo '<form method="get" class="mgd-toolbar"><input type="hidden" name="page" value="mgd-giveaway-mail-list"><input type="search" name="s" value="' . esc_attr($search) . '" placeholder="E-Mail oder Daten suchen"><button class="button">Suchen</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway-mail-list')) . '">Zuruecksetzen</a></form>';
+        echo '<form method="get" class="mgd-toolbar"><input type="hidden" name="page" value="mgd-giveaway-mail-list"><input type="search" name="s" value="' . esc_attr($search) . '" placeholder="E-Mail oder Daten suchen"><button class="button">Suchen</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway-mail-list')) . '">Zurücksetzen</a></form>';
         echo '<div class="mgd-toolbar">';
         echo '<a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_export_mail_list'), 'mgd_giveaway_export_mail_list')) . '">CSV exportieren</a>';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" enctype="multipart/form-data">';
@@ -550,7 +550,7 @@ class MGD_Giveaway_Plugin
         echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Formular</th><th>E-Mail</th><th>Status</th><th>Downloads</th><th>Datum</th><th>Aktionen</th><th>DSGVO</th></tr></thead><tbody>';
 
         if (!$items) {
-            echo '<tr><td colspan="8">Keine Eintraege gefunden.</td></tr>';
+            echo '<tr><td colspan="8">Keine Einträge gefunden.</td></tr>';
         }
 
         foreach ($items as $item) {
@@ -566,12 +566,12 @@ class MGD_Giveaway_Plugin
             echo '<td>' . esc_html(isset($item->download_count) ? (string) $item->download_count : '0') . '</td>';
             echo '<td>' . esc_html($item->created_at) . '</td>';
             echo '<td><button type="button" class="button mgd-open-admin-modal" data-mgd-admin-modal="' . esc_attr($modal_id) . '">Ansehen</button></td>';
-            echo '<td><a class="button" href="' . esc_url($export_url) . '">Export</a> <a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Eintrag wirklich loeschen?\');">Loeschen</a></td>';
+            echo '<td><a class="button" href="' . esc_url($export_url) . '">Export</a> <a class="button button-link-delete" href="' . esc_url($delete_url) . '" onclick="return confirm(\'Eintrag wirklich löschen?\');">Löschen</a></td>';
             echo '</tr>';
             $this->render_submission_modal($modal_id, $item, is_array($data) ? $data : array());
         }
 
-        echo '</tbody></table><p><small>Anzeige ist auf 200 Eintraege begrenzt. Der CSV-Export enthaelt alle Eintraege.</small></p></div>';
+        echo '</tbody></table><p><small>Anzeige ist auf 200 Einträge begrenzt. Der CSV-Export enthält alle Einträge.</small></p></div>';
     }
 
     private function render_submission_modal($modal_id, $item, $data)
@@ -579,7 +579,7 @@ class MGD_Giveaway_Plugin
         echo '<div id="' . esc_attr($modal_id) . '" class="mgd-admin-modal" aria-hidden="true">';
         echo '<div class="mgd-admin-modal-backdrop" data-mgd-admin-modal-close></div>';
         echo '<div class="mgd-admin-modal-dialog" role="dialog" aria-modal="true" aria-label="Nutzerdaten">';
-        echo '<button type="button" class="mgd-admin-modal-close" data-mgd-admin-modal-close aria-label="Schliessen">&times;</button>';
+        echo '<button type="button" class="mgd-admin-modal-close" data-mgd-admin-modal-close aria-label="Schließen">&times;</button>';
         echo '<h2>Nutzerdaten</h2>';
         echo '<dl class="mgd-detail-list">';
         echo '<dt>ID</dt><dd>' . esc_html((string) $item->id) . '</dd>';
@@ -630,8 +630,8 @@ class MGD_Giveaway_Plugin
 
         echo '<div class="wrap mgd-admin"><h1>Logs</h1>';
         $this->render_notices();
-        echo '<div class="mgd-stats"><div><strong>' . esc_html((string) $this->count_logs()) . '</strong><span>Log-Eintraege</span></div><div><strong>' . esc_html($storage) . '</strong><span>Speicherverbrauch</span></div></div>';
-        echo '<form method="get" class="mgd-toolbar"><input type="hidden" name="page" value="mgd-giveaway-logs"><input type="search" name="s" value="' . esc_attr($search) . '" placeholder="Logs durchsuchen"><select name="level"><option value="">Alle Level</option><option value="info" ' . selected($level, 'info', false) . '>Info</option><option value="warning" ' . selected($level, 'warning', false) . '>Warnung</option><option value="error" ' . selected($level, 'error', false) . '>Fehler</option></select><button class="button">Filtern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway-logs')) . '">Zuruecksetzen</a></form>';
+        echo '<div class="mgd-stats"><div><strong>' . esc_html((string) $this->count_logs()) . '</strong><span>Log-Einträge</span></div><div><strong>' . esc_html($storage) . '</strong><span>Speicherverbrauch</span></div></div>';
+        echo '<form method="get" class="mgd-toolbar"><input type="hidden" name="page" value="mgd-giveaway-logs"><input type="search" name="s" value="' . esc_attr($search) . '" placeholder="Logs durchsuchen"><select name="level"><option value="">Alle Level</option><option value="info" ' . selected($level, 'info', false) . '>Info</option><option value="warning" ' . selected($level, 'warning', false) . '>Warnung</option><option value="error" ' . selected($level, 'error', false) . '>Fehler</option></select><button class="button">Filtern</button> <a class="button" href="' . esc_url(admin_url('admin.php?page=mgd-giveaway-logs')) . '">Zurücksetzen</a></form>';
         echo '<div class="mgd-toolbar"><a class="button button-primary" href="' . esc_url(wp_nonce_url(admin_url('admin-post.php?action=mgd_giveaway_export_logs'), 'mgd_giveaway_export_logs')) . '">Logs exportieren</a>';
         echo '<form method="post" action="' . esc_url(admin_url('admin-post.php')) . '" onsubmit="return confirm(\'Logs wirklich leeren?\');">';
         wp_nonce_field('mgd_giveaway_clear_logs');
@@ -653,7 +653,7 @@ class MGD_Giveaway_Plugin
             echo '</tr>';
         }
 
-        echo '</tbody></table><p><small>Anzeige ist auf 300 Eintraege begrenzt. Der CSV-Export enthaelt alle Logs.</small></p></div>';
+        echo '</tbody></table><p><small>Anzeige ist auf 300 Einträge begrenzt. Der CSV-Export enthält alle Logs.</small></p></div>';
     }
 
     public function render_credits_page()
@@ -663,10 +663,10 @@ class MGD_Giveaway_Plugin
         }
 
         $tools = array(
-            array('logo' => 'wordpress.svg', 'name' => 'WordPress', 'description' => 'CMS und Plugin-API fuer Backend, Shortcodes, Mediathek und E-Mail-Versand.', 'url' => 'https://wordpress.org', 'license' => 'GPL-2.0-or-later', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
+            array('logo' => 'wordpress.svg', 'name' => 'WordPress', 'description' => 'CMS und Plugin-API für Backend, Shortcodes, Mediathek und E-Mail-Versand.', 'url' => 'https://wordpress.org', 'license' => 'GPL-2.0-or-later', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
             array('logo' => 'php.svg', 'name' => 'PHP', 'description' => 'Serverseitige Programmiersprache des Plugins.', 'url' => 'https://www.php.net', 'license' => 'PHP License', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
-            array('logo' => 'phpmailer.svg', 'name' => 'PHPMailer', 'description' => 'E-Mail-Bibliothek, die WordPress intern fuer wp_mail nutzt.', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'license' => 'LGPL-2.1-only', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
-            array('logo' => 'dashicons.svg', 'name' => 'Dashicons', 'description' => 'WordPress-Icon-Font fuer Backend-Menues und Admin-Oberflaeche.', 'url' => 'https://developer.wordpress.org/resource/dashicons/', 'license' => 'GPL-2.0-or-later', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
+            array('logo' => 'phpmailer.svg', 'name' => 'PHPMailer', 'description' => 'E-Mail-Bibliothek, die WordPress intern für wp_mail nutzt.', 'url' => 'https://github.com/PHPMailer/PHPMailer', 'license' => 'LGPL-2.1-only', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
+            array('logo' => 'dashicons.svg', 'name' => 'Dashicons', 'description' => 'WordPress-Icon-Font für Backend-Menüs und Admin-Oberfläche.', 'url' => 'https://developer.wordpress.org/resource/dashicons/', 'license' => 'GPL-2.0-or-later', 'commercial' => 'Kommerzielle Nutzung erlaubt.'),
         );
 
         echo '<div class="wrap mgd-admin"><h1>Credits</h1>';
@@ -680,13 +680,13 @@ class MGD_Giveaway_Plugin
             echo '</article>';
         }
 
-        echo '</div><p><em>Hinweis: Diese Angaben ersetzen keine rechtliche Lizenzpruefung vor produktivem Release.</em></p></section></div>';
+        echo '</div><p><em>Hinweis: Diese Angaben ersetzen keine rechtliche Lizenzprüfung vor produktivem Release.</em></p></section></div>';
     }
 
     public function handle_save_form()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_save_form')) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         $form_id = isset($_POST['form_id']) ? absint($_POST['form_id']) : 0;
@@ -791,13 +791,13 @@ class MGD_Giveaway_Plugin
 
         $source_path = get_attached_file($attachment_id);
         if (!$source_path || !is_readable($source_path)) {
-            $this->add_log('warning', 'protected_copy_failed', 'Geschuetzte Download-Kopie konnte nicht erstellt werden.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
+            $this->add_log('warning', 'protected_copy_failed', 'Geschützte Download-Kopie konnte nicht erstellt werden.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
             return array();
         }
 
         $dir = $this->get_protected_download_dir();
         if (!$dir || !wp_mkdir_p($dir)) {
-            $this->add_log('error', 'protected_dir_failed', 'Geschuetzter Download-Ordner konnte nicht erstellt werden.', array('form_id' => $form_id));
+            $this->add_log('error', 'protected_dir_failed', 'Geschützter Download-Ordner konnte nicht erstellt werden.', array('form_id' => $form_id));
             return array();
         }
 
@@ -808,11 +808,11 @@ class MGD_Giveaway_Plugin
         $target_path = trailingslashit($dir) . $stored_name;
 
         if (!copy($source_path, $target_path)) {
-            $this->add_log('error', 'protected_copy_failed', 'Download-Datei konnte nicht in geschuetzten Ordner kopiert werden.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
+            $this->add_log('error', 'protected_copy_failed', 'Download-Datei konnte nicht in geschützten Ordner kopiert werden.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
             return array();
         }
 
-        $this->add_log('info', 'protected_copy_created', 'Geschuetzte Download-Kopie erstellt.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
+        $this->add_log('info', 'protected_copy_created', 'Geschützte Download-Kopie erstellt.', array('form_id' => $form_id, 'attachment_id' => $attachment_id));
 
         return array(
             'path' => $target_path,
@@ -849,11 +849,11 @@ class MGD_Giveaway_Plugin
     {
         $form_id = isset($_GET['form_id']) ? absint($_GET['form_id']) : 0;
         if (!current_user_can('manage_options') || !$form_id || !check_admin_referer('mgd_giveaway_delete_' . $form_id)) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         wp_delete_post($form_id, true);
-        $this->add_log('info', 'form_deleted', 'Formular geloescht.', array('form_id' => $form_id));
+        $this->add_log('info', 'form_deleted', 'Formular gelöscht.', array('form_id' => $form_id));
         wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway&mgd_notice=deleted'));
         exit;
     }
@@ -862,7 +862,7 @@ class MGD_Giveaway_Plugin
     {
         $form_id = isset($_GET['form_id']) ? absint($_GET['form_id']) : 0;
         if (!current_user_can('manage_options') || !$form_id || !check_admin_referer('mgd_giveaway_duplicate_' . $form_id)) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         $post = get_post($form_id);
@@ -886,7 +886,7 @@ class MGD_Giveaway_Plugin
     public function handle_save_settings()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_save_settings')) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         $settings = array(
@@ -910,7 +910,7 @@ class MGD_Giveaway_Plugin
     public function handle_export_mail_list()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_export_mail_list')) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         global $wpdb;
@@ -923,7 +923,7 @@ class MGD_Giveaway_Plugin
     public function handle_import_mail_list()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_import_mail_list')) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         if (empty($_FILES['mail_list_csv']['tmp_name'])) {
@@ -973,7 +973,7 @@ class MGD_Giveaway_Plugin
     {
         $submission_id = isset($_GET['submission_id']) ? absint($_GET['submission_id']) : 0;
         if (!current_user_can('manage_options') || !$submission_id || !check_admin_referer('mgd_giveaway_export_contact_' . $submission_id)) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         global $wpdb;
@@ -994,13 +994,13 @@ class MGD_Giveaway_Plugin
     {
         $submission_id = isset($_GET['submission_id']) ? absint($_GET['submission_id']) : 0;
         if (!current_user_can('manage_options') || !$submission_id || !check_admin_referer('mgd_giveaway_delete_contact_' . $submission_id)) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         global $wpdb;
         $item = $wpdb->get_row($wpdb->prepare("SELECT email FROM {$this->submission_table} WHERE id = %d", $submission_id), ARRAY_A);
         $wpdb->delete($this->submission_table, array('id' => $submission_id), array('%d'));
-        $this->add_log('info', 'contact_deleted', 'Kontakt-Daten geloescht.', array('submission_id' => $submission_id, 'email' => isset($item['email']) ? $item['email'] : ''));
+        $this->add_log('info', 'contact_deleted', 'Kontakt-Daten gelöscht.', array('submission_id' => $submission_id, 'email' => isset($item['email']) ? $item['email'] : ''));
         wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-mail-list&mgd_notice=contact_deleted'));
         exit;
     }
@@ -1008,7 +1008,7 @@ class MGD_Giveaway_Plugin
     public function handle_export_logs()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_export_logs')) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         global $wpdb;
@@ -1019,7 +1019,7 @@ class MGD_Giveaway_Plugin
     public function handle_clear_logs()
     {
         if (!current_user_can('manage_options') || !check_admin_referer('mgd_giveaway_clear_logs')) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         global $wpdb;
@@ -1162,7 +1162,7 @@ class MGD_Giveaway_Plugin
         } elseif ('privacy' === $type) {
             $notice = $text ? $text : $label;
             $modal_id = wp_unique_id('mgd-privacy-modal-');
-            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" data-mgd-modal="' . esc_attr($modal_id) . '">zur Datenschutzerkl&auml;rung</button></span></span>';
+            echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" data-mgd-modal="' . esc_attr($modal_id) . '">zur Datenschutzerklärung</button></span></span>';
             echo '</label>';
             $this->render_privacy_modal($modal_id, $privacy_url);
             return;
@@ -1181,17 +1181,17 @@ class MGD_Giveaway_Plugin
 
         echo '<div id="' . esc_attr($modal_id) . '" class="mgd-privacy-modal" aria-hidden="true">';
         echo '<div class="mgd-privacy-backdrop" data-mgd-modal-close></div>';
-        echo '<div class="mgd-privacy-dialog" role="dialog" aria-modal="true" aria-label="Datenschutzerkl&auml;rung">';
-        echo '<button type="button" class="mgd-privacy-close" data-mgd-modal-close aria-label="Schliessen">&times;</button>';
-        echo '<h2>Datenschutzerkl&auml;rung</h2>';
+        echo '<div class="mgd-privacy-dialog" role="dialog" aria-modal="true" aria-label="Datenschutzerklärung">';
+        echo '<button type="button" class="mgd-privacy-close" data-mgd-modal-close aria-label="Schließen">&times;</button>';
+        echo '<h2>Datenschutzerklärung</h2>';
         echo '<div class="mgd-privacy-content">';
         if ($privacy_page && 'publish' === $privacy_page->post_status) {
             echo apply_filters('the_content', $privacy_page->post_content);
         } elseif ($privacy_url) {
-            echo '<iframe class="mgd-privacy-frame" src="' . esc_url($privacy_url) . '" title="Datenschutzerkl&auml;rung"></iframe>';
-            echo '<p><a href="' . esc_url($privacy_url) . '" target="_blank" rel="noopener noreferrer">Datenschutzerkl&auml;rung in neuem Fenster oeffnen</a></p>';
+            echo '<iframe class="mgd-privacy-frame" src="' . esc_url($privacy_url) . '" title="Datenschutzerklärung"></iframe>';
+            echo '<p><a href="' . esc_url($privacy_url) . '" target="_blank" rel="noopener noreferrer">Datenschutzerklärung in neuem Fenster öffnen</a></p>';
         } else {
-            echo '<p>Es wurde noch keine Datenschutzerkl&auml;rung in WordPress hinterlegt.</p>';
+            echo '<p>Es wurde noch keine Datenschutzerklärung in WordPress hinterlegt.</p>';
         }
         echo '</div>';
         echo '</div>';
@@ -1202,11 +1202,11 @@ class MGD_Giveaway_Plugin
     {
         $form_id = isset($_POST['form_id']) ? absint($_POST['form_id']) : 0;
         if (!$form_id || !check_admin_referer('mgd_giveaway_submit_' . $form_id)) {
-            wp_die(esc_html__('Ungueltige Anfrage.', 'mgd-giveaway'));
+            wp_die(esc_html__('Ungültige Anfrage.', 'mgd-giveaway'));
         }
 
         if (!$this->passes_spam_check($form_id)) {
-            wp_die(esc_html__('Die Anmeldung wurde aus Sicherheitsgruenden abgelehnt. Bitte lade die Seite neu und versuche es erneut.', 'mgd-giveaway'));
+            wp_die(esc_html__('Die Anmeldung wurde aus Sicherheitsgründen abgelehnt. Bitte lade die Seite neu und versuche es erneut.', 'mgd-giveaway'));
         }
 
         $config = $this->get_form_config($form_id);
@@ -1221,13 +1221,13 @@ class MGD_Giveaway_Plugin
 
             $value = isset($_POST[$name]) ? wp_unslash($_POST[$name]) : '';
             if (!empty($field['required']) && '' === $value) {
-                wp_die(esc_html__('Bitte alle Pflichtfelder ausfuellen.', 'mgd-giveaway'));
+                wp_die(esc_html__('Bitte alle Pflichtfelder ausfüllen.', 'mgd-giveaway'));
             }
 
             if ('email' === $field['type']) {
                 $value = sanitize_email($value);
                 if (!empty($field['required']) && !is_email($value)) {
-                    wp_die(esc_html__('Bitte eine gueltige E-Mail-Adresse eingeben.', 'mgd-giveaway'));
+                    wp_die(esc_html__('Bitte eine gültige E-Mail-Adresse eingeben.', 'mgd-giveaway'));
                 }
                 $email = $value;
             } elseif ('checkbox' === $field['type'] || 'privacy' === $field['type']) {
@@ -1282,20 +1282,20 @@ class MGD_Giveaway_Plugin
         $token = isset($_POST['mgd_giveaway_started']) ? (string) wp_unslash($_POST['mgd_giveaway_started']) : '';
         $decoded = base64_decode($token, true);
         if (!$decoded || false === strpos($decoded, '|')) {
-            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Start-Token fehlt oder ist ungueltig.', array('form_id' => $form_id));
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Start-Token fehlt oder ist ungültig.', array('form_id' => $form_id));
             return false;
         }
 
         list($timestamp, $hash) = explode('|', $decoded, 2);
         $expected = hash_hmac('sha256', (string) $timestamp, wp_salt('nonce'));
         if (!hash_equals($expected, $hash)) {
-            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Start-Token Signatur ungueltig.', array('form_id' => $form_id));
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Start-Token Signatur ungültig.', array('form_id' => $form_id));
             return false;
         }
 
         $age = time() - (int) $timestamp;
         if ($age < $this->spam_min_seconds || $age > $this->spam_max_seconds) {
-            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Absendezeit ausserhalb des erlaubten Bereichs.', array('form_id' => $form_id, 'age' => $age));
+            $this->add_log('warning', 'spam_rejected', 'Spam-Schutz: Absendezeit außerhalb des erlaubten Bereichs.', array('form_id' => $form_id, 'age' => $age));
             return false;
         }
 
@@ -1312,7 +1312,7 @@ class MGD_Giveaway_Plugin
         $payload = $this->verify_download_token($token);
 
         if (!$payload || empty($payload['form_id'])) {
-            $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link ungueltig.', array());
+            $this->add_log('warning', 'download_rejected', 'Maskierter Download-Link ungültig.', array());
             status_header(404);
             wp_die(esc_html__('Download nicht gefunden.', 'mgd-giveaway'));
         }
@@ -1329,7 +1329,7 @@ class MGD_Giveaway_Plugin
         }
         $file_path = !empty($protected_file['path']) ? $protected_file['path'] : '';
         if (!$file_path || !is_readable($file_path)) {
-            $this->add_log('error', 'download_missing_file', 'Geschuetzte Download-Datei konnte nicht gelesen werden.', array('form_id' => $form_id));
+            $this->add_log('error', 'download_missing_file', 'Geschützte Download-Datei konnte nicht gelesen werden.', array('form_id' => $form_id));
             status_header(404);
             wp_die(esc_html__('Download-Datei nicht gefunden.', 'mgd-giveaway'));
         }
@@ -1344,7 +1344,7 @@ class MGD_Giveaway_Plugin
         if (!empty($payload['submission_id'])) {
             $this->increment_download_count((int) $payload['submission_id']);
         }
-        $this->add_log('info', 'masked_download', 'Geschuetzter Download ausgeliefert.', array('form_id' => $form_id, 'submission_id' => isset($payload['submission_id']) ? (int) $payload['submission_id'] : 0));
+        $this->add_log('info', 'masked_download', 'Geschützter Download ausgeliefert.', array('form_id' => $form_id, 'submission_id' => isset($payload['submission_id']) ? (int) $payload['submission_id'] : 0));
 
         nocache_headers();
         header('Content-Type: ' . $mime);
@@ -1364,14 +1364,14 @@ class MGD_Giveaway_Plugin
         $payload = $this->verify_download_token($token);
         if (!$payload || empty($payload['form_id']) || empty($payload['submission_id']) || empty($payload['email'])) {
             status_header(404);
-            wp_die(esc_html__('Bestaetigungslink ist ungueltig.', 'mgd-giveaway'));
+            wp_die(esc_html__('Bestätigungslink ist ungültig.', 'mgd-giveaway'));
         }
 
         global $wpdb;
         $submission = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$this->submission_table} WHERE id = %d AND form_id = %d", (int) $payload['submission_id'], (int) $payload['form_id']));
         if (!$submission || !hash_equals((string) $submission->email, (string) $payload['email'])) {
             status_header(404);
-            wp_die(esc_html__('Bestaetigung nicht gefunden.', 'mgd-giveaway'));
+            wp_die(esc_html__('Bestätigung nicht gefunden.', 'mgd-giveaway'));
         }
 
         $config = $this->get_form_config((int) $payload['form_id']);
@@ -1387,7 +1387,7 @@ class MGD_Giveaway_Plugin
                 array('%s', '%s'),
                 array('%d')
             );
-            $this->add_log('info', 'double_opt_in_confirmed', 'Double-Opt-In bestaetigt.', array('form_id' => (int) $payload['form_id'], 'submission_id' => (int) $submission->id));
+            $this->add_log('info', 'double_opt_in_confirmed', 'Double-Opt-In bestätigt.', array('form_id' => (int) $payload['form_id'], 'submission_id' => (int) $submission->id));
             $this->send_notification_email((int) $payload['form_id'], $submission->email, $data);
         }
 
@@ -1500,7 +1500,7 @@ class MGD_Giveaway_Plugin
 
     private function send_confirmation_email($email, $confirm_url, $config)
     {
-        $subject = $config['confirm_subject'] ? $config['confirm_subject'] : 'Bitte bestaetige deine Anmeldung';
+        $subject = $config['confirm_subject'] ? $config['confirm_subject'] : 'Bitte bestätige deine Anmeldung';
         $body = str_replace('{confirm_url}', $confirm_url, $config['confirm_body']);
 
         return $this->send_mail($email, $subject, $body);
@@ -1512,7 +1512,7 @@ class MGD_Giveaway_Plugin
         $recipient = sanitize_email($settings['notification_recipient']);
 
         if (!$recipient) {
-            $this->add_log('warning', 'notification_email_skipped', 'Keine Empfaengeradresse fuer neue Anmeldungen hinterlegt.', array('form_id' => $form_id, 'email' => $email));
+            $this->add_log('warning', 'notification_email_skipped', 'Keine Empfängeradresse für neue Anmeldungen hinterlegt.', array('form_id' => $form_id, 'email' => $email));
             return false;
         }
 
@@ -1673,10 +1673,10 @@ class MGD_Giveaway_Plugin
 
         $messages = array(
             'saved' => 'Formular wurde gespeichert.',
-            'deleted' => 'Geloescht.',
+            'deleted' => 'Gelöscht.',
             'duplicated' => 'Dupliziert.',
             'imported' => 'CSV importiert.',
-            'import_empty' => 'Keine CSV-Datei ausgewaehlt.',
+            'import_empty' => 'Keine CSV-Datei ausgewählt.',
             'import_invalid' => 'CSV-Datei konnte nicht importiert werden.',
             'logs_cleared' => 'Logs geleert.',
         );

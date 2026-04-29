@@ -67,8 +67,8 @@
             '<label><span>Feldname</span><input type="text" name="fields[' + index + '][name]" value="' + name + '" placeholder="feldname"></label>' +
             '<label><span>Typ</span><select class="mgd-field-type" name="fields[' + index + '][type]">' + typeOptions + '</select></label>' +
             '<label class="mgd-required-toggle"><input type="checkbox" name="fields[' + index + '][required]" value="1"' + required + '> Pflichtfeld</label>' +
-            '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' + index + '][text]" rows="3" placeholder="Optionaler Text, besonders fuer Datenschutz-Hinweise">' + text + '</textarea></label>' +
-            '<label class="mgd-privacy-url-field"><span>URL zur Datenschutzerklaerung</span><input type="url" name="fields[' + index + '][privacy_url]" value="' + privacyUrl + '" placeholder="https://example.de/datenschutzerklaerung/"><small>Nur fuer Datenschutz-Felder. Interne WordPress-Seiten werden direkt im Popup angezeigt.</small></label>' +
+            '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' + index + '][text]" rows="3" placeholder="Optionaler Text, besonders für Datenschutz-Hinweise">' + text + '</textarea></label>' +
+            '<label class="mgd-privacy-url-field"><span>URL zur Datenschutzerklärung</span><input type="url" name="fields[' + index + '][privacy_url]" value="' + privacyUrl + '" placeholder="https://example.de/datenschutzerklaerung/"><small>Nur für Datenschutz-Felder. Interne WordPress-Seiten werden direkt im Popup angezeigt.</small></label>' +
             '</div></div>' +
             '</div>';
     }
@@ -273,7 +273,7 @@
     $(document).on('click', '.mgd-select-media', function (event) {
         event.preventDefault();
         var frame = wp.media({
-            title: 'Download Datei auswaehlen',
+            title: 'Download Datei auswählen',
             button: { text: 'Datei verwenden' },
             multiple: false
         });

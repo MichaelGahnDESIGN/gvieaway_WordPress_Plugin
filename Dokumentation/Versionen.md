@@ -1,148 +1,155 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.22
+
+Beschreibung: Sichtbare deutsche Texte und Dokumentation auf UTF-8-Umlaute umgestellt.
+Begründung: Umlaute wie ä, ö, ü und ß sollen gemäß Projektregel korrekt dargestellt werden.
+Betroffene Bereiche: Backend-Texte, Frontend-Texte, README, Dokumentation.
+Rücknahme: Version 0.0.21 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.21
 
-Beschreibung: Mail-Liste um Ansehen-Button mit Popup fuer Nutzerdaten erweitert und JSON-Daten aus der Tabelle entfernt.
-Begruendung: Personenbezogene Daten sollen im Backend uebersichtlich einsehbar sein, ohne die Tabellenansicht zu ueberladen.
+Beschreibung: Mail-Liste um Ansehen-Button mit Popup für Nutzerdaten erweitert und JSON-Daten aus der Tabelle entfernt.
+Begründung: Personenbezogene Daten sollen im Backend übersichtlich einsehbar sein, ohne die Tabellenansicht zu überladen.
 Betroffene Bereiche: Mail-Liste, Admin JavaScript, Admin CSS, Dokumentation.
-Ruecknahme: Version 0.0.20 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.20 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-30 - Version 0.0.20
 
-Beschreibung: Formular-Abstaende im Frontend und in der Backend-Vorschau kompakter und konsistenter gestaltet.
-Begruendung: Das Formular soll ruhiger wirken; Datenschutztext und Button-Abstand sollen optisch besser zum Layout passen.
+Beschreibung: Formular-Abstände im Frontend und in der Backend-Vorschau kompakter und konsistenter gestaltet.
+Begründung: Das Formular soll ruhiger wirken; Datenschutztext und Button-Abstand sollen optisch besser zum Layout passen.
 Betroffene Bereiche: Frontend CSS, Admin CSS, Formular-Vorschau, Dokumentation.
-Ruecknahme: Version 0.0.19 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.19 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.19
 
-Beschreibung: Absenden-Button und Download-Button textlich getrennt; Spam-Mindestzeit fuer bessere Bedienbarkeit reduziert.
-Begruendung: Der erste Button sendet zunaechst die Formulardaten ab und soll nicht wie ein direkter Download wirken. Zu strenge Mindestzeit kann schnelles Absenden wie einen defekten Button erscheinen lassen.
+Beschreibung: Absenden-Button und Download-Button textlich getrennt; Spam-Mindestzeit für bessere Bedienbarkeit reduziert.
+Begründung: Der erste Button sendet zunächst die Formulardaten ab und soll nicht wie ein direkter Download wirken. Zu strenge Mindestzeit kann schnelles Absenden wie einen defekten Button erscheinen lassen.
 Betroffene Bereiche: Formular-Editor, Frontend Formularausgabe, Spam-Schutz, Vorschau, Dokumentation.
-Ruecknahme: Version 0.0.18 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.18 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.18
 
-Beschreibung: Datenschutz-Feld um eine eigene URL zur Datenschutzerklaerung erweitert und Popup-Ausgabe darauf umgestellt.
-Begruendung: Das Popup soll nicht versehentlich die falsche WordPress-Datenschutzseite verwenden, sondern die im Feld konfigurierte Datenschutzerklaerung anzeigen.
+Beschreibung: Datenschutz-Feld um eine eigene URL zur Datenschutzerklärung erweitert und Popup-Ausgabe darauf umgestellt.
+Begründung: Das Popup soll nicht versehentlich die falsche WordPress-Datenschutzseite verwenden, sondern die im Feld konfigurierte Datenschutzerklärung anzeigen.
 Betroffene Bereiche: Formular-Editor, Datenschutz-Feld, Frontend Popup, Admin CSS, Frontend CSS, Dokumentation.
-Ruecknahme: Version 0.0.17 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.17 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.17
 
-Beschreibung: Feldreihenfolge beim Speichern stabilisiert, damit das im Inspector ausgewaehlte Feld nicht ans Ende rutscht.
-Begruendung: Der Inspector verschiebt Feld-Einstellungen zur Bearbeitung in eine Seitenleiste; vor dem Submit muessen diese Inputs wieder in der Canvas-Reihenfolge stehen.
+Beschreibung: Feldreihenfolge beim Speichern stabilisiert, damit das im Inspector ausgewählte Feld nicht ans Ende rutscht.
+Begründung: Der Inspector verschiebt Feld-Einstellungen zur Bearbeitung in eine Seitenleiste; vor dem Submit müssen diese Inputs wieder in der Canvas-Reihenfolge stehen.
 Betroffene Bereiche: Admin JavaScript, Formular-Editor, Feldspeicherung, Dokumentation.
-Ruecknahme: Version 0.0.16 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.16 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.16
 
 Beschreibung: Frontend- und Backend-Vorschau-Styling angeglichen, damit der Datenschutz-Link nicht wie der Download-Button gestaltet wird.
-Begruendung: Nur der echte Formular-Submit soll das Button-Design erhalten; der Datenschutz-Link soll in Vorschau und Frontend als Textlink erscheinen.
+Begründung: Nur der echte Formular-Submit soll das Button-Design erhalten; der Datenschutz-Link soll in Vorschau und Frontend als Textlink erscheinen.
 Betroffene Bereiche: Frontend CSS, Admin CSS, Formularausgabe, Dokumentation.
-Ruecknahme: Version 0.0.15 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.15 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.15
 
 Beschreibung: Backend-Vorschau mit eigenen Formular-Styles verbessert, damit Felder sauber untereinander angezeigt werden.
-Begruendung: Die statische Vorschau soll visuell verstaendlich bleiben und nicht durch fehlende Frontend-Styles kaputt wirken.
+Begründung: Die statische Vorschau soll visuell verständlich bleiben und nicht durch fehlende Frontend-Styles kaputt wirken.
 Betroffene Bereiche: Backend Formular-Editor, Vorschau, Admin CSS, Dokumentation.
-Ruecknahme: Version 0.0.14 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.14 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.14
 
 Beschreibung: Speichern-Buttons im Formular-Editor zu echten Submit-Buttons gemacht.
-Begruendung: Speichern soll auch funktionieren, wenn das Admin-JavaScript nicht geladen, blockiert oder noch veraltet aus dem Cache geladen wird.
+Begründung: Speichern soll auch funktionieren, wenn das Admin-JavaScript nicht geladen, blockiert oder noch veraltet aus dem Cache geladen wird.
 Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Dokumentation.
-Ruecknahme: Version 0.0.13 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.13 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.13
 
-Beschreibung: Backend-Vorschau auf statische Formularausgabe umgestellt, damit beim Speichern kein Frontend-Submit ausgeloest wird.
-Begruendung: Die echte Shortcode-Ausgabe in der Vorschau konnte das Backend-Speichern stoeren und Pflichtfeldfehler ausloesen.
+Beschreibung: Backend-Vorschau auf statische Formularausgabe umgestellt, damit beim Speichern kein Frontend-Submit ausgelöst wird.
+Begründung: Die echte Shortcode-Ausgabe in der Vorschau konnte das Backend-Speichern stören und Pflichtfeldfehler auslösen.
 Betroffene Bereiche: Backend Formular-Editor, Vorschau, Dokumentation.
-Ruecknahme: Version 0.0.12 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.12 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.12
 
-Beschreibung: Speichern im Formular-Editor robuster gemacht und Browser-Validierung fuer versteckte Tab-Felder deaktiviert.
-Begruendung: Der Speichern-Button soll unabhaengig vom aktiven Tab zuverlaessig absenden.
+Beschreibung: Speichern im Formular-Editor robuster gemacht und Browser-Validierung für versteckte Tab-Felder deaktiviert.
+Begründung: Der Speichern-Button soll unabhängig vom aktiven Tab zuverlässig absenden.
 Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Dokumentation.
-Ruecknahme: Version 0.0.11 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.11 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.11
 
-Beschreibung: Datenschutz-Element im Frontend um Link und Popup zur WordPress-Datenschutzerklaerung erweitert.
-Begruendung: Nutzer sollen die Datenschutzerklaerung direkt beim Datenschutz-Hinweis lesen koennen, ohne die Seite zu verlassen.
+Beschreibung: Datenschutz-Element im Frontend um Link und Popup zur WordPress-Datenschutzerklärung erweitert.
+Begründung: Nutzer sollen die Datenschutzerklärung direkt beim Datenschutz-Hinweis lesen können, ohne die Seite zu verlassen.
 Betroffene Bereiche: Frontend Formularausgabe, Frontend JavaScript, Frontend CSS, Dokumentation.
-Ruecknahme: Version 0.0.10 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.10 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.10
 
 Beschreibung: Speichern-Feedback im Formular-Editor verbessert, aktiven Tab nach dem Speichern beibehalten und Hilfetexte unter die Felder gesetzt.
-Begruendung: Rueckmeldung und Lesbarkeit im Backend verbessern.
+Begründung: Rückmeldung und Lesbarkeit im Backend verbessern.
 Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Admin CSS, Dokumentation.
-Ruecknahme: Version 0.0.9 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.9 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.9
 
-Beschreibung: Geschuetzte Download-Kopie, optionales Double-Opt-In, Frontend-Design-Einstellungen und DSGVO-Kontaktaktionen umgesetzt.
-Begruendung: Download-Auslieferung soll besser geschuetzt, E-Mail-Einwilligung optional bestaetigt, Formularoptik steuerbar und personenbezogene Daten besser verwaltbar werden.
+Beschreibung: Geschützte Download-Kopie, optionales Double-Opt-In, Frontend-Design-Einstellungen und DSGVO-Kontaktaktionen umgesetzt.
+Begründung: Download-Auslieferung soll besser geschützt, E-Mail-Einwilligung optional bestätigt, Formularoptik steuerbar und personenbezogene Daten besser verwaltbar werden.
 Betroffene Bereiche: Datenbank, Formular-Editor, Frontend-Ausgabe, Download-Auslieferung, E-Mail-Prozess, Mail-Liste, Dokumentation.
-Ruecknahme: Version 0.0.8 aus Git-Historie oder Backup-ZIP wiederherstellen; Datenbankspalten `status`, `confirmed_at` und `download_count` koennen bestehen bleiben.
+Rücknahme: Version 0.0.8 aus Git-Historie oder Backup-ZIP wiederherstellen; Datenbankspalten `status`, `confirmed_at` und `download_count` können bestehen bleiben.
 
 ## 2026-04-29 - Version 0.0.8
 
-Beschreibung: Download-Links werden ueber einen signierten Plugin-Link maskiert und nicht mehr als direkter Mediathek-Pfad in Button oder E-Mail ausgegeben.
-Begruendung: Empfaenger sollen keine sichtbaren WordPress-Upload-Pfade wie `wp-content/uploads` sehen.
+Beschreibung: Download-Links werden über einen signierten Plugin-Link maskiert und nicht mehr als direkter Mediathek-Pfad in Button oder E-Mail ausgegeben.
+Begründung: Empfänger sollen keine sichtbaren WordPress-Upload-Pfade wie `wp-content/uploads` sehen.
 Betroffene Bereiche: Frontend Download-Link, Download-E-Mail, Download-Auslieferung, Logs, Dokumentation.
-Ruecknahme: Version 0.0.7 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.7 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.7
 
-Beschreibung: Formular-Editor in Tabs fuer Felder, Formular, Download, E-Mail und Vorschau aufgeteilt.
-Begruendung: Die Builder-Ansicht soll uebersichtlicher werden und nicht gleichzeitig alle Formular-, Download- und E-Mail-Einstellungen anzeigen.
+Beschreibung: Formular-Editor in Tabs für Felder, Formular, Download, E-Mail und Vorschau aufgeteilt.
+Begründung: Die Builder-Ansicht soll übersichtlicher werden und nicht gleichzeitig alle Formular-, Download- und E-Mail-Einstellungen anzeigen.
 Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Admin CSS, Dokumentation.
-Ruecknahme: Version 0.0.6 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.6 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.6
 
 Beschreibung: Formular-Editor zu einem modernen Builder mit Element-Palette, Canvas, Drag & Drop und Feld-Inspector umgebaut.
-Begruendung: Die Formularerstellung soll sich eher wie WPForms anfuehlen und weniger wie eine technische Feldliste.
+Begründung: Die Formularerstellung soll sich eher wie WPForms anfühlen und weniger wie eine technische Feldliste.
 Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Admin CSS, Dokumentation.
-Ruecknahme: Version 0.0.5 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.5 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.5
 
 Beschreibung: Erfolgsmeldung und Download-Button werden nach der Anmeldung direkt im Shortcode-Bereich anstelle des Formulars angezeigt.
-Begruendung: Die Nutzer sollen auf der urspruenglichen Landingpage bleiben und nicht auf eine separate technische Erfolgsseite wechseln.
+Begründung: Die Nutzer sollen auf der ursprünglichen Landingpage bleiben und nicht auf eine separate technische Erfolgsseite wechseln.
 Betroffene Bereiche: Frontend Formularausgabe, Formular-Submit-Weiterleitung, Assets, Dokumentation.
-Ruecknahme: Version 0.0.4 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Rücknahme: Version 0.0.4 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.4
 
-Beschreibung: Formular-Editor mit Drag & Drop Feldkarten modernisiert, Datenschutz-Element und Spam-Schutz ergaenzt.  
-Begruendung: Bedienung im Backend verbessern und Frontend-Anmeldungen besser gegen einfache Bots schuetzen.  
-Betroffene Bereiche: Backend Formular-Editor, Frontend Formularausgabe, Formularvalidierung, Assets, Dokumentation.  
-Ruecknahme: Version 0.0.3 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Beschreibung: Formular-Editor mit Drag & Drop Feldkarten modernisiert, Datenschutz-Element und Spam-Schutz ergänzt.
+Begründung: Bedienung im Backend verbessern und Frontend-Anmeldungen besser gegen einfache Bots schützen.
+Betroffene Bereiche: Backend Formular-Editor, Frontend Formularausgabe, Formularvalidierung, Assets, Dokumentation.
+Rücknahme: Version 0.0.3 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.3
 
-Beschreibung: Sicherheitsverbesserungen fuer CSV-Import/Export und Formular-E-Mail-Validierung umgesetzt.  
-Begruendung: Vor Live-Installation muessen CSV-Formel-Injection, sehr grosse CSV-Uploads und ungueltige Pflicht-E-Mail-Adressen reduziert werden.  
-Betroffene Bereiche: CSV Import, CSV Export, Frontend Formularvalidierung, Dokumentation.  
-Ruecknahme: Version 0.0.2 aus Git-Historie oder Backup-ZIP wiederherstellen.
+Beschreibung: Sicherheitsverbesserungen für CSV-Import/Export und Formular-E-Mail-Validierung umgesetzt.
+Begründung: Vor Live-Installation müssen CSV-Formel-Injection, sehr große CSV-Uploads und ungültige Pflicht-E-Mail-Adressen reduziert werden.
+Betroffene Bereiche: CSV Import, CSV Export, Frontend Formularvalidierung, Dokumentation.
+Rücknahme: Version 0.0.2 aus Git-Historie oder Backup-ZIP wiederherstellen.
 
 ## 2026-04-29 - Version 0.0.2
 
-Beschreibung: Mail-Liste mit CSV Import/Export, Benachrichtigungs-Empfaenger, Log-Reiter mit Suche/Filter/Export/Speicheranzeige/Leeren und lokale Asset-Dokumentation ergaenzt.  
-Begruendung: Anforderungen an Empfaengerverwaltung, Nachvollziehbarkeit und Datenschutz wurden erweitert.  
-Betroffene Bereiche: WordPress Plugin, Backend, E-Mail, CSV, Logs, Dokumentation.  
-Ruecknahme: Version 0.0.1 aus Git-Historie oder ZIP wiederherstellen; bei Datenbank-Rollback Tabellen `wp_mgd_giveaway_submissions` und `wp_mgd_giveaway_logs` pruefen.
+Beschreibung: Mail-Liste mit CSV Import/Export, Benachrichtigungs-Empfänger, Log-Reiter mit Suche/Filter/Export/Speicheranzeige/Leeren und lokale Asset-Dokumentation ergänzt.
+Begründung: Anforderungen an Empfängerverwaltung, Nachvollziehbarkeit und Datenschutz wurden erweitert.
+Betroffene Bereiche: WordPress Plugin, Backend, E-Mail, CSV, Logs, Dokumentation.
+Rücknahme: Version 0.0.1 aus Git-Historie oder ZIP wiederherstellen; bei Datenbank-Rollback Tabellen `wp_mgd_giveaway_submissions` und `wp_mgd_giveaway_logs` prüfen.
 
 ## 2026-04-29 - Version 0.0.1
 
-Beschreibung: Erste Version von MGD Giveaway erstellt.  
-Begruendung: Basis-Plugin fuer Giveaway-Formulare mit PDF/eBook-Download.  
-Betroffene Bereiche: WordPress Plugin, Backend, Frontend, E-Mail, Dokumentation.  
-Ruecknahme: Plugin deaktivieren und Ordner `mgd-giveaway` entfernen; bei Bedarf Datenbanktabelle `wp_mgd_giveaway_submissions` pruefen.
+Beschreibung: Erste Version von MGD Giveaway erstellt.
+Begründung: Basis-Plugin für Giveaway-Formulare mit PDF/eBook-Download.
+Betroffene Bereiche: WordPress Plugin, Backend, Frontend, E-Mail, Dokumentation.
+Rücknahme: Plugin deaktivieren und Ordner `mgd-giveaway` entfernen; bei Bedarf Datenbanktabelle `wp_mgd_giveaway_submissions` prüfen.

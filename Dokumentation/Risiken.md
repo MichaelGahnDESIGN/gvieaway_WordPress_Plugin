@@ -1,9 +1,9 @@
 # Risiken
 
-- Formularanmeldungen koennen personenbezogene Daten enthalten.
-- SMTP-Zugangsdaten duerfen nicht versehentlich veroeffentlicht werden.
-- Direkte Download-Links aus der Mediathek koennen fuer Personen mit URL erreichbar bleiben, wenn die originale Mediathek-Datei oeffentlich vorhanden ist. Das Plugin liefert eine geschuetzte Kopie aus, ersetzt aber keine Serverregel fuer bereits bekannte Original-URLs.
-- Rechtliche Pflichttexte und Einwilligungen sind projektspezifisch zu klaeren.
-- Double-Opt-In verbessert die Nachweisbarkeit, ersetzt aber keine Rechtsberatung zu Einwilligung, Datenschutzerklaerung und Speicherfristen.
-- CSV-Importe koennen personenbezogene Daten enthalten und muessen aus rechtmaessiger Quelle stammen.
-- Logs koennen technische Kontextdaten enthalten und sollten regelmaessig geloescht werden.
+- Formularanmeldungen können personenbezogene Daten enthalten.
+- SMTP-Zugangsdaten dürfen nicht versehentlich veröffentlicht werden.
+- Direkte Download-Links aus der Mediathek können für Personen mit URL erreichbar bleiben, wenn die originale Mediathek-Datei öffentlich vorhanden ist. Das Plugin liefert eine geschützte Kopie aus, ersetzt aber keine Serverregel für bereits bekannte Original-URLs.
+- Rechtliche Pflichttexte und Einwilligungen sind projektspezifisch zu klären.
+- Double-Opt-In verbessert die Nachweisbarkeit, ersetzt aber keine Rechtsberatung zu Einwilligung, Datenschutzerklärung und Speicherfristen.
+- CSV-Importe können personenbezogene Daten enthalten und müssen aus rechtmäßiger Quelle stammen.
+- Logs können technische Kontextdaten enthalten und sollten regelmäßig gelöscht werden.
