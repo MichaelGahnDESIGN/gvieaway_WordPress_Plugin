@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.18
+
+Beschreibung: Datenschutz-Feld um eine eigene URL zur Datenschutzerklaerung erweitert und Popup-Ausgabe darauf umgestellt.
+Begruendung: Das Popup soll nicht versehentlich die falsche WordPress-Datenschutzseite verwenden, sondern die im Feld konfigurierte Datenschutzerklaerung anzeigen.
+Betroffene Bereiche: Formular-Editor, Datenschutz-Feld, Frontend Popup, Admin CSS, Frontend CSS, Dokumentation.
+Ruecknahme: Version 0.0.17 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.17
 
 Beschreibung: Feldreihenfolge beim Speichern stabilisiert, damit das im Inspector ausgewaehlte Feld nicht ans Ende rutscht.

@@ -188,7 +188,7 @@ class MGD_Giveaway_Plugin
         $default = array(
             'fields' => array(
                 array('label' => 'E-Mail', 'name' => 'email', 'type' => 'email', 'required' => true),
-                array('label' => 'Datenschutz', 'name' => 'privacy', 'type' => 'privacy', 'required' => true, 'text' => 'Ich habe die Datenschutzhinweise gelesen und bin mit der Verarbeitung meiner Angaben einverstanden.'),
+                array('label' => 'Datenschutz', 'name' => 'privacy', 'type' => 'privacy', 'required' => true, 'text' => 'Ich habe die Datenschutzhinweise gelesen und bin mit der Verarbeitung meiner Angaben einverstanden.', 'privacy_url' => ''),
             ),
             'download_attachment_id' => 0,
             'protected_file' => array(),
@@ -422,6 +422,7 @@ class MGD_Giveaway_Plugin
         $type_label = isset($types[$type]) ? $types[$type] : $types['text'];
         $required = !empty($field['required']);
         $text = isset($field['text']) ? $field['text'] : '';
+        $privacy_url = isset($field['privacy_url']) ? $field['privacy_url'] : '';
 
         echo '<div class="mgd-field-row" draggable="true" data-type="' . esc_attr($type) . '">';
         echo '<button type="button" class="mgd-drag-handle" aria-label="Element verschieben"><span class="dashicons dashicons-move"></span></button>';
@@ -440,6 +441,7 @@ class MGD_Giveaway_Plugin
         echo '</select></label>';
         echo '<label class="mgd-required-toggle"><input type="checkbox" name="fields[' . esc_attr((string) $index) . '][required]" value="1" ' . checked($required, true, false) . '> Pflichtfeld</label>';
         echo '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' . esc_attr((string) $index) . '][text]" rows="3" placeholder="Optionaler Text, besonders fuer Datenschutz-Hinweise">' . esc_textarea($text) . '</textarea></label>';
+        echo '<label class="mgd-privacy-url-field"><span>URL zur Datenschutzerklaerung</span><input type="url" name="fields[' . esc_attr((string) $index) . '][privacy_url]" value="' . esc_attr($privacy_url) . '" placeholder="https://example.de/datenschutzerklaerung/"><small>Nur fuer Datenschutz-Felder. Interne WordPress-Seiten werden direkt im Popup angezeigt.</small></label>';
         echo '</div>';
         echo '</div>';
         echo '</div>';
@@ -731,6 +733,7 @@ class MGD_Giveaway_Plugin
                 'type' => $type,
                 'required' => !empty($field['required']),
                 'text' => isset($field['text']) ? sanitize_textarea_field($field['text']) : '',
+                'privacy_url' => isset($field['privacy_url']) ? esc_url_raw($field['privacy_url']) : '',
             );
         }
 
@@ -1121,6 +1124,7 @@ class MGD_Giveaway_Plugin
         $type = isset($field['type']) ? $field['type'] : 'text';
         $required = !empty($field['required']) ? ' required' : '';
         $text = isset($field['text']) ? $field['text'] : '';
+        $privacy_url = isset($field['privacy_url']) ? esc_url_raw($field['privacy_url']) : '';
 
         echo '<label class="mgd-giveaway-field"><span>' . esc_html($label) . '</span>';
         if ('textarea' === $type) {
@@ -1130,7 +1134,7 @@ class MGD_Giveaway_Plugin
             $modal_id = wp_unique_id('mgd-privacy-modal-');
             echo '<span class="mgd-giveaway-checkbox"><input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '> <span>' . esc_html($notice) . ' <button type="button" class="mgd-privacy-link" data-mgd-modal="' . esc_attr($modal_id) . '">zur Datenschutzerkl&auml;rung</button></span></span>';
             echo '</label>';
-            $this->render_privacy_modal($modal_id);
+            $this->render_privacy_modal($modal_id, $privacy_url);
             return;
         } elseif ('checkbox' === $type) {
             echo '<input type="checkbox" name="' . esc_attr($name) . '" value="1"' . $required . '>';
@@ -1140,9 +1144,9 @@ class MGD_Giveaway_Plugin
         echo '</label>';
     }
 
-    private function render_privacy_modal($modal_id)
+    private function render_privacy_modal($modal_id, $privacy_url = '')
     {
-        $privacy_page_id = (int) get_option('wp_page_for_privacy_policy');
+        $privacy_page_id = $privacy_url ? url_to_postid($privacy_url) : (int) get_option('wp_page_for_privacy_policy');
         $privacy_page = $privacy_page_id ? get_post($privacy_page_id) : null;
 
         echo '<div id="' . esc_attr($modal_id) . '" class="mgd-privacy-modal" aria-hidden="true">';
@@ -1153,6 +1157,9 @@ class MGD_Giveaway_Plugin
         echo '<div class="mgd-privacy-content">';
         if ($privacy_page && 'publish' === $privacy_page->post_status) {
             echo apply_filters('the_content', $privacy_page->post_content);
+        } elseif ($privacy_url) {
+            echo '<iframe class="mgd-privacy-frame" src="' . esc_url($privacy_url) . '" title="Datenschutzerkl&auml;rung"></iframe>';
+            echo '<p><a href="' . esc_url($privacy_url) . '" target="_blank" rel="noopener noreferrer">Datenschutzerkl&auml;rung in neuem Fenster oeffnen</a></p>';
         } else {
             echo '<p>Es wurde noch keine Datenschutzerkl&auml;rung in WordPress hinterlegt.</p>';
         }

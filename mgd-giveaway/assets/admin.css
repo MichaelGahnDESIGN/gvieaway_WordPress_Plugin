@@ -491,9 +491,14 @@
 }
 
 .mgd-field-config input[type="text"],
+.mgd-field-config input[type="url"],
 .mgd-field-config select,
 .mgd-field-config textarea {
     width: 100%;
+}
+
+.mgd-field-row:not([data-type="privacy"]) .mgd-privacy-url-field {
+    display: none;
 }
 
 .mgd-drag-handle {

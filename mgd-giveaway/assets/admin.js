@@ -2,13 +2,13 @@
     'use strict';
 
     var fieldDefaults = {
-        text: ['Text', 'text', false, ''],
-        email: ['E-Mail', 'email', true, ''],
-        number: ['Zahl', 'zahl', false, ''],
-        date: ['Datum', 'datum', false, ''],
-        checkbox: ['Checkbox', 'checkbox', false, ''],
-        textarea: ['Nachricht', 'nachricht', false, ''],
-        privacy: ['Datenschutz', 'privacy', true, 'Ich habe die Datenschutzhinweise gelesen und bin mit der Verarbeitung meiner Angaben einverstanden.']
+        text: ['Text', 'text', false, '', ''],
+        email: ['E-Mail', 'email', true, '', ''],
+        number: ['Zahl', 'zahl', false, '', ''],
+        date: ['Datum', 'datum', false, '', ''],
+        checkbox: ['Checkbox', 'checkbox', false, '', ''],
+        textarea: ['Nachricht', 'nachricht', false, '', ''],
+        privacy: ['Datenschutz', 'privacy', true, 'Ich habe die Datenschutzhinweise gelesen und bin mit der Verarbeitung meiner Angaben einverstanden.', '']
     };
 
     var fieldLabels = {
@@ -49,6 +49,7 @@
         var label = escapeHtml(defaults[0]);
         var name = escapeHtml(defaults[1]);
         var text = escapeHtml(defaults[3]);
+        var privacyUrl = escapeHtml(defaults[4]);
         var icon = fieldIcons[type] || 'dashicons-feedback';
         var typeOptions = Object.keys(fieldLabels).map(function (key) {
             return '<option value="' + key + '"' + (key === type ? ' selected' : '') + '>' + fieldLabels[key] + '</option>';
@@ -67,6 +68,7 @@
             '<label><span>Typ</span><select class="mgd-field-type" name="fields[' + index + '][type]">' + typeOptions + '</select></label>' +
             '<label class="mgd-required-toggle"><input type="checkbox" name="fields[' + index + '][required]" value="1"' + required + '> Pflichtfeld</label>' +
             '<label class="mgd-field-text"><span>Hinweistext</span><textarea name="fields[' + index + '][text]" rows="3" placeholder="Optionaler Text, besonders fuer Datenschutz-Hinweise">' + text + '</textarea></label>' +
+            '<label class="mgd-privacy-url-field"><span>URL zur Datenschutzerklaerung</span><input type="url" name="fields[' + index + '][privacy_url]" value="' + privacyUrl + '" placeholder="https://example.de/datenschutzerklaerung/"><small>Nur fuer Datenschutz-Felder. Interne WordPress-Seiten werden direkt im Popup angezeigt.</small></label>' +
             '</div></div>' +
             '</div>';
     }
@@ -231,6 +233,7 @@
         row.find('.mgd-field-preview-icon').attr('class', 'mgd-field-preview-icon dashicons ' + (fieldIcons[type] || 'dashicons-feedback'));
         row.find('.mgd-field-preview-body strong').text(label);
         row.find('.mgd-field-preview-body small').text((fieldLabels[type] || 'Feld') + (required ? ' - Pflichtfeld' : ''));
+        config.find('.mgd-privacy-url-field').toggle(type === 'privacy');
         updateBuilderState();
     }
 

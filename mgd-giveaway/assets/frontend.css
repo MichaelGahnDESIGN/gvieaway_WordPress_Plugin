@@ -140,6 +140,14 @@
     line-height: 1;
 }
 
+.mgd-privacy-frame {
+    width: 100%;
+    min-height: 60vh;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    background: #fff;
+}
+
 .mgd-modal-open {
     overflow: hidden;
 }
