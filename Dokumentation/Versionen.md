@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.3
+
+Beschreibung: Sicherheitsverbesserungen fuer CSV-Import/Export und Formular-E-Mail-Validierung umgesetzt.  
+Begruendung: Vor Live-Installation muessen CSV-Formel-Injection, sehr grosse CSV-Uploads und ungueltige Pflicht-E-Mail-Adressen reduziert werden.  
+Betroffene Bereiche: CSV Import, CSV Export, Frontend Formularvalidierung, Dokumentation.  
+Ruecknahme: Version 0.0.2 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.2
 
 Beschreibung: Mail-Liste mit CSV Import/Export, Benachrichtigungs-Empfaenger, Log-Reiter mit Suche/Filter/Export/Speicheranzeige/Leeren und lokale Asset-Dokumentation ergaenzt.  

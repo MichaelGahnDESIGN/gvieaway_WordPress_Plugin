@@ -10,6 +10,8 @@ class MGD_Giveaway_Plugin
     private $post_type = 'mgd_giveaway_form';
     private $submission_table;
     private $log_table;
+    private $max_csv_upload_bytes = 2097152;
+    private $max_csv_import_rows = 5000;
 
     public static function instance()
     {
@@ -647,9 +649,10 @@ class MGD_Giveaway_Plugin
         $filename = isset($file['name']) ? sanitize_file_name($file['name']) : '';
         $tmp_name = isset($file['tmp_name']) ? $file['tmp_name'] : '';
         $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+        $file_size = isset($file['size']) ? (int) $file['size'] : 0;
 
-        if ('csv' !== $extension || !is_uploaded_file($tmp_name)) {
-            $this->add_log('warning', 'mail_list_import_rejected', 'CSV Import abgelehnt.', array('filename' => $filename));
+        if ('csv' !== $extension || !is_uploaded_file($tmp_name) || $file_size > $this->max_csv_upload_bytes) {
+            $this->add_log('warning', 'mail_list_import_rejected', 'CSV Import abgelehnt.', array('filename' => $filename, 'size' => $file_size));
             wp_safe_redirect(admin_url('admin.php?page=mgd-giveaway-mail-list&mgd_notice=import_invalid'));
             exit;
         }
@@ -659,11 +662,11 @@ class MGD_Giveaway_Plugin
 
         if ($handle) {
             $header = fgetcsv($handle, 0, ',');
-            while (($row = fgetcsv($handle, 0, ',')) !== false) {
+            while (($row = fgetcsv($handle, 0, ',')) !== false && $imported < $this->max_csv_import_rows) {
                 $record = $this->map_csv_row($header, $row);
                 $email = isset($record['email']) ? sanitize_email($record['email']) : '';
 
-                if (!$email) {
+                if (!$email || !is_email($email)) {
                     continue;
                 }
 
@@ -772,6 +775,9 @@ class MGD_Giveaway_Plugin
 
             if ('email' === $field['type']) {
                 $value = sanitize_email($value);
+                if (!empty($field['required']) && !is_email($value)) {
+                    wp_die(esc_html__('Bitte eine gueltige E-Mail-Adresse eingeben.', 'mgd-giveaway'));
+                }
                 $email = $value;
             } elseif ('checkbox' === $field['type']) {
                 $value = $value ? '1' : '0';
@@ -845,30 +851,8 @@ class MGD_Giveaway_Plugin
         $settings = $this->get_settings();
         $subject = $config['email_subject'] ? $config['email_subject'] : 'Dein Download';
         $body = str_replace('{download_url}', $download_url, $config['email_body']);
-        $headers = array('Content-Type: text/plain; charset=UTF-8');
 
-        add_filter('wp_mail_from', function () use ($settings) {
-            return $settings['from_email'];
-        });
-        add_filter('wp_mail_from_name', function () use ($settings) {
-            return $settings['from_name'];
-        });
-
-        if ('smtp' === $settings['mail_method']) {
-            add_action('phpmailer_init', function ($phpmailer) use ($settings) {
-                $phpmailer->isSMTP();
-                $phpmailer->Host = $settings['smtp_host'];
-                $phpmailer->Port = (int) $settings['smtp_port'];
-                $phpmailer->SMTPAuth = !empty($settings['smtp_username']);
-                $phpmailer->Username = $settings['smtp_username'];
-                $phpmailer->Password = $settings['smtp_password'];
-                if ('none' !== $settings['smtp_encryption']) {
-                    $phpmailer->SMTPSecure = $settings['smtp_encryption'];
-                }
-            });
-        }
-
-        return wp_mail($email, $subject, $body, $headers);
+        return $this->send_mail($email, $subject, $body);
     }
 
     private function send_notification_email($form_id, $email, $data)
@@ -940,7 +924,7 @@ class MGD_Giveaway_Plugin
         foreach ($rows as $row) {
             $line = array();
             foreach ($columns as $column) {
-                $line[] = isset($row[$column]) ? $row[$column] : '';
+                $line[] = $this->escape_csv_cell(isset($row[$column]) ? $row[$column] : '');
             }
             fputcsv($output, $line);
         }
@@ -966,6 +950,16 @@ class MGD_Giveaway_Plugin
         }
 
         return $record;
+    }
+
+    private function escape_csv_cell($value)
+    {
+        $value = (string) $value;
+        if ('' !== $value && preg_match('/^[=+\-@]/', $value)) {
+            return "'" . $value;
+        }
+
+        return $value;
     }
 
     private function add_log($level, $event, $message, $context = array())

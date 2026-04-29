@@ -4,7 +4,7 @@ Tags: download, forms, ebook, pdf, shortcode
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.0.2
+Stable tag: 0.0.3
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,9 @@ Anmeldungen werden in der Mail-Liste gespeichert und koennen als CSV importiert 
 4. Shortcode wie `[mgd_giveaway id="123"]` in eine Seite einfuegen.
 
 == Changelog ==
+
+= 0.0.3 =
+* Sicherheitsverbesserungen: CSV-Formel-Schutz beim Export, CSV-Groessen- und Zeilenlimit beim Import, strengere E-Mail-Validierung.
 
 = 0.0.2 =
 * Mail-Liste mit CSV Import und Export ergaenzt.

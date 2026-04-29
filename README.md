@@ -19,7 +19,7 @@ Ein einfaches WordPress Plugin von Michael Gahn DESIGN zum Erstellen von Formula
 
 ## Installation
 
-1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.2.zip` in WordPress hochladen.
+1. ZIP-Datei aus `dist/mgd-giveaway-v0.0.3.zip` in WordPress hochladen.
 2. Plugin aktivieren.
 3. Unter `MGD Giveaway` ein Formular anlegen.
 4. Den angezeigten Shortcode in eine Seite oder einen Beitrag einfuegen.
@@ -43,11 +43,11 @@ Das Plugin laedt keine externen Schriften, Icons, Skripte oder Stylesheets. Genu
 
 ## CSV Mail-Liste
 
-Der Import erwartet eine CSV-Datei mit Kopfzeile. Mindestens die Spalte `email` muss vorhanden sein. Weitere Spalten werden als Daten gespeichert. Der Export enthaelt `id`, `form_id`, `email`, `data` und `created_at`.
+Der Import erwartet eine CSV-Datei mit Kopfzeile. Mindestens die Spalte `email` muss vorhanden sein. Weitere Spalten werden als Daten gespeichert. Der Export enthaelt `id`, `form_id`, `email`, `data` und `created_at`. CSV-Importe sind auf 2 MB und 5000 Zeilen begrenzt. CSV-Exports schuetzen Werte, die in Tabellenkalkulationen als Formel interpretiert werden koennten.
 
 ## Version
 
-Aktuelle Version: `0.0.2`
+Aktuelle Version: `0.0.3`
 
 ## Autor
 
