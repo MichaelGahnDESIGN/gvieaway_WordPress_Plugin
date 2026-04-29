@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-29 - Version 0.0.10
+
+Beschreibung: Speichern-Feedback im Formular-Editor verbessert, aktiven Tab nach dem Speichern beibehalten und Hilfetexte unter die Felder gesetzt.
+Begruendung: Rueckmeldung und Lesbarkeit im Backend verbessern.
+Betroffene Bereiche: Backend Formular-Editor, Admin JavaScript, Admin CSS, Dokumentation.
+Ruecknahme: Version 0.0.9 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-29 - Version 0.0.9
 
 Beschreibung: Geschuetzte Download-Kopie, optionales Double-Opt-In, Frontend-Design-Einstellungen und DSGVO-Kontaktaktionen umgesetzt.

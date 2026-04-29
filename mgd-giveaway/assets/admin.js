@@ -101,6 +101,7 @@
         $(this).addClass('is-active').attr('aria-selected', 'true');
         $('.mgd-tab-panel').removeClass('is-active');
         $('.mgd-tab-panel[data-panel="' + tab + '"]').addClass('is-active');
+        $('#mgd_active_tab').val(tab);
     });
 
     $(document).on('dragstart', '.mgd-add-field', function (event) {
@@ -254,7 +255,13 @@
         $('.mgd-builder-count').text(count + (count === 1 ? ' Feld' : ' Felder'));
     }
 
-    $(document).on('submit', '.mgd-admin form', function () {
+    $(document).on('submit', '#mgd-giveaway-editor-form', function () {
+        reindexFields();
+        $(this).find('button[type="submit"]').text('Speichert...');
+        $('.mgd-editor-actions button[type="submit"]').text('Speichert...');
+    });
+
+    $(document).on('submit', '.mgd-admin form:not(#mgd-giveaway-editor-form)', function () {
         reindexFields();
     });
 

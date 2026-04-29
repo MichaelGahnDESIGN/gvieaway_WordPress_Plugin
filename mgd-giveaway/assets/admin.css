@@ -164,7 +164,8 @@
 }
 
 .mgd-field {
-    display: block;
+    display: grid;
+    gap: 5px;
     margin-bottom: 14px;
 }
 
@@ -178,8 +179,18 @@
 .mgd-field textarea,
 .mgd-field select,
 .mgd-media-row input {
+    display: block;
     width: 100%;
     max-width: 680px;
+}
+
+.mgd-field small,
+.mgd-field-config small {
+    display: block;
+    margin-top: 4px;
+    max-width: 680px;
+    color: #646970;
+    line-height: 1.4;
 }
 
 .mgd-media-row {
@@ -379,6 +390,15 @@
 .mgd-editor-card .description {
     margin: -4px 0 20px;
     color: #646970;
+}
+
+.mgd-save-notice {
+    border-left-color: #00a32a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.mgd-save-notice p {
+    font-size: 14px;
 }
 
 .mgd-check-row {
