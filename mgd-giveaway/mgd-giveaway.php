@@ -3,7 +3,7 @@
  * Plugin Name: MGD Giveaway
  * Plugin URI: https://github.com/MichaelGahnDESIGN/gvieaway_WordPress_Plugin
  * Description: Erstellt Download-Formulare für Gratis-eBooks und PDFs mit Shortcode, Backend-Verwaltung und Credits.
- * Version: 0.0.28
+ * Version: 0.0.29
  * Author: Michael Gahn DESIGN
  * Author URI: https://Michael-Gahn.de
  * License: GPL-2.0-or-later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('MGD_GIVEAWAY_VERSION', '0.0.28');
+define('MGD_GIVEAWAY_VERSION', '0.0.29');
 define('MGD_GIVEAWAY_FILE', __FILE__);
 define('MGD_GIVEAWAY_DIR', plugin_dir_path(__FILE__));
 define('MGD_GIVEAWAY_URL', plugin_dir_url(__FILE__));

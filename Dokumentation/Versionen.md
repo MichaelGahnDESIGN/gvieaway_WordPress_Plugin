@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.29
+
+Beschreibung: Absenden-Button per Formular-ID fest mit dem Formular verknüpft.
+Begründung: Elementor oder der Browser kann den Button im DOM außerhalb des Formulars einsortieren; ohne explizite Verknüpfung wird dann nichts abgesendet.
+Betroffene Bereiche: Frontend-Shortcode, Button-Rendering, Formular-Submit, Dokumentation.
+Rücknahme: Version 0.0.28 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.28
 
 Beschreibung: Absenden-Button mit Inline-Abstand und direktem Submit-Fallback abgesichert.

@@ -1083,6 +1083,7 @@ class MGD_Giveaway_Plugin
         ob_start();
         $wrapper_id = 'mgd-giveaway-' . $form_id;
         echo '<div id="' . esc_attr($wrapper_id) . '" class="mgd-giveaway-wrapper" style="' . esc_attr($this->get_frontend_style_vars($config)) . '">';
+        $html_form_id = 'mgd-giveaway-form-' . $form_id;
 
         $success_payload = $this->get_success_payload($form_id);
         if ($success_payload) {
@@ -1091,7 +1092,7 @@ class MGD_Giveaway_Plugin
             return ob_get_clean();
         }
 
-        echo '<form class="mgd-giveaway-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
+        echo '<form id="' . esc_attr($html_form_id) . '" class="mgd-giveaway-form" method="post" action="' . esc_url(admin_url('admin-post.php')) . '">';
         echo '<input type="hidden" name="action" value="mgd_giveaway_submit">';
         echo '<input type="hidden" name="form_id" value="' . esc_attr((string) $form_id) . '">';
         echo '<input type="hidden" name="mgd_giveaway_return_url" value="' . esc_attr($this->get_current_page_url()) . '">';
@@ -1102,8 +1103,8 @@ class MGD_Giveaway_Plugin
             $this->render_frontend_field($field);
         }
 
-        $submit_fallback = "if(this.form){if(this.form.reportValidity&&!this.form.reportValidity()){return false;}this.disabled=true;this.textContent='Wird gesendet...';if(window.HTMLFormElement&&HTMLFormElement.prototype.submit){HTMLFormElement.prototype.submit.call(this.form);}else{this.form.submit();}return false;}";
-        echo '<button type="submit" class="mgd-giveaway-submit" style="' . esc_attr($this->get_button_inline_style($config)) . '" onclick="' . esc_attr($submit_fallback) . '">' . esc_html($config['submit_button_label']) . '</button>';
+        $submit_fallback = "var f=this.form||document.getElementById('" . $html_form_id . "');if(f){if(f.reportValidity&&!f.reportValidity()){return false;}this.disabled=true;this.textContent='Wird gesendet...';if(window.HTMLFormElement&&HTMLFormElement.prototype.submit){HTMLFormElement.prototype.submit.call(f);}else{f.submit();}return false;}";
+        echo '<button type="submit" form="' . esc_attr($html_form_id) . '" class="mgd-giveaway-submit" style="' . esc_attr($this->get_button_inline_style($config)) . '" onclick="' . esc_attr($submit_fallback) . '">' . esc_html($config['submit_button_label']) . '</button>';
         echo '</form>';
         echo '</div>';
 
