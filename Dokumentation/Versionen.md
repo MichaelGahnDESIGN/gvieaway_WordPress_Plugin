@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.30
+
+Beschreibung: Rekursives Formular-Rendering im Datenschutz-Popup verhindert.
+Begründung: Auf der Live-Seite lädt das Datenschutz-Popup erneut die Landingpage und damit ein zweites Formular mit derselben ID. Das kann den sichtbaren Absenden-Button an das falsche Formular binden.
+Betroffene Bereiche: Frontend-Shortcode, Datenschutz-Popup, Formular-Submit, Dokumentation.
+Rücknahme: Version 0.0.29 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.29
 
 Beschreibung: Absenden-Button per Formular-ID fest mit dem Formular verknüpft.

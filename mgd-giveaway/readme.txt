@@ -4,7 +4,7 @@ Tags: download, forms, ebook, pdf, shortcode
 Requires at least: 6.0
 Tested up to: 6.5
 Requires PHP: 7.4
-Stable tag: 0.0.29
+Stable tag: 0.0.30
 License: GPL-2.0-or-later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,9 @@ Der Formular-Editor enthält einen modernen Builder mit Tabs, Element-Palette, F
 4. Shortcode wie `[mgd_giveaway id="123"]` in eine Seite einfügen.
 
 == Changelog ==
+
+= 0.0.30 =
+* Rekursives Formular-Rendering im Datenschutz-Popup verhindert.
 
 = 0.0.29 =
 * Absenden-Button per Formular-ID fest mit dem Formular verknüpft, damit Submit auch bei Elementor-DOM-Korrekturen funktioniert.

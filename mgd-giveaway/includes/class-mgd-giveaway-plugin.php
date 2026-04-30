@@ -16,6 +16,7 @@ class MGD_Giveaway_Plugin
     private $spam_max_seconds = 0;
     private $download_token_max_age = 2592000;
     private $confirm_token_max_age = 1209600;
+    private $rendering_privacy_modal = false;
 
     public static function instance()
     {
@@ -1071,6 +1072,10 @@ class MGD_Giveaway_Plugin
 
     public function render_shortcode($atts)
     {
+        if ($this->rendering_privacy_modal) {
+            return '';
+        }
+
         $atts = shortcode_atts(array('id' => 0), $atts, 'mgd_giveaway');
         $form_id = absint($atts['id']);
         $post = $form_id ? get_post($form_id) : null;
@@ -1237,7 +1242,12 @@ class MGD_Giveaway_Plugin
         echo '<h2>Datenschutzerklärung</h2>';
         echo '<div class="mgd-privacy-content">';
         if ($privacy_page && 'publish' === $privacy_page->post_status) {
-            echo apply_filters('the_content', $privacy_page->post_content);
+            $this->rendering_privacy_modal = true;
+            try {
+                echo apply_filters('the_content', $privacy_page->post_content);
+            } finally {
+                $this->rendering_privacy_modal = false;
+            }
         } elseif ($privacy_url) {
             echo '<iframe class="mgd-privacy-frame" src="' . esc_url($privacy_url) . '" title="Datenschutzerklärung"></iframe>';
             echo '<p><a href="' . esc_url($privacy_url) . '" target="_blank" rel="noopener noreferrer">Datenschutzerklärung in neuem Fenster öffnen</a></p>';
