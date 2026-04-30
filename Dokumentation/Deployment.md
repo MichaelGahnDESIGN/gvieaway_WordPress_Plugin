@@ -1,6 +1,6 @@
 # Deployment
 
-Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.31.zip`.
+Die auslieferbare ZIP liegt unter `dist/mgd-giveaway-v0.0.32.zip`.
 
 Vor einem produktiven Release prüfen:
 

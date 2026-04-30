@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.32
+
+Beschreibung: Bestätigungs- und Download-E-Mails als gebrandete HTML-E-Mails im Stil der Website gestaltet.
+Begründung: Die bisherigen reinen Textmails wirkten unpassend zur Landingpage und hatten keine klare Handlungsaufforderung.
+Betroffene Bereiche: E-Mail-Versand, Double-Opt-In, Download-Mail, Dokumentation.
+Rücknahme: Version 0.0.31 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.31
 
 Beschreibung: Datenschutz-URL beim Speichern stabilisiert und Popup-Ausgabe strikt an die eingetragene URL gebunden.

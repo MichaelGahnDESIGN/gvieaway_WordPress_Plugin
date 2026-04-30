@@ -1620,16 +1620,18 @@ class MGD_Giveaway_Plugin
     {
         $subject = $config['email_subject'] ? $config['email_subject'] : 'Dein Download';
         $body = str_replace('{download_url}', $download_url, $config['email_body']);
+        $body = $this->build_branded_email($subject, $body, $download_url, 'Ratgeber herunterladen');
 
-        return $this->send_mail($email, $subject, $body);
+        return $this->send_mail($email, $subject, $body, true);
     }
 
     private function send_confirmation_email($email, $confirm_url, $config)
     {
         $subject = $config['confirm_subject'] ? $config['confirm_subject'] : 'Bitte bestätige deine Anmeldung';
         $body = str_replace('{confirm_url}', $confirm_url, $config['confirm_body']);
+        $body = $this->build_branded_email($subject, $body, $confirm_url, 'Anmeldung bestätigen');
 
-        return $this->send_mail($email, $subject, $body);
+        return $this->send_mail($email, $subject, $body, true);
     }
 
     private function send_notification_email($form_id, $email, $data)
@@ -1660,10 +1662,47 @@ class MGD_Giveaway_Plugin
         return $sent;
     }
 
-    private function send_mail($to, $subject, $body)
+    private function build_branded_email($headline, $body, $button_url = '', $button_label = '')
+    {
+        $body = trim((string) $body);
+        $button_url = esc_url_raw((string) $button_url);
+        if ($button_url) {
+            $body = trim(str_replace($button_url, '', $body));
+        }
+
+        $paragraphs = '';
+        foreach (preg_split("/\n{2,}/", $body) as $paragraph) {
+            $paragraph = trim($paragraph);
+            if ('' === $paragraph) {
+                continue;
+            }
+            $paragraphs .= '<p style="margin:0 0 18px;color:#4f4540;font-size:16px;line-height:1.65;">' . nl2br(esc_html($paragraph)) . '</p>';
+        }
+
+        $button = '';
+        $fallback = '';
+        if ($button_url) {
+            $button = '<p style="margin:26px 0 20px;"><a href="' . esc_url($button_url) . '" style="display:inline-block;background:#ff9300;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;line-height:1.2;padding:15px 24px;border-radius:6px;">' . esc_html($button_label) . '</a></p>';
+            $fallback = '<p style="margin:18px 0 0;color:#746b66;font-size:13px;line-height:1.5;">Falls der Button nicht funktioniert, öffne diesen Link:<br><a href="' . esc_url($button_url) . '" style="color:#7a3d2b;word-break:break-all;">' . esc_html($button_url) . '</a></p>';
+        }
+
+        return '<!doctype html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#d4cec6;font-family:Arial,Helvetica,sans-serif;color:#3d332f;">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#d4cec6;margin:0;padding:28px 14px;"><tr><td align="center">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#f8f4ef;border:1px solid #c9c0b7;border-radius:8px;overflow:hidden;">'
+            . '<tr><td style="padding:30px 32px 20px;border-bottom:4px solid #ff9300;">'
+            . '<div style="font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:#8b6f5a;font-weight:700;margin-bottom:10px;">Hundepsychologe Sven</div>'
+            . '<h1 style="margin:0;color:#3d332f;font-size:30px;line-height:1.18;font-weight:800;">' . esc_html($headline) . '</h1>'
+            . '</td></tr><tr><td style="padding:30px 32px;">'
+            . $paragraphs . $button . $fallback
+            . '</td></tr><tr><td style="padding:22px 32px;background:#eee8e1;color:#5d534e;font-size:13px;line-height:1.6;">'
+            . '<strong>Angaben gemäß § 5 DDG</strong><br>Sven Dowiasch<br>Elisabeth Selbert Straße 37<br>34253 Lohfelden<br><br>Tel.: 015679520674<br>E-Mail: <a href="mailto:info@sven-dowiasch.de" style="color:#7a3d2b;">info@sven-dowiasch.de</a>'
+            . '</td></tr></table></td></tr></table></body></html>';
+    }
+
+    private function send_mail($to, $subject, $body, $html = false)
     {
         $settings = $this->get_settings();
-        $headers = array('Content-Type: text/plain; charset=UTF-8');
+        $headers = array('Content-Type: ' . ($html ? 'text/html' : 'text/plain') . '; charset=UTF-8');
         $from_filter = function () use ($settings) {
             return $settings['from_email'];
         };
