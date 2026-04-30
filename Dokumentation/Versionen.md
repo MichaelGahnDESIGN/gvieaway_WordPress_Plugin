@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.34
+
+Beschreibung: E-Mail-Vorschau im Formular-Backend ergänzt.
+Begründung: Das anpassbare E-Mail-Design soll direkt im Backend visuell prüfbar sein.
+Betroffene Bereiche: Formular-Editor, E-Mail-Tab, Admin-CSS, Dokumentation.
+Rücknahme: Version 0.0.33 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.33
 
 Beschreibung: E-Mail-Design im Formular-Backend anpassbar gemacht.

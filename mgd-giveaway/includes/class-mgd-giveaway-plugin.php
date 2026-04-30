@@ -385,6 +385,9 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-field"><span>Bestätigungsbutton Text</span><input type="text" name="email_style[confirm_button_label]" value="' . esc_attr($config['email_style']['confirm_button_label']) . '"></label>';
         echo '<label class="mgd-field"><span>Downloadbutton Text</span><input type="text" name="email_style[download_button_label]" value="' . esc_attr($config['email_style']['download_button_label']) . '"></label>';
         echo '<label class="mgd-field"><span>Footer / Impressumsangaben</span><textarea name="email_style[footer_text]" rows="7">' . esc_textarea($config['email_style']['footer_text']) . '</textarea></label>';
+        echo '<h3>E-Mail Vorschau</h3><p class="description">Die Vorschau zeigt die zuletzt gespeicherten Werte. Nach Änderungen bitte speichern.</p>';
+        $email_preview = $this->build_branded_email($config['confirm_subject'], str_replace('{confirm_url}', home_url('/?mgd_test=confirm'), $config['confirm_body']), home_url('/?mgd_test=confirm'), $config['email_style']['confirm_button_label'], $config);
+        echo '<iframe class="mgd-email-preview" title="E-Mail Vorschau" srcdoc="' . esc_attr($email_preview) . '"></iframe>';
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel ' . esc_attr('design' === $active_tab ? 'is-active' : '') . '" data-panel="design"><section class="mgd-panel mgd-editor-card"><h2>Design</h2><p class="description">Einfache Formularoptik für die Ausgabe per Shortcode.</p>';
