@@ -130,6 +130,11 @@
         updateSelectedPreview();
     });
 
+    $(document).on('submit', '#mgd-giveaway-editor-form', function () {
+        restoreInspector();
+        reindexFields(false);
+    });
+
     var dragged = null;
 
     $(document).on('dragstart', '.mgd-field-row', function (event) {

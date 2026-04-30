@@ -1232,7 +1232,8 @@ class MGD_Giveaway_Plugin
 
     private function render_privacy_modal($modal_id, $privacy_url = '')
     {
-        $privacy_page_id = $privacy_url ? url_to_postid($privacy_url) : (int) get_option('wp_page_for_privacy_policy');
+        $privacy_url = trim((string) $privacy_url);
+        $privacy_page_id = $privacy_url ? $this->get_page_id_from_url($privacy_url) : (int) get_option('wp_page_for_privacy_policy');
         $privacy_page = $privacy_page_id ? get_post($privacy_page_id) : null;
 
         echo '<div id="' . esc_attr($modal_id) . '" class="mgd-privacy-modal" aria-hidden="true">';
@@ -1248,7 +1249,7 @@ class MGD_Giveaway_Plugin
             } finally {
                 $this->rendering_privacy_modal = false;
             }
-        } elseif ($privacy_url) {
+        } elseif ('' !== $privacy_url) {
             echo '<iframe class="mgd-privacy-frame" src="' . esc_url($privacy_url) . '" title="Datenschutzerklärung"></iframe>';
             echo '<p><a href="' . esc_url($privacy_url) . '" target="_blank" rel="noopener noreferrer">Datenschutzerklärung in neuem Fenster öffnen</a></p>';
         } else {
@@ -1257,6 +1258,38 @@ class MGD_Giveaway_Plugin
         echo '</div>';
         echo '</div>';
         echo '</div>';
+    }
+
+    private function get_page_id_from_url($url)
+    {
+        $url = trim((string) $url);
+        if ('' === $url) {
+            return 0;
+        }
+
+        $page_id = url_to_postid($url);
+        if ($page_id) {
+            return (int) $page_id;
+        }
+
+        $home_host = wp_parse_url(home_url(), PHP_URL_HOST);
+        $url_host = wp_parse_url($url, PHP_URL_HOST);
+        if ($home_host && $url_host && strtolower((string) $home_host) !== strtolower((string) $url_host)) {
+            return 0;
+        }
+
+        $path = wp_parse_url($url, PHP_URL_PATH);
+        if (!$path) {
+            return 0;
+        }
+
+        $path = trim(rawurldecode($path), '/');
+        if ('' === $path) {
+            return 0;
+        }
+
+        $page = get_page_by_path($path);
+        return $page ? (int) $page->ID : 0;
     }
 
     public function handle_frontend_submit()

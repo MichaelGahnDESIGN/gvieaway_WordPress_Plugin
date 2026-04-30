@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.31
+
+Beschreibung: Datenschutz-URL beim Speichern stabilisiert und Popup-Ausgabe strikt an die eingetragene URL gebunden.
+Begründung: Der Inhalt des Datenschutz-Popups muss aus der im Datenschutz-Feld eingetragenen URL stammen und darf nicht unbeabsichtigt auf eine andere WordPress-Seite zurückfallen.
+Betroffene Bereiche: Formular-Editor, Datenschutz-Feld, Datenschutz-Popup, Dokumentation.
+Rücknahme: Version 0.0.30 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.30
 
 Beschreibung: Rekursives Formular-Rendering im Datenschutz-Popup verhindert.
