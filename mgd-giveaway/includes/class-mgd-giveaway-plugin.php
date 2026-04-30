@@ -205,6 +205,18 @@ class MGD_Giveaway_Plugin
             'confirm_subject' => 'Bitte bestätige deine Anmeldung',
             'confirm_body' => "Hallo,\n\nbitte bestätige deine Anmeldung über diesen Link:\n{confirm_url}",
             'confirm_message' => 'Bitte bestätige deine Anmeldung über den Link in deiner E-Mail. Danach ist der Download verfügbar.',
+            'email_style' => array(
+                'brand_label' => 'Hundepsychologe Sven',
+                'background' => '#d4cec6',
+                'card_background' => '#f8f4ef',
+                'text_color' => '#3d332f',
+                'muted_color' => '#746b66',
+                'accent_color' => '#ff9300',
+                'button_text_color' => '#ffffff',
+                'confirm_button_label' => 'Anmeldung bestätigen',
+                'download_button_label' => 'Ratgeber herunterladen',
+                'footer_text' => "Angaben gemäß § 5 DDG\n\nSven Dowiasch\nElisabeth Selbert Straße 37\n34253 Lohfelden\n\nTel.: 015679520674\nE-Mail: info@sven-dowiasch.de",
+            ),
             'style' => array(
                 'max_width' => '560',
                 'button_bg' => '#151515',
@@ -219,6 +231,7 @@ class MGD_Giveaway_Plugin
 
         $config = wp_parse_args($config, $default);
         $config['style'] = wp_parse_args(is_array($config['style']) ? $config['style'] : array(), $default['style']);
+        $config['email_style'] = $this->sanitize_email_style(wp_parse_args(is_array($config['email_style']) ? $config['email_style'] : array(), $default['email_style']));
         $config['protected_file'] = is_array($config['protected_file']) ? $config['protected_file'] : array();
 
         return $config;
@@ -361,6 +374,17 @@ class MGD_Giveaway_Plugin
         echo '<label class="mgd-check-row"><input type="checkbox" name="send_email" value="1" ' . checked(!empty($config['send_email']), true, false) . '> Download-Link auch per E-Mail senden</label>';
         echo '<label class="mgd-field"><span>E-Mail Betreff</span><input type="text" name="email_subject" value="' . esc_attr($config['email_subject']) . '"></label>';
         echo '<label class="mgd-field"><span>E-Mail Text</span><textarea name="email_body" rows="8">' . esc_textarea($config['email_body']) . '</textarea><small>Platzhalter: {download_url}</small></label>';
+        echo '<hr><h3>E-Mail Design</h3><p class="description">Design für Bestätigungs- und Download-E-Mails.</p>';
+        echo '<label class="mgd-field"><span>Markenname im E-Mail-Kopf</span><input type="text" name="email_style[brand_label]" value="' . esc_attr($config['email_style']['brand_label']) . '"></label>';
+        echo '<label class="mgd-field"><span>Hintergrundfarbe</span><input type="color" name="email_style[background]" value="' . esc_attr($config['email_style']['background']) . '"></label>';
+        echo '<label class="mgd-field"><span>Kartenfarbe</span><input type="color" name="email_style[card_background]" value="' . esc_attr($config['email_style']['card_background']) . '"></label>';
+        echo '<label class="mgd-field"><span>Textfarbe</span><input type="color" name="email_style[text_color]" value="' . esc_attr($config['email_style']['text_color']) . '"></label>';
+        echo '<label class="mgd-field"><span>Hinweistextfarbe</span><input type="color" name="email_style[muted_color]" value="' . esc_attr($config['email_style']['muted_color']) . '"></label>';
+        echo '<label class="mgd-field"><span>Akzent- und Buttonfarbe</span><input type="color" name="email_style[accent_color]" value="' . esc_attr($config['email_style']['accent_color']) . '"></label>';
+        echo '<label class="mgd-field"><span>Button Textfarbe</span><input type="color" name="email_style[button_text_color]" value="' . esc_attr($config['email_style']['button_text_color']) . '"></label>';
+        echo '<label class="mgd-field"><span>Bestätigungsbutton Text</span><input type="text" name="email_style[confirm_button_label]" value="' . esc_attr($config['email_style']['confirm_button_label']) . '"></label>';
+        echo '<label class="mgd-field"><span>Downloadbutton Text</span><input type="text" name="email_style[download_button_label]" value="' . esc_attr($config['email_style']['download_button_label']) . '"></label>';
+        echo '<label class="mgd-field"><span>Footer / Impressumsangaben</span><textarea name="email_style[footer_text]" rows="7">' . esc_textarea($config['email_style']['footer_text']) . '</textarea></label>';
         echo '</section></div>';
 
         echo '<div class="mgd-tab-panel ' . esc_attr('design' === $active_tab ? 'is-active' : '') . '" data-panel="design"><section class="mgd-panel mgd-editor-card"><h2>Design</h2><p class="description">Einfache Formularoptik für die Ausgabe per Shortcode.</p>';
@@ -740,6 +764,7 @@ class MGD_Giveaway_Plugin
             'confirm_subject' => isset($_POST['confirm_subject']) ? sanitize_text_field(wp_unslash($_POST['confirm_subject'])) : '',
             'confirm_body' => isset($_POST['confirm_body']) ? sanitize_textarea_field(wp_unslash($_POST['confirm_body'])) : '',
             'confirm_message' => isset($_POST['confirm_message']) ? sanitize_textarea_field(wp_unslash($_POST['confirm_message'])) : '',
+            'email_style' => $this->sanitize_email_style(isset($_POST['email_style']) ? wp_unslash($_POST['email_style']) : array()),
             'style' => $this->sanitize_style(isset($_POST['style']) ? wp_unslash($_POST['style']) : array()),
         );
 
@@ -816,6 +841,27 @@ class MGD_Giveaway_Plugin
             'button_text' => !empty($raw_style['button_text']) && sanitize_hex_color($raw_style['button_text']) ? sanitize_hex_color($raw_style['button_text']) : '#ffffff',
             'field_border' => !empty($raw_style['field_border']) && sanitize_hex_color($raw_style['field_border']) ? sanitize_hex_color($raw_style['field_border']) : '#bbbbbb',
             'radius' => (string) min(32, max(0, isset($raw_style['radius']) ? absint($raw_style['radius']) : 6)),
+        );
+    }
+
+    private function sanitize_email_style($raw_style)
+    {
+        $raw_style = is_array($raw_style) ? $raw_style : array();
+        $color = function ($key, $fallback) use ($raw_style) {
+            return !empty($raw_style[$key]) && sanitize_hex_color($raw_style[$key]) ? sanitize_hex_color($raw_style[$key]) : $fallback;
+        };
+
+        return array(
+            'brand_label' => isset($raw_style['brand_label']) ? sanitize_text_field($raw_style['brand_label']) : 'Hundepsychologe Sven',
+            'background' => $color('background', '#d4cec6'),
+            'card_background' => $color('card_background', '#f8f4ef'),
+            'text_color' => $color('text_color', '#3d332f'),
+            'muted_color' => $color('muted_color', '#746b66'),
+            'accent_color' => $color('accent_color', '#ff9300'),
+            'button_text_color' => $color('button_text_color', '#ffffff'),
+            'confirm_button_label' => isset($raw_style['confirm_button_label']) ? sanitize_text_field($raw_style['confirm_button_label']) : 'Anmeldung bestätigen',
+            'download_button_label' => isset($raw_style['download_button_label']) ? sanitize_text_field($raw_style['download_button_label']) : 'Ratgeber herunterladen',
+            'footer_text' => isset($raw_style['footer_text']) ? sanitize_textarea_field($raw_style['footer_text']) : "Angaben gemäß § 5 DDG\n\nSven Dowiasch\nElisabeth Selbert Straße 37\n34253 Lohfelden\n\nTel.: 015679520674\nE-Mail: info@sven-dowiasch.de",
         );
     }
 
@@ -1620,7 +1666,8 @@ class MGD_Giveaway_Plugin
     {
         $subject = $config['email_subject'] ? $config['email_subject'] : 'Dein Download';
         $body = str_replace('{download_url}', $download_url, $config['email_body']);
-        $body = $this->build_branded_email($subject, $body, $download_url, 'Ratgeber herunterladen');
+        $button_label = !empty($config['email_style']['download_button_label']) ? $config['email_style']['download_button_label'] : 'Ratgeber herunterladen';
+        $body = $this->build_branded_email($subject, $body, $download_url, $button_label, $config);
 
         return $this->send_mail($email, $subject, $body, true);
     }
@@ -1629,7 +1676,8 @@ class MGD_Giveaway_Plugin
     {
         $subject = $config['confirm_subject'] ? $config['confirm_subject'] : 'Bitte bestätige deine Anmeldung';
         $body = str_replace('{confirm_url}', $confirm_url, $config['confirm_body']);
-        $body = $this->build_branded_email($subject, $body, $confirm_url, 'Anmeldung bestätigen');
+        $button_label = !empty($config['email_style']['confirm_button_label']) ? $config['email_style']['confirm_button_label'] : 'Anmeldung bestätigen';
+        $body = $this->build_branded_email($subject, $body, $confirm_url, $button_label, $config);
 
         return $this->send_mail($email, $subject, $body, true);
     }
@@ -1662,8 +1710,9 @@ class MGD_Giveaway_Plugin
         return $sent;
     }
 
-    private function build_branded_email($headline, $body, $button_url = '', $button_label = '')
+    private function build_branded_email($headline, $body, $button_url = '', $button_label = '', $config = array())
     {
+        $style = isset($config['email_style']) && is_array($config['email_style']) ? $this->sanitize_email_style($config['email_style']) : $this->sanitize_email_style(array());
         $body = trim((string) $body);
         $button_url = esc_url_raw((string) $button_url);
         if ($button_url) {
@@ -1676,26 +1725,28 @@ class MGD_Giveaway_Plugin
             if ('' === $paragraph) {
                 continue;
             }
-            $paragraphs .= '<p style="margin:0 0 18px;color:#4f4540;font-size:16px;line-height:1.65;">' . nl2br(esc_html($paragraph)) . '</p>';
+            $paragraphs .= '<p style="margin:0 0 18px;color:' . esc_attr($style['text_color']) . ';font-size:16px;line-height:1.65;">' . nl2br(esc_html($paragraph)) . '</p>';
         }
 
         $button = '';
         $fallback = '';
         if ($button_url) {
-            $button = '<p style="margin:26px 0 20px;"><a href="' . esc_url($button_url) . '" style="display:inline-block;background:#ff9300;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;line-height:1.2;padding:15px 24px;border-radius:6px;">' . esc_html($button_label) . '</a></p>';
-            $fallback = '<p style="margin:18px 0 0;color:#746b66;font-size:13px;line-height:1.5;">Falls der Button nicht funktioniert, öffne diesen Link:<br><a href="' . esc_url($button_url) . '" style="color:#7a3d2b;word-break:break-all;">' . esc_html($button_url) . '</a></p>';
+            $button = '<p style="margin:26px 0 20px;"><a href="' . esc_url($button_url) . '" style="display:inline-block;background:' . esc_attr($style['accent_color']) . ';color:' . esc_attr($style['button_text_color']) . ';text-decoration:none;font-weight:700;font-size:16px;line-height:1.2;padding:15px 24px;border-radius:6px;">' . esc_html($button_label) . '</a></p>';
+            $fallback = '<p style="margin:18px 0 0;color:' . esc_attr($style['muted_color']) . ';font-size:13px;line-height:1.5;">Falls der Button nicht funktioniert, öffne diesen Link:<br><a href="' . esc_url($button_url) . '" style="color:' . esc_attr($style['text_color']) . ';word-break:break-all;">' . esc_html($button_url) . '</a></p>';
         }
 
-        return '<!doctype html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:#d4cec6;font-family:Arial,Helvetica,sans-serif;color:#3d332f;">'
-            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#d4cec6;margin:0;padding:28px 14px;"><tr><td align="center">'
-            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#f8f4ef;border:1px solid #c9c0b7;border-radius:8px;overflow:hidden;">'
-            . '<tr><td style="padding:30px 32px 20px;border-bottom:4px solid #ff9300;">'
-            . '<div style="font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:#8b6f5a;font-weight:700;margin-bottom:10px;">Hundepsychologe Sven</div>'
-            . '<h1 style="margin:0;color:#3d332f;font-size:30px;line-height:1.18;font-weight:800;">' . esc_html($headline) . '</h1>'
+        $footer = nl2br(esc_html($style['footer_text']));
+
+        return '<!doctype html><html><head><meta charset="UTF-8"></head><body style="margin:0;padding:0;background:' . esc_attr($style['background']) . ';font-family:Arial,Helvetica,sans-serif;color:' . esc_attr($style['text_color']) . ';">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:' . esc_attr($style['background']) . ';margin:0;padding:28px 14px;"><tr><td align="center">'
+            . '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:' . esc_attr($style['card_background']) . ';border:1px solid #c9c0b7;border-radius:8px;overflow:hidden;">'
+            . '<tr><td style="padding:30px 32px 20px;border-bottom:4px solid ' . esc_attr($style['accent_color']) . ';">'
+            . '<div style="font-size:14px;letter-spacing:.04em;text-transform:uppercase;color:' . esc_attr($style['muted_color']) . ';font-weight:700;margin-bottom:10px;">' . esc_html($style['brand_label']) . '</div>'
+            . '<h1 style="margin:0;color:' . esc_attr($style['text_color']) . ';font-size:30px;line-height:1.18;font-weight:800;">' . esc_html($headline) . '</h1>'
             . '</td></tr><tr><td style="padding:30px 32px;">'
             . $paragraphs . $button . $fallback
-            . '</td></tr><tr><td style="padding:22px 32px;background:#eee8e1;color:#5d534e;font-size:13px;line-height:1.6;">'
-            . '<strong>Angaben gemäß § 5 DDG</strong><br>Sven Dowiasch<br>Elisabeth Selbert Straße 37<br>34253 Lohfelden<br><br>Tel.: 015679520674<br>E-Mail: <a href="mailto:info@sven-dowiasch.de" style="color:#7a3d2b;">info@sven-dowiasch.de</a>'
+            . '</td></tr><tr><td style="padding:22px 32px;background:#eee8e1;color:' . esc_attr($style['muted_color']) . ';font-size:13px;line-height:1.6;">'
+            . $footer
             . '</td></tr></table></td></tr></table></body></html>';
     }
 

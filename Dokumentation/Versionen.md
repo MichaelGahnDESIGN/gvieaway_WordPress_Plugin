@@ -1,5 +1,12 @@
 # Versionen
 
+## 2026-04-30 - Version 0.0.33
+
+Beschreibung: E-Mail-Design im Formular-Backend anpassbar gemacht.
+Begründung: Bestätigungs- und Download-E-Mails sollen ohne Codeänderung an Website/Branding angepasst werden können.
+Betroffene Bereiche: Formular-Editor, E-Mail-Tab, E-Mail-Template, Dokumentation.
+Rücknahme: Version 0.0.32 aus Git-Historie oder Backup-ZIP wiederherstellen.
+
 ## 2026-04-30 - Version 0.0.32
 
 Beschreibung: Bestätigungs- und Download-E-Mails als gebrandete HTML-E-Mails im Stil der Website gestaltet.
