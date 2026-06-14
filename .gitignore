@@ -6,3 +6,9 @@ node_modules/
 vendor/
 Backups/*
 !Backups/.gitkeep
+
+# Lokal-only: Playtests und DB-Backups nie versionieren
+PlayTest/
+*.sql
+*.sql.gz
+*.dump
